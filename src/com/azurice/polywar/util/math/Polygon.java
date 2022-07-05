@@ -41,6 +41,14 @@ public class Polygon {
         return new Polygon(newPointList.toArray(new Vec2d[0]));
     }
 
+    public Polygon multiply(double value) {
+        List<Vec2d> newPointList = new ArrayList<>();
+        for (Vec2d point : pointList) {
+            newPointList.add(point.multiply(value));
+        }
+        return new Polygon(newPointList.toArray(new Vec2d[0]));
+    }
+
     public Polygon rotate(double angle) {
 //        System.out.println("Rotate " + angle + ": ");
 //        System.out.println(this);
