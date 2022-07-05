@@ -36,6 +36,7 @@ public class MapView extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 generateHeight();
+                repaint();
             }
 
             @Override
@@ -67,7 +68,7 @@ public class MapView extends JPanel {
                 double noise =PerlinNoise.noise(mappedI, mappedJ);
 
                 height[i][j] = (int) (256 * (noise + 2) / 3) - 1;
-                System.out.println("(" + i + ", " + j + "): " + noise + " " + height[i][j]);
+//                System.out.println("(" + i + ", " + j + "): " + noise + " " + height[i][j]);
             }
         }
     }
@@ -83,7 +84,7 @@ public class MapView extends JPanel {
         BufferedImage bufferedImage = new BufferedImage(mapSize, mapSize, BufferedImage.TYPE_BYTE_GRAY);
         for (int i = 0; i < mapSize; i++) {
             for (int j = 0; j < mapSize; j++) {
-                System.out.println(height[i][j]);
+//                System.out.println(height[i][j]);
                 bufferedImage.setRGB(i, j, MyColor.grayRGBColor(height[i][j]));
             }
         }

@@ -1,6 +1,8 @@
 package com.azurice.polywar.util;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 
 public final class PerlinNoise {
@@ -42,10 +44,21 @@ public final class PerlinNoise {
         } else {
             Random r = new Random();
             r.setSeed(seed);
-            for (int i = 0; i < 256; i++) {
-                // TODO: shuffle
-//                p[i+256] = p[i] = r.nextInt(0, 255);
+
+            HashSet<Integer> set = new HashSet<>();
+            for (int i = 0; set.size() < 256;) {
+                p[i] = r.nextInt(0, 256);
+//                System.out.print("(" + i + ", " + set.size() + "): " + p[i] + " ");
+                if (!set.contains(p[i])) {
+                    p[i+256] = p[i];
+                    set.add(p[i]);
+                    i++;
+                }
             }
+//            for (int i = 0; i < 256; i++) {
+//                System.out.print(p[i] + " ");
+//            }
+            System.out.println("");
         }
     }
 
