@@ -10,7 +10,6 @@ import com.azurice.polywar.util.math.Vec2d;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -29,7 +28,7 @@ public class MapView extends JPanel {
     ////// Entities //////
     //    private List<Missile> missileList = new ArrayList<>();
     private List<Vehicle> vehicleList = new ArrayList<>();
-    private List<Wall> wallList = new ArrayList<>();
+    public List<Wall> wallList = new ArrayList<>();
     // Player
     private Vehicle player = new Vehicle(new Vec2d(200, 200), this, new Color(30, 144, 255));
 
@@ -97,24 +96,16 @@ public class MapView extends JPanel {
 
             }
         });
+    }
 
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e) {
 //                System.out.println("Pressed: " + e);
-                player.keyPressed(e);
-            }
+        player.keyPressed(e);
+    }
 
-            @Override
-            public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent e) {
 //                System.out.println("Released: " + e);
-                player.keyReleased(e);
-            }
-        });
+        player.keyReleased(e);
     }
 
     public void tick() {

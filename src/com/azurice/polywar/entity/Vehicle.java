@@ -57,6 +57,13 @@ public class Vehicle extends BaseDrawableEntity {
             acceleration = acceleration.add(new Vec2d(+ACC, 0));
         }
 
+        for (Wall wall : mapView.wallList) {
+            if (getPolygon().intersect(wall.getPolygon())) {
+                System.out.println("Intersect!");
+                speed = Vec2d.ZERO;
+            }
+        }
+
         speed = speed.add(acceleration);
         if (abs(speed.length()) < FRICTION * (speed.length() * speed.length() + 2 * speed.length())) {
             speed = Vec2d.ZERO;
