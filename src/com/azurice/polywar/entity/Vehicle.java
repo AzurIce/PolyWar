@@ -63,7 +63,7 @@ public class Vehicle extends BaseDrawableEntity {
 
         for (Wall wall : mapView.wallList) {
             Vec2d collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
-//            Vec2d sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why this one does not work?
+//            Vec2d sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why not working?
             if (collisionPoint != Vec2d.ZERO) {
 //                System.out.println(getModel() + " + " + coord);
 //                System.out.println(getPolygon());
@@ -73,7 +73,7 @@ public class Vehicle extends BaseDrawableEntity {
 //                    coord = coord.minus(sp.minus(coord).normalize()); // Which is better?
                     coord = coord.minus(collisionPoint.minus(coord).normalize().add(speed.normalize())); // Which is better?
                     collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
-//                    sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why this one does not work?
+//                    sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why not working?
                 }
                 speed = Vec2d.ZERO; // Do we need it?
 //                speed = speed.negate();
