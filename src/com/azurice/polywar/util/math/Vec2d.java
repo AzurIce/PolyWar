@@ -1,6 +1,8 @@
 package com.azurice.polywar.util.math;
 
 
+import static java.lang.Math.acos;
+
 /**
  * An immutable vector composed of 2 floats.
  */
@@ -19,7 +21,26 @@ public class Vec2d {
         y = vec.y;
     }
 
-    public Vec2d multiply(float value) {
+    public double getAngle() {
+//        System.out.println("GetAngle " + this + ": " + dot(new Vec2d(0, 1)) / length() + " " + acos(dot(new Vec2d(0, 1)) / length()));
+        if (x == 0 && y == 0) {
+            return 0;
+        } else if (y == 0) {
+            return x > 0 ? 3 * Math.PI / 2 : Math.PI / 2;
+        } else if (x == 0) {
+            return y > 0 ? 0 : Math.PI;
+        }
+        return (x > 0 ? -1 : 1) * acos(dot(new Vec2d(0, 1)) / length());
+    }
+
+    public Vec2d rotate(double angle) {
+//        System.out.println("Rotate " + angle + ": ");
+//        System.out.println(this);
+//        System.out.println(new Vec2d(x * Math.cos(angle) - y * Math.sin(angle), x * Math.sin(angle) + y * Math.cos(angle)));
+        return new Vec2d(x * Math.cos(angle) - y * Math.sin(angle), x * Math.sin(angle) + y * Math.cos(angle));
+    }
+
+    public Vec2d multiply(double value) {
         return new Vec2d(x * value, y * value);
     }
 
@@ -37,6 +58,10 @@ public class Vec2d {
 
     public Vec2d add(double value) {
         return new Vec2d(x + value, y + value);
+    }
+
+    public Vec2d minus(double value) {
+        return add(-value);
     }
 
     public Vec2d minus(Vec2d vec) {
@@ -68,5 +93,10 @@ public class Vec2d {
 
     public Vec2d negate() {
         return new Vec2d(-x, -y);
+    }
+
+    @Override
+    public String toString() {
+        return "Vec2d(" + x + ", " + y + ")";
     }
 }

@@ -32,6 +32,17 @@ public class Polygon {
         return new Polygon(newPointList.toArray(new Vec2d[0]));
     }
 
+    public Polygon rotate(double angle) {
+//        System.out.println("Rotate " + angle + ": ");
+//        System.out.println(this);
+        List<Vec2d> newPointList = new ArrayList<>();
+        for (Vec2d point : pointList) {
+            newPointList.add(point.rotate(angle));
+        }
+//        System.out.println(new Polygon(newPointList.toArray(new Vec2d[0])));
+        return new Polygon(newPointList.toArray(new Vec2d[0]));
+    }
+
     public boolean contains(Vec2d p) {
         for (int i = 0; i < pointList.size(); i++) {
             Vec2d cur = pointList.get(i);
@@ -71,7 +82,20 @@ public class Polygon {
             yPoints[i] = (int) pointList.get(i).y;
 //            System.out.print("(" + xPoints[i] + ", " + yPoints[i] + ") ");
         }
-        System.out.println();
+//        System.out.println();
         return new java.awt.Polygon(xPoints, yPoints, pointList.size());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Polygon[");
+        for (int i = 0; i < pointList.size() - 1; i++) {
+            sb.append(pointList.get(i));
+            sb.append(", ");
+        }
+        sb.append(pointList.get(pointList.size() - 1));
+        sb.append("]");
+        return sb.toString();
     }
 }

@@ -2,7 +2,6 @@ package com.azurice.polywar.util;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Random;
 
 public final class PerlinNoise {
@@ -58,7 +57,7 @@ public final class PerlinNoise {
 //            for (int i = 0; i < 256; i++) {
 //                System.out.print(p[i] + " ");
 //            }
-            System.out.println("");
+//            System.out.println("");
         }
     }
 
