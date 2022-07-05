@@ -1,6 +1,6 @@
 package com.azurice.polywar.entity;
 
-import com.azurice.polywar.client.ui.GamePage;
+import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;
 
@@ -8,20 +8,23 @@ import java.awt.*;
 
 public class BaseDrawableEntity extends AbstractDrawableEntity {
 
-    public BaseDrawableEntity(GamePage gamePage, Polygon model) {
-        super(gamePage, model);
+    public BaseDrawableEntity(MapView mapView, Polygon model) {
+        super(mapView, model);
     }
 
-    public BaseDrawableEntity(Vec2d coord, GamePage gamePage, Polygon model) {
-        super(coord, gamePage, model);
+    public BaseDrawableEntity(Vec2d coord, MapView mapView, Polygon model) {
+        super(coord, mapView, model);
     }
 
-    public BaseDrawableEntity(Vec2d coord, GamePage gamePage, Polygon model, Color color) {
-        super(coord, gamePage, model, color);
+    public BaseDrawableEntity(Vec2d coord, MapView mapView, Polygon model, Color color) {
+        super(coord, mapView, model, color);
     }
 
     @Override
     public java.awt.Polygon getAwtPolygon() {
+//        if (this instanceof Wall) {
+//            System.out.println(MODEL.add(coord));
+//        }
         return MODEL.add(coord).toAwtPolygon();
     }
 }

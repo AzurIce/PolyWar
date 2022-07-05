@@ -1,7 +1,7 @@
 package com.azurice.polywar.entity;
 
-import com.azurice.polywar.client.ui.GamePage;
-import com.azurice.polywar.util.math.Polygon;
+import com.azurice.polywar.client.ui.component.MapView;
+import com.azurice.polywar.model.Model;
 import com.azurice.polywar.util.math.Vec2d;
 
 import java.awt.*;
@@ -23,10 +23,7 @@ public class Vehicle extends BaseDrawableEntity {
     // Vehicle properties
     private static final double FRICTION = 0.01;
     private static final double ACC = 4;
-    //
-    private static final Color color = new Color(30, 144, 255);
-    private static double angle;
-    protected Vec2d acceleration = Vec2d.ZERO;
+
     ////// Properties //////
     // Key status
     private boolean keyUpPressed;
@@ -34,10 +31,11 @@ public class Vehicle extends BaseDrawableEntity {
     private boolean keyRightPressed;
     private boolean keyLeftPressed;
 
-    public Vehicle(Vec2d coord, GamePage gamePage) {
-        super(coord, gamePage, new Polygon(
-                new Vec2d(0, 15), new Vec2d(-10, -10), new Vec2d(0, -5), new Vec2d(10, -10)
-        ));
+    protected Vec2d acceleration = Vec2d.ZERO;
+    private double angle;
+
+    public Vehicle(Vec2d coord, MapView mapView) {
+        super(coord, mapView, Model.VEHICLE_MODEL);
     }
 
     @Override
@@ -71,6 +69,10 @@ public class Vehicle extends BaseDrawableEntity {
         if (abs(speed.y) < 0.5) {
             speed = new Vec2d(speed.x, 0);
         }
+    }
+
+    public Vehicle(Vec2d coord, MapView mapView, Color color) {
+        super(coord, mapView, Model.VEHICLE_MODEL, color);
     }
 
     @Override

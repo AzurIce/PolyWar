@@ -1,11 +1,14 @@
-package com.azurice.polywar.client.ui;
+package com.azurice.polywar.client.ui.component;
 
 import com.azurice.polywar.entity.Vehicle;
+import com.azurice.polywar.entity.Wall;
 import com.azurice.polywar.util.MyColor;
 import com.azurice.polywar.util.MyMath;
 import com.azurice.polywar.util.PerlinNoise;
+import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -16,27 +19,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GamePage extends AbstractPage {
-    public int mapSize;
+public class MapView extends JPanel {
+    private static final int WALL_THICK = 5;
     private static final Random r = new Random();
+
+    public int mapSize;
     private int[][] height;
 
+    ////// Entities //////
+    //    private List<Missile> missileList = new ArrayList<>();
     private List<Vehicle> vehicleList = new ArrayList<>();
-//    private List<Missile> missileList = new ArrayList<>();
+    private List<Wall> wallList = new ArrayList<>();
+    // Player
+    private Vehicle player = new Vehicle(new Vec2d(200, 200), this, new Color(30, 144, 255));
 
     private Image offScreenImage;
 
-    public GamePage(int mapSize) {
+    public MapView(int mapSize) {
         this.mapSize = mapSize;
         height = new int[mapSize][mapSize];
 
         generateHeight();
-        vehicleList.add(new Vehicle(new Vec2d(200, 200), this));
 
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(mapSize, mapSize));
 
+        initGame();
+
         initListener();
+    }
+
+    private void initGame() {
+        vehicleList.add(player);
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(0, 0), new Vec2d(0, WALL_THICK),
+                new Vec2d(mapSize, WALL_THICK), new Vec2d(mapSize, 0)
+        )));
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(WALL_THICK, 0), new Vec2d(0, 0),
+                new Vec2d(0, mapSize), new Vec2d(WALL_THICK, mapSize)
+        )));
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(mapSize - WALL_THICK, 0), new Vec2d(mapSize - WALL_THICK, mapSize),
+                new Vec2d(mapSize, mapSize), new Vec2d(mapSize, 0)
+        )));
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(0, mapSize - WALL_THICK), new Vec2d(0, mapSize),
+                new Vec2d(mapSize, mapSize), new Vec2d(mapSize, mapSize - WALL_THICK)
+        )));
     }
 
     private void initListener() {
@@ -76,13 +106,13 @@ public class GamePage extends AbstractPage {
             @Override
             public void keyPressed(KeyEvent e) {
 //                System.out.println("Pressed: " + e);
-                vehicleList.get(0).keyPressed(e);
+                player.keyPressed(e);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
 //                System.out.println("Released: " + e);
-                vehicleList.get(0).keyReleased(e);
+                player.keyReleased(e);
             }
         });
     }
@@ -114,19 +144,19 @@ public class GamePage extends AbstractPage {
 
     @Override
     public void update(Graphics g) {
+        // Buffer image
         if (offScreenImage == null) {
-            // 截取窗体所在位置的图片
             offScreenImage = this.createImage(WIDTH, HEIGHT);
         }
-        // 获得截取图片的画布
+
         Graphics gImage = offScreenImage.getGraphics();
-        // 获取画布的底色并且使用这种颜色填充画布（默认的颜色为黑色）
+
         Color c = Color.BLACK;
         gImage.setColor(c);
-        gImage.fillRect(0, 0, WIDTH, HEIGHT);
-        // 将截下的图片上的画布传给重绘函数，重绘函数只需要在截图的画布上绘制即可，不必在从底层绘制
-        paint(gImage);
-        // 将截下来的图片加载到窗体画布上去，才能考到每次画的效果
+        gImage.fillRect(0, 0, WIDTH, HEIGHT); // clear
+
+        paint(gImage); // Draw on the image
+
         g.drawImage(offScreenImage, 0, 0, null);
     }
 
@@ -151,11 +181,14 @@ public class GamePage extends AbstractPage {
         for (Vehicle vehicle : vehicleList) {
             vehicle.paint(g);
         }
+
+        for (Wall wall : wallList) {
+            wall.paint(g);
+        }
     }
 
-    @Override
-    public void display() {
-        super.display();
+    public void display(JFrame parent) {
+        parent.setContentPane(this);
         Thread renderThread = new Thread(() -> {
             for (; ; ) {
                 long time = System.currentTimeMillis();
@@ -170,7 +203,7 @@ public class GamePage extends AbstractPage {
             }
         });
         Thread t = new Thread(() -> {
-            while (true) {
+            for (; ; ) {
                 long time = System.currentTimeMillis();
                 tick();
                 try {

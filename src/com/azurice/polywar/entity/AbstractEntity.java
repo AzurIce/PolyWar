@@ -1,16 +1,16 @@
 package com.azurice.polywar.entity;
 
-import com.azurice.polywar.client.ui.GamePage;
+import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.util.math.Vec2d;
 
 public abstract class AbstractEntity {
     protected Vec2d speed = Vec2d.ZERO;
     protected Vec2d coord;
-    protected GamePage gamePage;
+    protected MapView mapView;
 
-    public AbstractEntity(Vec2d coord, GamePage gamePage) {
+    public AbstractEntity(Vec2d coord, MapView mapView) {
         this.coord = coord;
-        this.gamePage = gamePage;
+        this.mapView = mapView;
     }
 
     public void tick() {
