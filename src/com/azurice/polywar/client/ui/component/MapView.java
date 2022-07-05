@@ -1,26 +1,33 @@
-package com.azurice.polywar.ui.component;
+package com.azurice.polywar.client.ui.component;
 
+import com.azurice.polywar.entity.Vehicle;
 import com.azurice.polywar.util.MyColor;
 import com.azurice.polywar.util.MyMath;
 import com.azurice.polywar.util.PerlinNoise;
+import com.azurice.polywar.util.math.Vec2d;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MapView extends JPanel {
-    private int mapSize;
+    public int mapSize;
     private static final Random r = new Random();
     private int[][] height;
+
+    private List<Vehicle> vehicleList = new ArrayList<>();
 
     public MapView(int mapSize) {
         this.mapSize = mapSize;
         height = new int[mapSize][mapSize];
 
         generateHeight();
+        vehicleList.add(new Vehicle(new Vec2d(200, 200), this));
 
         addMouseListener(new MouseListener() {
             @Override
@@ -54,7 +61,11 @@ public class MapView extends JPanel {
         setPreferredSize(new Dimension(mapSize, mapSize));
     }
 
-    public void generateHeight(){
+    public void tick() {
+        repaint();
+    }
+
+    public void generateHeight() {
         PerlinNoise.shuffle();
         int latticeCnt = 8;
         for (int i = 0; i < mapSize; i++) {
@@ -90,5 +101,9 @@ public class MapView extends JPanel {
         }
 
         g2d.drawImage(bufferedImage, 0, 0, null);
+
+        for (Vehicle vehicle : vehicleList) {
+            vehicle.paint(g);
+        }
     }
 }

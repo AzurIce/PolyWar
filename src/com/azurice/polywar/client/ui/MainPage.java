@@ -1,6 +1,6 @@
-package com.azurice.polywar.ui;
+package com.azurice.polywar.client.ui;
 
-import com.azurice.polywar.ui.component.MapView;
+import com.azurice.polywar.client.ui.component.MapView;
 
 import javax.swing.*;
 
