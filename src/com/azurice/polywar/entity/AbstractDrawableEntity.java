@@ -39,8 +39,12 @@ public abstract class AbstractDrawableEntity extends AbstractEntity {
         g2d.fillPolygon(getAwtPolygon());
     }
 
-    public Polygon getPolygon() {
+    public Polygon getModel() {
         return MODEL;
+    }
+
+    public Polygon getPolygon() {
+        return MODEL.add(coord);
     }
 
     /**

@@ -6,13 +6,22 @@ import java.util.List;
 
 public class Polygon {
     public List<Vec2d> pointList = new ArrayList<>();
-    private double precision = 0.1;
+    private double precision = 1;
 
     /**
      * !!!IMPORTANT
-     * The points have to be permuted in counterclockwise
+     * The points have to be permuted in counterclockwise<br>
+     * NOTE:
+     * The coordinate system in the game is like this:<br>
+     * +-----> x<br>
+     * |<br>
+     * |<br>
+     * v<br>
+     * y<br>
+     * The word "counterclockwise" here is the counterclockwise in this coordinate system,
+     * but not the normal coordinate system.
      *
-     * @param points
+     * @param points The points for composing a polygon
      */
     public Polygon(Vec2d... points) {
         pointList.addAll(Arrays.asList(points));
@@ -49,28 +58,34 @@ public class Polygon {
             Vec2d next = pointList.get((i + 1) % pointList.size());
             Vec2d edge = next.add(cur.negate());
             Vec2d vec = p.minus(cur);
-            if (edge.multiply(vec).z < 0) {
+
+            if (edge.multiply(vec).z > 0) {
                 return false;
             }
         }
+//        System.out.println("Contains: " + this + " " + p);
         return true;
     }
 
-    public boolean intersect(Polygon poly) {
+    public Vec2d intersect(Polygon poly) {
         for (int i = 0; i < pointList.size(); i++) {
             Vec2d cur = pointList.get(i);
             Vec2d next = pointList.get((i + 1) % pointList.size());
-            Vec2d edge = next.add(cur.negate());
+            Vec2d edge = next.minus(cur);
 
             Vec2d samplePoint = new Vec2d(cur);
             for (int j = 0; j < edge.length() / precision; j++) {
+//                System.out.println(samplePoint);
                 if (poly.contains(samplePoint)) {
-                    return true;
+//                    System.out.println("Intersect detection: " + this + " " + poly);
+//                    System.out.println("Edge: " + edge);
+//                    System.out.println("SamplePoint: " + samplePoint);
+                    return samplePoint;
                 }
-                samplePoint = samplePoint.add(precision);
+                samplePoint = samplePoint.add(edge.normalize().multiply(precision));
             }
         }
-        return false;
+        return Vec2d.ZERO;
     }
 
 

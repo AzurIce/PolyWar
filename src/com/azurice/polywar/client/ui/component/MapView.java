@@ -66,6 +66,23 @@ public class MapView extends JPanel {
                 new Vec2d(0, mapSize - WALL_THICK), new Vec2d(0, mapSize),
                 new Vec2d(mapSize, mapSize), new Vec2d(mapSize, mapSize - WALL_THICK)
         )));
+
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(0, 0), new Vec2d(0, WALL_THICK * 4),
+                new Vec2d(WALL_THICK * 4, 0)
+        )));
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(0, mapSize), new Vec2d(WALL_THICK * 4, mapSize),
+                new Vec2d(0, mapSize - WALL_THICK * 4)
+        )));
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(mapSize, mapSize), new Vec2d(mapSize, mapSize - WALL_THICK * 4),
+                new Vec2d(mapSize - WALL_THICK * 4, mapSize)
+        )));
+        wallList.add(new Wall(this, new Polygon(
+                new Vec2d(mapSize, 0), new Vec2d(mapSize - WALL_THICK * 4, 0),
+                new Vec2d(mapSize, WALL_THICK * 4)
+        )));
     }
 
     private void initListener() {
@@ -82,8 +99,9 @@ public class MapView extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                generateHeight();
-                repaint();
+//                player.setCoord(new Vec2d(200, 200));
+//                generateHeight();
+//                repaint();
             }
 
             @Override

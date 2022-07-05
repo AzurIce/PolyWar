@@ -68,9 +68,6 @@ public class Vec2d {
         return add(vec.negate());
     }
 
-    public boolean equals(Vec2d other) {
-        return x == other.x && y == other.y;
-    }
 
     public Vec2d normalize() {
         double f = length();
@@ -98,5 +95,9 @@ public class Vec2d {
     @Override
     public String toString() {
         return "Vec2d(" + x + ", " + y + ")";
+    }
+
+    public boolean equals(Vec2d other) {
+        return x == other.x && y == other.y;
     }
 }

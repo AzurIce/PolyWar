@@ -34,6 +34,10 @@ public class Vehicle extends BaseDrawableEntity {
     protected Vec2d acceleration = Vec2d.ZERO;
     private double angle;
 
+    public void setCoord(Vec2d coord) {
+        this.coord = coord;
+    }
+
     public Vehicle(Vec2d coord, MapView mapView) {
         super(coord, mapView, Model.VEHICLE_MODEL);
     }
@@ -58,9 +62,22 @@ public class Vehicle extends BaseDrawableEntity {
         }
 
         for (Wall wall : mapView.wallList) {
-            if (getPolygon().intersect(wall.getPolygon())) {
-                System.out.println("Intersect!");
-                speed = Vec2d.ZERO;
+            Vec2d collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
+//            Vec2d sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why this one does not work?
+            if (collisionPoint != Vec2d.ZERO) {
+//                System.out.println(getModel() + " + " + coord);
+//                System.out.println(getPolygon());
+                while (collisionPoint != Vec2d.ZERO) {
+                    System.out.println("Intersect!");
+//                    coord = coord.minus(speed.normalize()); // Not working...
+//                    coord = coord.minus(sp.minus(coord).normalize()); // Which is better?
+                    coord = coord.minus(collisionPoint.minus(coord).normalize().add(speed.normalize())); // Which is better?
+                    collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
+//                    sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why this one does not work?
+                }
+                speed = Vec2d.ZERO; // Do we need it?
+//                speed = speed.negate();
+//                speed = speed.multiply(0.1);
             }
         }
 
@@ -84,10 +101,15 @@ public class Vehicle extends BaseDrawableEntity {
 
     @Override
     public java.awt.Polygon getAwtPolygon() {
-        if (speed.x != 0 && speed.y != 0) {
+        if (speed.x != 0 || speed.y != 0) {
             angle = speed.getAngle();
         }
-        return MODEL.rotate(angle).add(coord).toAwtPolygon();
+        return getPolygon().toAwtPolygon();
+    }
+
+    @Override
+    public com.azurice.polywar.util.math.Polygon getPolygon() {
+        return MODEL.rotate(angle).add(coord);
     }
 
     public void keyPressed(KeyEvent e) {
