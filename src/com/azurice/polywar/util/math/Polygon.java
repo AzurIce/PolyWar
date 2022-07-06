@@ -75,7 +75,37 @@ public class Polygon {
         return true;
     }
 
+    public Vec2d getMinXY() {
+        Vec2d minXY = pointList.get(0);
+        for (int i = 1; i < pointList.size(); i++) {
+            if (pointList.get(i).x < minXY.x) {
+                minXY = new Vec2d(pointList.get(i).x, minXY.y);
+            }
+            if (pointList.get(i).y < minXY.y) {
+                minXY = new Vec2d(minXY.x, pointList.get(i).y);
+            }
+        }
+        return minXY;
+    }
+
+    public Vec2d getMaxXY() {
+        Vec2d maxXY = pointList.get(0);
+        for (int i = 1; i < pointList.size(); i++) {
+            if (pointList.get(i).x > maxXY.x) {
+                maxXY = new Vec2d(pointList.get(i).x, maxXY.y);
+            }
+            if (pointList.get(i).y > maxXY.y) {
+                maxXY = new Vec2d(maxXY.x, pointList.get(i).y);
+            }
+        }
+        return maxXY;
+    }
+
     public Vec2d intersect(Polygon poly) {
+        if (getMaxXY().x < poly.getMinXY().x || getMaxXY().y < poly.getMinXY().y ||
+                getMinXY().x > poly.getMaxXY().x || getMinXY().y > poly.getMaxXY().y) {
+            return Vec2d.ZERO;
+        }
         for (int i = 0; i < pointList.size(); i++) {
             Vec2d cur = pointList.get(i);
             Vec2d next = pointList.get((i + 1) % pointList.size());
