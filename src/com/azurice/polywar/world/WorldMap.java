@@ -2,13 +2,10 @@ package com.azurice.polywar.world;
 
 import com.azurice.polywar.entity.Wall;
 import com.azurice.polywar.model.Model;
-import com.azurice.polywar.util.MyColor;
 import com.azurice.polywar.util.MyMath;
 import com.azurice.polywar.util.PerlinNoise;
 import com.azurice.polywar.util.math.Vec2d;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +14,7 @@ public class WorldMap {
     private static int[] dirY = new int[]{1, 0, 0, 1};
     public List<Wall> walls = new ArrayList<>();
     public int[][] height;
-    private int mapSize;
+    public int mapSize;
 
     private static final int latticeCnt = 8;
 
@@ -39,8 +36,6 @@ public class WorldMap {
             for (int j = 0; j < mapSize; j++) {
                 double mappedI = MyMath.mapValue(i, mapSize, latticeCnt);
                 double mappedJ = MyMath.mapValue(j, mapSize, latticeCnt);
-//                System.out.println(mappedI);
-//                System.out.println(mappedJ);
 
                 double noise = PerlinNoise.noise(mappedI, mappedJ);
 
@@ -67,31 +62,8 @@ public class WorldMap {
             }
         }
 
-//        for (Wall wall: map.walls) {
-//            System.out.println(wall.getPolygon());
-//        }
-
         return map;
     }
 
-    public void paint(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        BufferedImage bufferedImage = new BufferedImage(mapSize, mapSize, BufferedImage.TYPE_BYTE_GRAY);
-        for (int i = 0; i < mapSize; i++) {
-            for (int j = 0; j < mapSize; j++) {
-//                System.out.println(height[i][j]);
-                bufferedImage.setRGB(i, j, MyColor.grayRGBColor(height[i][j]));
-            }
-        }
-        g2d.drawImage(bufferedImage, 0, 0, null);
 
-//        System.out.println(walls.size());
-        for (Wall wall : walls) {
-            if (wall.getCoord().x > 800 || wall.getCoord().y > 800) {
-                continue;
-            }
-//            System.out.println(wall.getPolygon());
-            wall.paint(g2d);
-        }
-    }
 }

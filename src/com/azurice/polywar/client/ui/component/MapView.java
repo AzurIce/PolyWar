@@ -1,10 +1,10 @@
 package com.azurice.polywar.client.ui.component;
 
+import com.azurice.polywar.client.render.MapRenderer;
 import com.azurice.polywar.entity.Vehicle;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MapView extends JPanel {
+public class MapView extends AbstractView {
     private static final int WALL_THICK = 5;
     private static final Random r = new Random();
 
@@ -31,17 +31,8 @@ public class MapView extends JPanel {
     private Image offScreenImage;
 
     public MapView() {
-
-//        height = new int[mapSize][mapSize];
-
-//        generateHeight();
-
-        setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(800, 800));
-
         initGame();
-
-        initListener();
+        init();
     }
 
     private void initGame() {
@@ -89,7 +80,73 @@ public class MapView extends JPanel {
 //        )));
     }
 
-    private void initListener() {
+    // KeyListener
+    public void keyPressed(KeyEvent e) {
+        player.keyPressed(e);
+    }
+
+    public void keyReleased(KeyEvent e) {
+        player.keyReleased(e);
+    }
+
+    // Render & tick
+    public void tick() {
+        for (Vehicle vehicle : vehicleList) {
+            vehicle.tick();
+        }
+    }
+
+    public void render() {
+        repaint();
+    }
+
+
+    // Overrides of painting
+    @Override
+    public void update(Graphics g) {
+        // Buffer image
+        if (offScreenImage == null) {
+            offScreenImage = this.createImage(WIDTH, HEIGHT);
+        }
+
+        Graphics gImage = offScreenImage.getGraphics();
+
+        Color c = Color.BLACK;
+        gImage.setColor(c);
+        gImage.fillRect(0, 0, WIDTH, HEIGHT); // clear
+
+        paint(gImage); // Draw on the image
+
+        g.drawImage(offScreenImage, 0, 0, null);
+    }
+
+    @Override
+    public void paint(Graphics g) {
+//        super.paint(g);
+
+        // For better visual
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        MapRenderer.render(map, g2d);
+
+        for (Vehicle vehicle : vehicleList) {
+            vehicle.paint(g);
+        }
+
+    }
+
+
+    // Overrides of AbstractView
+    @Override
+    public void initViews() {
+        setBackground(Color.WHITE);
+        setPreferredSize(new Dimension(800, 800));
+
+    }
+
+    @Override
+    public void initListeners() {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -118,123 +175,5 @@ public class MapView extends JPanel {
 
             }
         });
-    }
-
-    public void keyPressed(KeyEvent e) {
-//                System.out.println("Pressed: " + e);
-        player.keyPressed(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-//                System.out.println("Released: " + e);
-        player.keyReleased(e);
-    }
-
-    public void tick() {
-        for (Vehicle vehicle : vehicleList) {
-            vehicle.tick();
-        }
-    }
-
-//    public void generateHeight() {
-//        PerlinNoise.shuffle();
-//        int latticeCnt = 8;
-//        for (int i = 0; i < mapSize; i++) {
-//            for (int j = 0; j < mapSize; j++) {
-//                double mappedI = MyMath.mapValue(i, mapSize, latticeCnt);
-//                double mappedJ = MyMath.mapValue(j, mapSize, latticeCnt);
-////                System.out.println(mappedI);
-////                System.out.println(mappedJ);
-//
-//                double noise = PerlinNoise.noise(mappedI, mappedJ);
-//
-//                height[i][j] = (int) (256 * (noise + 2) / 3) - 1;
-////                System.out.println("(" + i + ", " + j + "): " + noise + " " + height[i][j]);
-//            }
-//        }
-//    }
-
-
-    public void render() {
-        repaint();
-    }
-
-    @Override
-    public void update(Graphics g) {
-        // Buffer image
-        if (offScreenImage == null) {
-            offScreenImage = this.createImage(WIDTH, HEIGHT);
-        }
-
-        Graphics gImage = offScreenImage.getGraphics();
-
-        Color c = Color.BLACK;
-        gImage.setColor(c);
-        gImage.fillRect(0, 0, WIDTH, HEIGHT); // clear
-
-        paint(gImage); // Draw on the image
-
-        g.drawImage(offScreenImage, 0, 0, null);
-    }
-
-    @Override
-    public void paint(Graphics g) {
-//        super.paint(g);
-
-        // For better visual
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-//        BufferedImage bufferedImage = new BufferedImage(mapSize, mapSize, BufferedImage.TYPE_BYTE_GRAY);
-//        for (int i = 0; i < mapSize; i++) {
-//            for (int j = 0; j < mapSize; j++) {
-////                System.out.println(height[i][j]);
-//                bufferedImage.setRGB(i, j, MyColor.grayRGBColor(height[i][j]));
-//            }
-//        }
-//        g2d.drawImage(bufferedImage, 0, 0, null);
-
-        map.paint(g);
-
-        for (Vehicle vehicle : vehicleList) {
-            vehicle.paint(g);
-        }
-
-//        for (Wall wall : wallList) {
-//            wall.paint(g);
-//        }
-    }
-
-    public void display(JFrame parent) {
-//        parent.setContentPane(this);
-//        Thread renderThread = new Thread(() -> {
-//            for (; ; ) {
-//                long time = System.currentTimeMillis();
-//                repaint();
-////                System.out.println(System.currentTimeMillis() - time);
-//                try {
-//                    Thread.sleep(1000 / 60 - (System.currentTimeMillis() - time)); // 60fps
-//                } catch (InterruptedException e) {
-//                    // TODO: Game over
-//                    break;
-//                }
-//            }
-//        });
-//        Thread t = new Thread(() -> {
-//            for (; ; ) {
-//                long time = System.currentTimeMillis();
-//                tick();
-////                System.out.println(System.currentTimeMillis() - time);
-//                try {
-////                    System.out.println(1000 / 20 - System.currentTimeMillis() + time);
-//                    Thread.sleep(1000 / 20 - System.currentTimeMillis() + time);
-//                } catch (InterruptedException e) {
-//                    // TODO: Game over
-//                    break;
-//                }
-//            }
-//        });
-//        t.start();
-//        renderThread.start();
     }
 }

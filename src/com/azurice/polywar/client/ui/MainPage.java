@@ -10,7 +10,8 @@ public class MainPage extends BasicWindow {
     private MapView mapView = new MapView();
 
     public MainPage() {
-        mapView.display(this);
+        setContentPane(mapView);
+//        mapView.display(this);
 
         addKeyListener(new KeyAdapter() {
             @Override
