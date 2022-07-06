@@ -34,24 +34,14 @@ public class Vehicle extends BaseDrawableEntity {
     protected Vec2d acceleration = Vec2d.ZERO;
     private double angle;
 
-    private WorldMap worldMap;
+    private final WorldMap worldMap;
 
-    public void setCoord(Vec2d coord) {
-        this.coord = coord;
-    }
 
-    //    public Vehicle(Vec2d coord, MapView mapView) {
-//        super(coord, mapView, Model.VEHICLE_MODEL);
-//    }
     public Vehicle(Vec2d coord, WorldMap map) {
         super(coord, Model.VEHICLE_MODEL);
         worldMap = map;
     }
 
-
-    //    public Vehicle(Vec2d coord, MapView mapView, Color color) {
-//        super(coord, mapView, Model.VEHICLE_MODEL, color);
-//    }
     public Vehicle(Vec2d coord, Color color, WorldMap map) {
         super(coord, Model.VEHICLE_MODEL, color);
         worldMap = map;
