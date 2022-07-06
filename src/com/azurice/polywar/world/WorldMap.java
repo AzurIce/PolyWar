@@ -1,6 +1,5 @@
 package com.azurice.polywar.world;
 
-import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.entity.Wall;
 import com.azurice.polywar.model.Model;
 import com.azurice.polywar.util.MyColor;
@@ -19,7 +18,6 @@ public class WorldMap {
     public List<Wall> walls = new ArrayList<>();
     public int[][] height;
     private int mapSize;
-    private MapView mapView;
 
     private WorldMap(int mapSize) {
         this.mapSize = mapSize;
@@ -56,7 +54,7 @@ public class WorldMap {
                     }
                 }
                 if (bitmask != 0) {
-                    System.out.println("Bitmask: " + bitmask);
+//                    System.out.println("Bitmask: " + bitmask);
                     map.walls.add(new Wall(new Vec2d((i + 0.5) * squareLength, (j + 0.5) * squareLength), Model.MARCHING_SQUARE.get(bitmask).multiply(squareLength / 2.0)));
                 }
             }
