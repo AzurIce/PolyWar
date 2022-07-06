@@ -6,7 +6,7 @@ import static java.lang.Math.acos;
 /**
  * An immutable vector composed of 2 floats.
  */
-public class Vec2d {
+public class Vec2d implements Comparable<Vec2d> {
     public static final Vec2d ZERO = new Vec2d(0, 0);
 
     public static final Vec2d U = new Vec2d(0, -1);
@@ -109,5 +109,10 @@ public class Vec2d {
 
     public boolean equals(Vec2d other) {
         return x == other.x && y == other.y;
+    }
+
+    @Override
+    public int compareTo(Vec2d o) {
+        return (int) (length() - o.length());
     }
 }
