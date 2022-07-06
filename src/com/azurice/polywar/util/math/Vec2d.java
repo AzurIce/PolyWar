@@ -8,6 +8,16 @@ import static java.lang.Math.acos;
  */
 public class Vec2d {
     public static final Vec2d ZERO = new Vec2d(0, 0);
+
+    public static final Vec2d U = new Vec2d(0, -1);
+    public static final Vec2d UL = new Vec2d(-1, -1);
+    public static final Vec2d L = new Vec2d(-1, 0);
+    public static final Vec2d DL = new Vec2d(-1, 1);
+    public static final Vec2d D = new Vec2d(0, 1);
+    public static final Vec2d DR = new Vec2d(1, 1);
+    public static final Vec2d R = new Vec2d(1, 0);
+    public static final Vec2d UR = new Vec2d(1, -1);
+
     public final double x;
     public final double y;
 

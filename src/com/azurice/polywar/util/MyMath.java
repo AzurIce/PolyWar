@@ -11,4 +11,5 @@ public class MyMath {
     public static double mapValue(int value, int originBound, int targetBound) {
         return (value + 1.0) / originBound * targetBound;
     }
+
 }

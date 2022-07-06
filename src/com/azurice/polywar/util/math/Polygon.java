@@ -117,7 +117,9 @@ public class Polygon {
             sb.append(pointList.get(i));
             sb.append(", ");
         }
-        sb.append(pointList.get(pointList.size() - 1));
+        if (pointList.size() > 0) {
+            sb.append(pointList.get(pointList.size() - 1));
+        }
         sb.append("]");
         return sb.toString();
     }

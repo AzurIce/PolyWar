@@ -1,6 +1,5 @@
 package com.azurice.polywar.entity;
 
-import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;
 
@@ -10,19 +9,34 @@ public abstract class AbstractDrawableEntity extends AbstractEntity {
     protected final Polygon MODEL;
     private Color color;
 
-    public AbstractDrawableEntity(MapView mapView, Polygon model) {
-        this(Vec2d.ZERO, mapView, model);
+//    public AbstractDrawableEntity(MapView mapView, Polygon model) {
+//        this(Vec2d.ZERO, mapView, model);
+//    }
+//
+//    public AbstractDrawableEntity(Vec2d coord, MapView mapView, Polygon model) {
+//        this(coord, mapView, model, new Color(255, 0, 0));
+//    }
+//
+//    public AbstractDrawableEntity(Vec2d coord, MapView mapView, Polygon model, Color color) {
+//        super(coord, mapView);
+//        this.MODEL = model;
+//        this.color = color;
+//    }
+
+    public AbstractDrawableEntity(Polygon model) {
+        this(Vec2d.ZERO, model);
     }
 
-    public AbstractDrawableEntity(Vec2d coord, MapView mapView, Polygon model) {
-        this(coord, mapView, model, new Color(255, 0, 0));
+    public AbstractDrawableEntity(Vec2d coord, Polygon model) {
+        this(coord, model, new Color(255, 0, 0));
     }
 
-    public AbstractDrawableEntity(Vec2d coord, MapView mapView, Polygon model, Color color) {
-        super(coord, mapView);
+    public AbstractDrawableEntity(Vec2d coord, Polygon model, Color color) {
+        super(coord);
         this.MODEL = model;
         this.color = color;
     }
+
 
     public void setColor(Color color) {
         this.color = color;

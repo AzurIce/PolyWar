@@ -1,8 +1,8 @@
 package com.azurice.polywar.entity;
 
-import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.model.Model;
 import com.azurice.polywar.util.math.Vec2d;
+import com.azurice.polywar.world.WorldMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -34,12 +34,27 @@ public class Vehicle extends BaseDrawableEntity {
     protected Vec2d acceleration = Vec2d.ZERO;
     private double angle;
 
+    private WorldMap worldMap;
+
     public void setCoord(Vec2d coord) {
         this.coord = coord;
     }
 
-    public Vehicle(Vec2d coord, MapView mapView) {
-        super(coord, mapView, Model.VEHICLE_MODEL);
+    //    public Vehicle(Vec2d coord, MapView mapView) {
+//        super(coord, mapView, Model.VEHICLE_MODEL);
+//    }
+    public Vehicle(Vec2d coord, WorldMap map) {
+        super(coord, Model.VEHICLE_MODEL);
+        worldMap = map;
+    }
+
+
+    //    public Vehicle(Vec2d coord, MapView mapView, Color color) {
+//        super(coord, mapView, Model.VEHICLE_MODEL, color);
+//    }
+    public Vehicle(Vec2d coord, Color color, WorldMap map) {
+        super(coord, Model.VEHICLE_MODEL, color);
+        worldMap = map;
     }
 
     @Override
@@ -61,7 +76,7 @@ public class Vehicle extends BaseDrawableEntity {
             acceleration = acceleration.add(new Vec2d(+ACC, 0));
         }
 
-        for (Wall wall : mapView.wallList) {
+        for (Wall wall : worldMap.walls) {
             Vec2d collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
 //            Vec2d sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why not working?
             if (collisionPoint != Vec2d.ZERO) {
@@ -95,9 +110,6 @@ public class Vehicle extends BaseDrawableEntity {
         }
     }
 
-    public Vehicle(Vec2d coord, MapView mapView, Color color) {
-        super(coord, mapView, Model.VEHICLE_MODEL, color);
-    }
 
     @Override
     public java.awt.Polygon getAwtPolygon() {
