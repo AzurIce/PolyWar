@@ -6,11 +6,10 @@ import com.azurice.polywar.world.WorldMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 
 import static java.lang.Math.abs;
 
-public class Player extends BaseDrawableEntity {
+public class Player extends SpeedDirectionEntity {
     ////// CONSTANTS //////
     // Keys
     private static final int KEY_UP = KeyEvent.VK_W;
@@ -18,7 +17,7 @@ public class Player extends BaseDrawableEntity {
     private static final int KEY_RIGHT = KeyEvent.VK_D;
     private static final int KEY_LEFT = KeyEvent.VK_A;
 
-    private static final int KEY_SHOOT = MouseEvent.BUTTON1;
+    private static final int KEY_SHOOT = KeyEvent.VK_SPACE;
 
     // Vehicle properties
     private static final double FRICTION = 0.01;
@@ -32,9 +31,10 @@ public class Player extends BaseDrawableEntity {
     private boolean keyLeftPressed;
 
     protected Vec2d acceleration = Vec2d.ZERO;
-    private double angle;
 
     private final WorldMap worldMap;
+
+    private int health = 100;
 
 
     public Player(Vec2d coord, WorldMap map) {
@@ -101,14 +101,7 @@ public class Player extends BaseDrawableEntity {
         }
     }
 
-    @Override
-    public com.azurice.polywar.util.math.Polygon getPolygon() {
-        if (speed.x != 0 || speed.y != 0) {
-            angle = speed.getAngle();
-        }
-        return getModel().rotate(angle).add(coord);
-    }
-
+    ////// Key listeners //////
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KEY_UP -> keyUpPressed = true;
@@ -133,4 +126,12 @@ public class Player extends BaseDrawableEntity {
 //        System.out.println(keyUpPressed + " " + keyDownPressed + " " + keyLeftPressed + " " + keyRightPressed);
     }
 
+    ////// Getters & Setters //////
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
 }
