@@ -3,7 +3,15 @@ package com.azurice.polywar.server;
 import com.azurice.polywar.util.Util;
 
 public class PolyWarServer {
+    private static PolyWarServer instance = new PolyWarServer();
     private boolean running = true;
+
+    private PolyWarServer() {
+    }
+
+    public PolyWarServer getInstance() {
+        return instance;
+    }
 
     public void run() {
         while (this.running) {
