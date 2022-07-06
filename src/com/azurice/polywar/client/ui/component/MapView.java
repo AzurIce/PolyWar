@@ -1,10 +1,13 @@
 package com.azurice.polywar.client.ui.component;
 
 import com.azurice.polywar.client.render.MapRenderer;
-import com.azurice.polywar.entity.Vehicle;
+import com.azurice.polywar.client.render.PlayerRenderer;
+import com.azurice.polywar.entity.Player;
+import com.azurice.polywar.util.math.Util;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -14,21 +17,28 @@ import java.util.List;
 import java.util.Random;
 
 public class MapView extends AbstractView {
-    private static final int WALL_THICK = 5;
     private static final Random r = new Random();
+    private static final int MAP_SIZE = 4096;
+    private static final int VIEWPORT_SIZE = 800;
 
     private WorldMap map;
 
-//    private int[][] height;
 
     ////// Entities //////
     //    private List<Missile> missileList = new ArrayList<>();
-    private List<Vehicle> vehicleList = new ArrayList<>();
+    private List<Player> playerList = new ArrayList<>();
     //    public List<Wall> wallList = new ArrayList<>();
     // Player
-    private Vehicle player;
+    private Player mainPlayer;
 
-    private Image offScreenImage;
+//    private Image offScreenImage;
+
+    private Vec2d screenLocation = Vec2d.ZERO;
+
+//    private JLabel labelPlayerCoord = new JLabel("labelPlayerCoord");
+//    private JLabel labelScreenCoord = new JLabel("labelScreenCoord");
+//    private JLabel labelScreenCenterCoord = new JLabel("labelScreenCenterCoord");
+
 
     public MapView() {
         initGame();
@@ -37,63 +47,45 @@ public class MapView extends AbstractView {
 
     private void initGame() {
         System.out.println("Generating map...");
-        map = WorldMap.generateWorldMap(1024);
+        map = WorldMap.generateWorldMap(MAP_SIZE);
 
         System.out.println("Creating player...");
-        player = new Vehicle(new Vec2d(200, 200), new Color(30, 144, 255), map);
-        while (!map.isAvailableToSpawnAt(player.getCoord())) {
-            player.setCoord(new Vec2d(r.nextInt(0, 800), r.nextInt(0, 800)));
+        mainPlayer = new Player(
+                new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)),
+                new Color(30, 144, 255),
+                map
+        );
+        while (!map.isAvailableToSpawnAt(mainPlayer.getCoord())) {
+            mainPlayer.setCoord(new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)));
         }
-        vehicleList.add(player);
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(0, 0), new Vec2d(0, WALL_THICK),
-//                new Vec2d(mapSize, WALL_THICK), new Vec2d(mapSize, 0)
-//        )));
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(WALL_THICK, 0), new Vec2d(0, 0),
-//                new Vec2d(0, mapSize), new Vec2d(WALL_THICK, mapSize)
-//        )));
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(mapSize - WALL_THICK, 0), new Vec2d(mapSize - WALL_THICK, mapSize),
-//                new Vec2d(mapSize, mapSize), new Vec2d(mapSize, 0)
-//        )));
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(0, mapSize - WALL_THICK), new Vec2d(0, mapSize),
-//                new Vec2d(mapSize, mapSize), new Vec2d(mapSize, mapSize - WALL_THICK)
-//        )));
-//
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(0, 0), new Vec2d(0, WALL_THICK * 4),
-//                new Vec2d(WALL_THICK * 4, 0)
-//        )));
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(0, mapSize), new Vec2d(WALL_THICK * 4, mapSize),
-//                new Vec2d(0, mapSize - WALL_THICK * 4)
-//        )));
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(mapSize, mapSize), new Vec2d(mapSize, mapSize - WALL_THICK * 4),
-//                new Vec2d(mapSize - WALL_THICK * 4, mapSize)
-//        )));
-//        wallList.add(new Wall(new Polygon(
-//                new Vec2d(mapSize, 0), new Vec2d(mapSize - WALL_THICK * 4, 0),
-//                new Vec2d(mapSize, WALL_THICK * 4)
-//        )));
+        playerList.add(mainPlayer);
     }
 
     // KeyListener
     public void keyPressed(KeyEvent e) {
-        player.keyPressed(e);
+        mainPlayer.keyPressed(e);
     }
 
     public void keyReleased(KeyEvent e) {
-        player.keyReleased(e);
+        mainPlayer.keyReleased(e);
     }
 
     // Render & tick
     public void tick() {
-        for (Vehicle vehicle : vehicleList) {
-            vehicle.tick();
+        for (Player player : playerList) {
+            player.tick();
         }
+        updateScreenLocation();
+    }
+
+    private void updateScreenLocation() {
+        double x = mainPlayer.getCoord().x;
+        double y = mainPlayer.getCoord().y;
+//        System.out.println(mainPlayer.getCoord());
+        screenLocation = new Vec2d(
+                Util.clip(x - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE),
+                Util.clip(y - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE)
+        );
     }
 
     public void render() {
@@ -102,38 +94,43 @@ public class MapView extends AbstractView {
 
 
     // Overrides of painting
-    @Override
-    public void update(Graphics g) {
-        // Buffer image
-        if (offScreenImage == null) {
-            offScreenImage = this.createImage(WIDTH, HEIGHT);
-        }
-
-        Graphics gImage = offScreenImage.getGraphics();
-
-        Color c = Color.BLACK;
-        gImage.setColor(c);
-        gImage.fillRect(0, 0, WIDTH, HEIGHT); // clear
-
-        paint(gImage); // Draw on the image
-
-        g.drawImage(offScreenImage, 0, 0, null);
-    }
+//    @Override
+//    public void update(Graphics g) {
+//        // Buffer image
+//        if (offScreenImage == null) {
+//            offScreenImage = this.createImage(WIDTH, HEIGHT);
+//        }
+//
+//        Graphics gImage = offScreenImage.getGraphics();
+//
+//        Color c = Color.BLACK;
+//        gImage.setColor(c);
+//        gImage.fillRect(0, 0, WIDTH, HEIGHT); // clear
+//
+//        paint(gImage); // Draw on the image
+//
+//        g.drawImage(offScreenImage, 0, 0, null);
+//    }
 
     @Override
     public void paint(Graphics g) {
-//        super.paint(g);
+        super.paint(g);
 
-        // For better visual
+        // For better visual ANTIALIASING
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        MapRenderer.render(map, g2d);
+        MapRenderer.render(map, g2d, screenLocation, new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
 
-        for (Vehicle vehicle : vehicleList) {
-            vehicle.paint(g);
+        for (Player player : playerList) {
+            PlayerRenderer.render(player, g2d, screenLocation.negate(), new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
         }
 
+        g.setColor(new Color(0x3c3c3c));
+        g.fillOval(VIEWPORT_SIZE / 2, VIEWPORT_SIZE / 2, 10, 10);
+        g.drawString("PlayerCoord: " + mainPlayer.getCoord(), 350, 20);
+        g.drawString("ScreenLocation: " + screenLocation, 350, 40);
+        g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 60);
     }
 
 
@@ -141,8 +138,8 @@ public class MapView extends AbstractView {
     @Override
     public void initViews() {
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(800, 800));
-
+        setPreferredSize(new Dimension(VIEWPORT_SIZE, VIEWPORT_SIZE));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
 
     @Override

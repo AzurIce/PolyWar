@@ -46,6 +46,20 @@ public abstract class AbstractDrawableEntity extends AbstractEntity {
         return color;
     }
 
+
+    public void paint(Graphics g, Vec2d offset) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setColor(color);
+//        if (this instanceof Player) {
+//            if (Util.getMeasuringTimeMs() % 1000 <= 100) {
+//                System.out.println(getPolygon());
+//                System.out.println(getPolygon().add(offset));
+//            }
+//        }
+        g2d.fillPolygon(getPolygon().add(offset).toAwtPolygon());
+    }
+
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
@@ -57,14 +71,17 @@ public abstract class AbstractDrawableEntity extends AbstractEntity {
         return MODEL;
     }
 
+    /**
+     * Rewrite this method to control rendering of the model
+     *
+     * @return The Polygon for rendering the model.
+     */
     public Polygon getPolygon() {
         return MODEL.add(coord);
     }
 
-    /**
-     * Rewrite this method to control rendering of the model
-     *
-     * @return The AwtPolygon for rendering the model.
-     */
-    public abstract java.awt.Polygon getAwtPolygon();
+
+    public java.awt.Polygon getAwtPolygon() {
+        return getPolygon().toAwtPolygon();
+    }
 }

@@ -5,10 +5,6 @@ public class Main {
         Thread.currentThread().setName("Thread-Renderer");
         PolyWarClient polyWarClient = PolyWarClient.getInstance();
 
-        try {
-            polyWarClient.run();
-        } catch (Throwable throwable) {
-            System.out.println("ERROR");
-        }
+        polyWarClient.run();
     }
 }

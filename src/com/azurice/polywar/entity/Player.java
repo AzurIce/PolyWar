@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 
 import static java.lang.Math.abs;
 
-public class Vehicle extends BaseDrawableEntity {
+public class Player extends BaseDrawableEntity {
     ////// CONSTANTS //////
     // Keys
     private static final int KEY_UP = KeyEvent.VK_W;
@@ -37,15 +37,16 @@ public class Vehicle extends BaseDrawableEntity {
     private final WorldMap worldMap;
 
 
-    public Vehicle(Vec2d coord, WorldMap map) {
-        super(coord, Model.VEHICLE_MODEL);
+    public Player(Vec2d coord, WorldMap map) {
+        super(coord, Model.PLAYER);
         worldMap = map;
     }
 
-    public Vehicle(Vec2d coord, Color color, WorldMap map) {
-        super(coord, Model.VEHICLE_MODEL, color);
+    public Player(Vec2d coord, Color color, WorldMap map) {
+        super(coord, Model.PLAYER, color);
         worldMap = map;
     }
+
 
     @Override
     public void tick() {
@@ -73,7 +74,7 @@ public class Vehicle extends BaseDrawableEntity {
 //                System.out.println(getModel() + " + " + coord);
 //                System.out.println(getPolygon());
                 while (collisionPoint != Vec2d.ZERO) {
-                    System.out.println("Intersect!");
+//                    System.out.println("Intersect!");
 //                    coord = coord.minus(speed.normalize()); // Not working...
 //                    coord = coord.minus(sp.minus(coord).normalize()); // Which is better?
                     coord = coord.minus(collisionPoint.minus(coord).normalize().add(speed.normalize())); // Which is better?
@@ -90,7 +91,7 @@ public class Vehicle extends BaseDrawableEntity {
         if (abs(speed.length()) < FRICTION * (speed.length() * speed.length() + 2 * speed.length())) {
             speed = Vec2d.ZERO;
         } else {
-            speed = speed.minus(speed.normalize().multiply(FRICTION * (speed.length() * speed.length() + 2 * speed.length())));
+            speed = speed.minus(speed.normalize().multiply(FRICTION * (1.2 * speed.length() * speed.length() + 2 * speed.length())));
         }
         if (abs(speed.x) < 0.5) {
             speed = new Vec2d(0, speed.y);
@@ -100,18 +101,12 @@ public class Vehicle extends BaseDrawableEntity {
         }
     }
 
-
     @Override
-    public java.awt.Polygon getAwtPolygon() {
+    public com.azurice.polywar.util.math.Polygon getPolygon() {
         if (speed.x != 0 || speed.y != 0) {
             angle = speed.getAngle();
         }
-        return getPolygon().toAwtPolygon();
-    }
-
-    @Override
-    public com.azurice.polywar.util.math.Polygon getPolygon() {
-        return MODEL.rotate(angle).add(coord);
+        return getModel().rotate(angle).add(coord);
     }
 
     public void keyPressed(KeyEvent e) {

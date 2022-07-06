@@ -31,11 +31,4 @@ public class BaseDrawableEntity extends AbstractDrawableEntity {
         super(coord, model, color);
     }
 
-    @Override
-    public java.awt.Polygon getAwtPolygon() {
-//        if (this instanceof Wall) {
-//            System.out.println(MODEL.add(coord));
-//        }
-        return MODEL.add(coord).toAwtPolygon();
-    }
 }
