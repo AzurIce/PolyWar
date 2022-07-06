@@ -12,6 +12,15 @@ public abstract class AbstractEntity {
 //        this.mapView = mapView;
 //    }
 
+
+    public Vec2d getCoord() {
+        return coord;
+    }
+
+    public void setCoord(Vec2d coord) {
+        this.coord = coord;
+    }
+
     public AbstractEntity(Vec2d coord) {
         this.coord = coord;
 //        this.mapView = mapView;
