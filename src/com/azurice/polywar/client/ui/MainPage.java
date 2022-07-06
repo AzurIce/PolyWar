@@ -5,10 +5,9 @@ import com.azurice.polywar.client.ui.component.MapView;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class MainPage extends AbstractPage {
-    private static final int MAP_SIZE = 800;
+public class MainPage extends BasicWindow {
 
-    private MapView mapView = new MapView(MAP_SIZE);
+    private MapView mapView = new MapView();
 
     public MainPage() {
         mapView.display(this);
