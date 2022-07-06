@@ -19,15 +19,22 @@ public class WorldMap {
     public int[][] height;
     private int mapSize;
 
+    private static final int latticeCnt = 8;
+
     private WorldMap(int mapSize) {
         this.mapSize = mapSize;
         height = new int[mapSize][mapSize];
     }
 
+    public boolean isAvailableToSpawnAt(Vec2d p) {
+        double mappedI = MyMath.mapValue((int) p.x, mapSize, latticeCnt);
+        double mappedJ = MyMath.mapValue((int) p.y, mapSize, latticeCnt);
+        return PerlinNoise.noise(mappedI, mappedJ) > 0;
+    }
+
     public static WorldMap generateWorldMap(int mapSize) {
         WorldMap map = new WorldMap(mapSize);
 
-        int latticeCnt = 8;
         for (int i = 0; i < mapSize; i++) {
             for (int j = 0; j < mapSize; j++) {
                 double mappedI = MyMath.mapValue(i, mapSize, latticeCnt);
@@ -80,6 +87,9 @@ public class WorldMap {
 
 //        System.out.println(walls.size());
         for (Wall wall : walls) {
+            if (wall.getCoord().x > 800 || wall.getCoord().y > 800) {
+                continue;
+            }
 //            System.out.println(wall.getPolygon());
             wall.paint(g2d);
         }

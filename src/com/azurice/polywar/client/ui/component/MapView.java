@@ -19,7 +19,6 @@ public class MapView extends JPanel {
 
     private WorldMap map;
 
-    public int mapSize;
 //    private int[][] height;
 
     ////// Entities //////
@@ -31,15 +30,14 @@ public class MapView extends JPanel {
 
     private Image offScreenImage;
 
-    public MapView(int mapSize) {
-        this.mapSize = mapSize;
+    public MapView() {
 
 //        height = new int[mapSize][mapSize];
 
 //        generateHeight();
 
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(mapSize, mapSize));
+        setPreferredSize(new Dimension(800, 800));
 
         initGame();
 
@@ -52,7 +50,10 @@ public class MapView extends JPanel {
 
         System.out.println("Creating player...");
         player = new Vehicle(new Vec2d(200, 200), new Color(30, 144, 255), map);
-//        vehicleList.add(player);
+        while (!map.isAvailableToSpawnAt(player.getCoord())) {
+            player.setCoord(new Vec2d(r.nextInt(0, 800), r.nextInt(0, 800)));
+        }
+        vehicleList.add(player);
 //        wallList.add(new Wall(new Polygon(
 //                new Vec2d(0, 0), new Vec2d(0, WALL_THICK),
 //                new Vec2d(mapSize, WALL_THICK), new Vec2d(mapSize, 0)
@@ -154,6 +155,10 @@ public class MapView extends JPanel {
 //    }
 
 
+    public void render() {
+        repaint();
+    }
+
     @Override
     public void update(Graphics g) {
         // Buffer image
@@ -201,33 +206,35 @@ public class MapView extends JPanel {
     }
 
     public void display(JFrame parent) {
-        parent.setContentPane(this);
-        Thread renderThread = new Thread(() -> {
-            for (; ; ) {
-                long time = System.currentTimeMillis();
-                repaint();
-//                System.out.println(System.currentTimeMillis() - time);
-                try {
-                    Thread.sleep(1000 / 60 - (System.currentTimeMillis() - time)); // 60fps
-                } catch (InterruptedException e) {
-                    // TODO: Game over
-                    break;
-                }
-            }
-        });
-        Thread t = new Thread(() -> {
-            for (; ; ) {
-                long time = System.currentTimeMillis();
-                tick();
-                try {
-                    Thread.sleep(1000 / 60 - System.currentTimeMillis() + time);
-                } catch (InterruptedException e) {
-                    // TODO: Game over
-                    break;
-                }
-            }
-        });
-        t.start();
-        renderThread.start();
+//        parent.setContentPane(this);
+//        Thread renderThread = new Thread(() -> {
+//            for (; ; ) {
+//                long time = System.currentTimeMillis();
+//                repaint();
+////                System.out.println(System.currentTimeMillis() - time);
+//                try {
+//                    Thread.sleep(1000 / 60 - (System.currentTimeMillis() - time)); // 60fps
+//                } catch (InterruptedException e) {
+//                    // TODO: Game over
+//                    break;
+//                }
+//            }
+//        });
+//        Thread t = new Thread(() -> {
+//            for (; ; ) {
+//                long time = System.currentTimeMillis();
+//                tick();
+////                System.out.println(System.currentTimeMillis() - time);
+//                try {
+////                    System.out.println(1000 / 20 - System.currentTimeMillis() + time);
+//                    Thread.sleep(1000 / 20 - System.currentTimeMillis() + time);
+//                } catch (InterruptedException e) {
+//                    // TODO: Game over
+//                    break;
+//                }
+//            }
+//        });
+//        t.start();
+//        renderThread.start();
     }
 }
