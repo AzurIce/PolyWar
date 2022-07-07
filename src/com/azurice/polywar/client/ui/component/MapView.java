@@ -59,6 +59,7 @@ public class MapView extends AbstractView {
 
 
     // Render & tick
+    @Override
     public void tick() {
         for (Player player : playerList) {
             player.tick();
@@ -75,6 +76,7 @@ public class MapView extends AbstractView {
         );
     }
 
+    @Override
     public void render() {
         updateScreenLocation();
         repaint();

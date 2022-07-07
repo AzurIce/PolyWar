@@ -12,4 +12,8 @@ public abstract class AbstractView extends JPanel {
     public abstract void initViews();
 
     public abstract void initListeners();
+
+    public abstract void tick();
+
+    public abstract void render();
 }

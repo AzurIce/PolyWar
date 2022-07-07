@@ -2,6 +2,7 @@ package com.azurice.polywar.client.ui;
 
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.page.AbstractPage;
+import com.azurice.polywar.client.ui.page.CreateRoomPage;
 import com.azurice.polywar.client.ui.page.GamePage;
 import com.azurice.polywar.client.ui.page.MainPage;
 
@@ -15,6 +16,7 @@ import java.awt.event.WindowEvent;
 public class MainWindow extends JFrame {
     public static final String MAIN_PAGE = "MainPage";
     public static final String GAME_PAGE = "GamePage";
+    public static final String CREATE_ROOM_PAGE = "CreateRoomPage";
 
     private AbstractPage curPage;
 
@@ -22,6 +24,7 @@ public class MainWindow extends JFrame {
     private CardLayout cardLayout = new CardLayout();
     private MainPage mainPage;
     private GamePage gamePage;
+    private CreateRoomPage createRoomPage;
 
 
     private PolyWarClient client;
@@ -36,11 +39,12 @@ public class MainWindow extends JFrame {
     public void initViews() {
         mainPage = new MainPage(this);
         gamePage = new GamePage(this);
+        createRoomPage = new CreateRoomPage(this);
 
         container.setLayout(cardLayout);
         container.add(MAIN_PAGE, mainPage);
         container.add(GAME_PAGE, gamePage);
-        cardLayout.show(container, MAIN_PAGE);
+        container.add(CREATE_ROOM_PAGE, createRoomPage);
 
         setContentPane(container);
     }
@@ -54,6 +58,7 @@ public class MainWindow extends JFrame {
         curPage = switch (pageName) {
             case MAIN_PAGE -> mainPage;
             case GAME_PAGE -> gamePage;
+            case CREATE_ROOM_PAGE -> createRoomPage;
             default -> null; // Never happens
         };
 //        curPage.requestFocus();
