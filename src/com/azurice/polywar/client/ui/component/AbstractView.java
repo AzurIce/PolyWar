@@ -3,7 +3,8 @@ package com.azurice.polywar.client.ui.component;
 import javax.swing.*;
 
 public abstract class AbstractView extends JPanel {
-    public void init() {
+
+    public AbstractView() {
         initViews();
         initListeners();
     }

@@ -1,13 +1,13 @@
 package com.azurice.polywar.client;
 
-import com.azurice.polywar.client.ui.BasicWindow;
+import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.util.Util;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class PolyWarClient extends BasicWindow {
+public class PolyWarClient extends MainWindow {
     public static final int TICK_RATE = 20;
     public static final int FRAME_RATE = 144;
 
@@ -17,6 +17,7 @@ public class PolyWarClient extends BasicWindow {
     private MapView mapView = new MapView();
 
     private PolyWarClient() {
+        super();
     }
 
 
@@ -99,7 +100,7 @@ public class PolyWarClient extends BasicWindow {
     }
 
     // Overrides of BasicWindow
-    @Override
+
     public void initViews() {
         setContentPane(mapView);
     }
@@ -130,7 +131,7 @@ public class PolyWarClient extends BasicWindow {
         });
     }
 
-    @Override
+    //    @Override
     public void onClose() {
         scheduleStop();
     }

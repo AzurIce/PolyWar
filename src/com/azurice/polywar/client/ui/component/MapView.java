@@ -10,8 +10,7 @@ import com.azurice.polywar.world.WorldMap;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,30 +25,12 @@ public class MapView extends AbstractView {
 
     ////// Entities //////
     //    private List<Missile> missileList = new ArrayList<>();
-    private List<Player> playerList = new ArrayList<>();
-    //    public List<Wall> wallList = new ArrayList<>();
+    private List<Player> playerList;
     // Player
     private Player mainPlayer;
 
-//    private Image offScreenImage;
-
     private Vec2d screenLocation = Vec2d.ZERO;
 
-
-//    private double tickDelta;
-//
-//    public double getTickDelta() {
-//        return tickDelta;
-//    }
-//
-//    public void setTickDelta(double tickDelta) {
-//        this.tickDelta = tickDelta;
-//    }
-
-    public MapView() {
-        initGame();
-        init();
-    }
 
     private void initGame() {
         System.out.println("Generating map...");
@@ -76,6 +57,7 @@ public class MapView extends AbstractView {
         mainPlayer.keyReleased(e);
     }
 
+
     // Render & tick
     public void tick() {
         for (Player player : playerList) {
@@ -94,7 +76,6 @@ public class MapView extends AbstractView {
     }
 
     public void render() {
-//        this.tickDelta = tickDelta;
         updateScreenLocation();
         repaint();
     }
@@ -125,40 +106,17 @@ public class MapView extends AbstractView {
     // Overrides of AbstractView
     @Override
     public void initViews() {
+        playerList = new ArrayList<>();
+
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(VIEWPORT_SIZE, VIEWPORT_SIZE));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        initGame();
     }
 
     @Override
     public void initListeners() {
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-//                player.setCoord(new Vec2d(200, 200));
-//                generateHeight();
-//                repaint();
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
+        addMouseListener(new MouseAdapter() {
         });
     }
 }
