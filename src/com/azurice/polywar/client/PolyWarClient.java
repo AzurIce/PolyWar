@@ -8,6 +8,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class PolyWarClient extends BasicWindow {
+    public static final int TICK_RATE = 20;
+    public static final int FRAME_RATE = 144;
+
     // Singleton
     private static final PolyWarClient instance = new PolyWarClient();
     // Views
@@ -26,14 +29,27 @@ public class PolyWarClient extends BasicWindow {
 
     // Runtime control
     public void run() {
-        thread = Thread.currentThread();
-        thread.setPriority(Thread.MAX_PRIORITY);
         display();
+
+        Thread logicThread = new Thread(() -> {
+            while (running) {
+                long timeTickStart = Util.getMeasuringTimeMs();
+                tick();
+                try {
+                    Thread.sleep(1000 / TICK_RATE - Util.getMeasuringTimeMs() + timeTickStart);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        logicThread.setPriority(Thread.MAX_PRIORITY);
+        logicThread.start();
+
         while (running) {
             long timeFrameStart = Util.getMeasuringTimeMs();
             render();
             try {
-                Thread.sleep(1000 / 60 - Util.getMeasuringTimeMs() + timeFrameStart);
+                Thread.sleep(1000 / FRAME_RATE - Util.getMeasuringTimeMs() + timeFrameStart);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -72,8 +88,9 @@ public class PolyWarClient extends BasicWindow {
 
     // Render & tick
     private void render() {
+//        System.out.println(tickDelta);
         mapView.render();
-        tick();
+//        tick();
     }
 
     private void tick() {

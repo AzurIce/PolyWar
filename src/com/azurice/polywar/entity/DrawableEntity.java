@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class DrawableEntity extends AbstractEntity {
     protected final Polygon MODEL;
-    private Color color;
+    protected Color color;
 
     ////// Constructors //////
     public DrawableEntity(Polygon model) {
@@ -43,19 +43,34 @@ public class DrawableEntity extends AbstractEntity {
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(color);
-        g2d.fillPolygon(getPolygon().add(offset).toAwtPolygon());
+        g2d.fillPolygon(getRenderPolygon().add(offset).toAwtPolygon());
     }
+
+    /**
+     * Get the Polygon of the current entity model.
+     *
+     * @return Polygon
+     */
 
     public Polygon getModel() {
         return MODEL;
     }
 
     /**
-     * Rewrite this method to control rendering of the model
+     * Get the Polygon of the current entity model in world.
      *
-     * @return The Polygon for rendering the model.
+     * @return Polygon in world
      */
     public Polygon getPolygon() {
-        return MODEL.add(coord);
+        return getModel().add(coord);
+    }
+
+    /**
+     * Get the Polygon for rendering
+     *
+     * @return Polygon for rendering
+     */
+    public Polygon getRenderPolygon() {
+        return getPolygon();
     }
 }

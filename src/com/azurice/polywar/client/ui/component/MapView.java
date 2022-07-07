@@ -35,10 +35,16 @@ public class MapView extends AbstractView {
 
     private Vec2d screenLocation = Vec2d.ZERO;
 
-//    private JLabel labelPlayerCoord = new JLabel("labelPlayerCoord");
-//    private JLabel labelScreenCoord = new JLabel("labelScreenCoord");
-//    private JLabel labelScreenCenterCoord = new JLabel("labelScreenCenterCoord");
 
+//    private double tickDelta;
+//
+//    public double getTickDelta() {
+//        return tickDelta;
+//    }
+//
+//    public void setTickDelta(double tickDelta) {
+//        this.tickDelta = tickDelta;
+//    }
 
     public MapView() {
         initGame();
@@ -75,12 +81,11 @@ public class MapView extends AbstractView {
         for (Player player : playerList) {
             player.tick();
         }
-        updateScreenLocation();
     }
 
     private void updateScreenLocation() {
-        double x = mainPlayer.getCoord().x;
-        double y = mainPlayer.getCoord().y;
+        double x = mainPlayer.getPredictedCoord().x;
+        double y = mainPlayer.getPredictedCoord().y;
 //        System.out.println(mainPlayer.getCoord());
         screenLocation = new Vec2d(
                 Util.clip(x - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE),
@@ -89,28 +94,10 @@ public class MapView extends AbstractView {
     }
 
     public void render() {
+//        this.tickDelta = tickDelta;
+        updateScreenLocation();
         repaint();
     }
-
-
-    // Overrides of painting
-//    @Override
-//    public void update(Graphics g) {
-//        // Buffer image
-//        if (offScreenImage == null) {
-//            offScreenImage = this.createImage(WIDTH, HEIGHT);
-//        }
-//
-//        Graphics gImage = offScreenImage.getGraphics();
-//
-//        Color c = Color.BLACK;
-//        gImage.setColor(c);
-//        gImage.fillRect(0, 0, WIDTH, HEIGHT); // clear
-//
-//        paint(gImage); // Draw on the image
-//
-//        g.drawImage(offScreenImage, 0, 0, null);
-//    }
 
     @Override
     public void paint(Graphics g) {
@@ -129,8 +116,9 @@ public class MapView extends AbstractView {
         g.setColor(new Color(0x3c3c3c));
         g.fillOval(VIEWPORT_SIZE / 2, VIEWPORT_SIZE / 2, 10, 10);
         g.drawString("PlayerCoord: " + mainPlayer.getCoord(), 350, 20);
-        g.drawString("ScreenLocation: " + screenLocation, 350, 40);
-        g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 60);
+        g.drawString("PredictedPlayerCoord: " + mainPlayer.getPredictedCoord(), 350, 40);
+        g.drawString("ScreenLocation: " + screenLocation, 350, 60);
+        g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 80);
     }
 
 

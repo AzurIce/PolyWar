@@ -5,10 +5,11 @@ import com.azurice.polywar.util.math.Vec2d;
 
 import java.awt.*;
 
-public class SpeedDirectionEntity extends DrawableEntity {
-    private double angle;
+public class SpeedDirectionEntity extends PredictableEntity {
+    protected double angle;
 
 
+    ////// Constructors //////
     public SpeedDirectionEntity(Polygon model) {
         super(model);
     }
@@ -21,16 +22,18 @@ public class SpeedDirectionEntity extends DrawableEntity {
         super(coord, model, color);
     }
 
-    // Override it for the direction
+    ////// Core part //////
+    // Now the model has a rotation based on the original model.
     @Override
-    public Polygon getPolygon() {
+    public Polygon getModel() {
         if (speed != Vec2d.ZERO) {
             setAngle(speed.getAngle());
         }
-        return getModel().rotate(angle).add(coord);
+        return super.getModel().rotate(angle);
     }
 
-    ////// Getters & Setters
+
+    ////// Getters & Setters //////
     public double getAngle() {
         return angle;
     }

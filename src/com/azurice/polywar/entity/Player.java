@@ -50,7 +50,6 @@ public class Player extends SpeedDirectionEntity {
 
     @Override
     public void tick() {
-        super.tick();
 //        System.out.println("Coord: " + coord + ", Speed: " + speed + ", Acceleration: " + acceleration);
 
         acceleration = Vec2d.ZERO;
@@ -99,6 +98,8 @@ public class Player extends SpeedDirectionEntity {
         if (abs(speed.y) < 0.5) {
             speed = new Vec2d(speed.x, 0);
         }
+
+        super.tick();
     }
 
     ////// Key listeners //////
@@ -134,4 +135,6 @@ public class Player extends SpeedDirectionEntity {
     public void setHealth(int health) {
         this.health = health;
     }
+
+
 }
