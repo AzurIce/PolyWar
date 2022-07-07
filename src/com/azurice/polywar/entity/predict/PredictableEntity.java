@@ -1,6 +1,7 @@
-package com.azurice.polywar.entity;
+package com.azurice.polywar.entity.predict;
 
 import com.azurice.polywar.client.PolyWarClient;
+import com.azurice.polywar.entity.DrawableEntity;
 import com.azurice.polywar.util.Util;
 import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;

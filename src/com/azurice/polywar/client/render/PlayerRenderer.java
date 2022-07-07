@@ -1,6 +1,6 @@
 package com.azurice.polywar.client.render;
 
-import com.azurice.polywar.entity.Player;
+import com.azurice.polywar.entity.predict.Player;
 import com.azurice.polywar.util.math.Vec2d;
 
 import java.awt.*;

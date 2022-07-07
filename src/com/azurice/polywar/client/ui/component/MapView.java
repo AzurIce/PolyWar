@@ -2,7 +2,7 @@ package com.azurice.polywar.client.ui.component;
 
 import com.azurice.polywar.client.render.MapRenderer;
 import com.azurice.polywar.client.render.PlayerRenderer;
-import com.azurice.polywar.entity.Player;
+import com.azurice.polywar.entity.predict.Player;
 import com.azurice.polywar.util.math.Util;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;

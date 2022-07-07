@@ -1,4 +1,4 @@
-package com.azurice.polywar.entity;
+package com.azurice.polywar.entity.predict;
 
 import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;

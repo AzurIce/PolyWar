@@ -1,5 +1,6 @@
-package com.azurice.polywar.entity;
+package com.azurice.polywar.entity.predict;
 
+import com.azurice.polywar.entity.Wall;
 import com.azurice.polywar.model.Model;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;

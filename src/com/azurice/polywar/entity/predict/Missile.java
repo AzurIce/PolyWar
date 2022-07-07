@@ -1,4 +1,4 @@
-package com.azurice.polywar.entity;
+package com.azurice.polywar.entity.predict;
 
 import com.azurice.polywar.model.Model;
 import com.azurice.polywar.util.math.Vec2d;
@@ -19,6 +19,5 @@ public class Missile extends SpeedDirectionEntity {
     @Override
     public void tick() {
         super.tick();
-
     }
 }

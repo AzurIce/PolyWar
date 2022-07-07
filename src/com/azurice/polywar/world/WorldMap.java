@@ -2,9 +2,9 @@ package com.azurice.polywar.world;
 
 import com.azurice.polywar.entity.Wall;
 import com.azurice.polywar.model.Model;
-import com.azurice.polywar.util.MyMath;
 import com.azurice.polywar.util.PerlinNoise;
 import com.azurice.polywar.util.math.Polygon;
+import com.azurice.polywar.util.math.Util;
 import com.azurice.polywar.util.math.Vec2d;
 
 import java.util.ArrayList;
@@ -25,19 +25,13 @@ public class WorldMap {
         height = new int[mapSize][mapSize];
     }
 
-    public boolean isAvailableToSpawnAt(Vec2d p) {
-        double mappedI = MyMath.mapValue((int) p.x, mapSize, latticeCnt);
-        double mappedJ = MyMath.mapValue((int) p.y, mapSize, latticeCnt);
-        return PerlinNoise.noise(mappedI, mappedJ) > 0;
-    }
-
     public static WorldMap generateWorldMap(int mapSize) {
         WorldMap map = new WorldMap(mapSize);
 
         for (int i = 0; i < mapSize; i++) {
             for (int j = 0; j < mapSize; j++) {
-                double mappedI = MyMath.mapValue(i, mapSize, latticeCnt);
-                double mappedJ = MyMath.mapValue(j, mapSize, latticeCnt);
+                double mappedI = Util.mapValue(i, mapSize, latticeCnt);
+                double mappedJ = Util.mapValue(j, mapSize, latticeCnt);
 
                 double noise = PerlinNoise.noise(mappedI, mappedJ);
 
@@ -51,8 +45,8 @@ public class WorldMap {
             for (int j = 0; j < resolution - 1; j++) {
                 int bitmask = 0;
                 for (int k = 0; k < 4; k++) {
-                    double mappedI = MyMath.mapValue((i + dirX[k]) * squareLength, mapSize, latticeCnt);
-                    double mappedJ = MyMath.mapValue((j + dirY[k]) * squareLength, mapSize, latticeCnt);
+                    double mappedI = Util.mapValue((i + dirX[k]) * squareLength, mapSize, latticeCnt);
+                    double mappedJ = Util.mapValue((j + dirY[k]) * squareLength, mapSize, latticeCnt);
                     if (PerlinNoise.noise(mappedI, mappedJ) < -0.2) {
                         bitmask |= (1 << k);
                     }
@@ -100,6 +94,12 @@ public class WorldMap {
         )));
 
         return map;
+    }
+
+    public boolean isAvailableToSpawnAt(Vec2d p) {
+        double mappedI = Util.mapValue((int) p.x, mapSize, latticeCnt);
+        double mappedJ = Util.mapValue((int) p.y, mapSize, latticeCnt);
+        return PerlinNoise.noise(mappedI, mappedJ) > 0;
     }
 
 
