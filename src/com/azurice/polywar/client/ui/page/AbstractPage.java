@@ -7,14 +7,14 @@ import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import static com.azurice.polywar.client.PolyWarClient.FRAME_RATE;
+import static com.azurice.polywar.client.PolyWarClient.TICK_RATE;
+
 /**
  * A JPanel with render and logic cycle
  */
 public abstract class AbstractPage extends JPanel {
-    public static final int TICK_RATE = 20;
-    public static final int FRAME_RATE = 144;
-
-    MainWindow parent;
+    protected MainWindow parent;
     private boolean running = true;
     private boolean stopped = false;
 
@@ -29,7 +29,25 @@ public abstract class AbstractPage extends JPanel {
         new Thread(this::run).start();
     }
 
+    public final void stop() {
+        onStop();
+    }
+
+    public void stopAndWaitUntilStopped() {
+        onStop();
+        while (!isStopped()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        ;
+    }
+
     private void run() {
+        running = true;
+        stopped = false;
         Thread logicThread = new Thread(() -> {
             while (running) {
                 long timeTickStart = Util.getMeasuringTimeMs();
@@ -41,7 +59,6 @@ public abstract class AbstractPage extends JPanel {
                 }
             }
         });
-        logicThread.setPriority(Thread.MAX_PRIORITY);
         logicThread.start();
 
         while (running) {
@@ -56,26 +73,20 @@ public abstract class AbstractPage extends JPanel {
         onStopped();
     }
 
-    /**
-     * Call this method to stop the cycle
-     */
-    public final void scheduleStop() {
-        running = false;
-    }
 
-
+    ////// Lifecycles //////
     /**
      * Lifecycle - onStop
      */
     public void onStop() {
-        scheduleStop();
+        running = false;
     }
 
     /**
      * Lifecycle - onStopped
      */
     public void onStopped() {
-        stopped = false;
+        stopped = true;
     }
 
 
@@ -85,7 +96,6 @@ public abstract class AbstractPage extends JPanel {
 
     abstract void tick();
 
-    ;
 
 
     public void initViews() {

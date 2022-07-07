@@ -1,5 +1,6 @@
 package com.azurice.polywar.client.ui;
 
+import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.page.AbstractPage;
 import com.azurice.polywar.client.ui.page.GamePage;
 import com.azurice.polywar.client.ui.page.MainPage;
@@ -23,28 +24,32 @@ public class MainWindow extends JFrame {
     private GamePage gamePage;
 
 
-    public MainWindow() {
+    private PolyWarClient client;
+
+    public MainWindow(PolyWarClient client) {
         super();
         initViews();
         initListeners();
-//        this.setPage(new MainPage(this));
+        this.client = client;
     }
 
     public void initViews() {
         mainPage = new MainPage(this);
         gamePage = new GamePage(this);
-        curPage = mainPage;
-//
+
         container.setLayout(cardLayout);
-//        container.add(mainPage);
         container.add(MAIN_PAGE, mainPage);
         container.add(GAME_PAGE, gamePage);
         cardLayout.show(container, MAIN_PAGE);
-//
+
         setContentPane(container);
     }
 
     public void setPage(String pageName) {
+        if (curPage != null) {
+            curPage.stopAndWaitUntilStopped();
+        }
+
         cardLayout.show(container, pageName);
         curPage = switch (pageName) {
             case MAIN_PAGE -> mainPage;
@@ -55,11 +60,6 @@ public class MainWindow extends JFrame {
         curPage.requestFocusInWindow();
         curPage.start();
         System.out.println("[MainWindow/setPage]: " + pageName + " " + curPage);
-//        System.out.println("BasicWindow-setPage");
-//        this.page = page;
-//        setContentPane(page);
-//        page.start();
-//        repaint();
     }
 
 
@@ -67,7 +67,7 @@ public class MainWindow extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println(e);
+//                System.out.println(e);
                 onClosing();
                 super.windowClosing(e);
             }
@@ -99,13 +99,13 @@ public class MainWindow extends JFrame {
      * Lifecycle - onClosing
      */
     public void onClosing() {
-        curPage.onStop();
-        while (!curPage.isStopped()) ;
+        curPage.stopAndWaitUntilStopped();
         System.exit(0);
     }
 
     public void display() {
-        System.out.println("display");
+//        System.out.println("display");
+        setPage(MAIN_PAGE);
         pack();
         setLocationRelativeTo(null);
         setVisible(true);

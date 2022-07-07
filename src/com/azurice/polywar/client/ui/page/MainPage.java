@@ -3,12 +3,8 @@ package com.azurice.polywar.client.ui.page;
 import com.azurice.polywar.client.ui.MainWindow;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainPage extends AbstractPage {
-
-
     JButton btnStartGame;
 
     public MainPage(MainWindow parent) {
@@ -35,11 +31,6 @@ public class MainPage extends AbstractPage {
     @Override
     public void initListeners() {
         super.initListeners();
-        btnStartGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.setPage(MainWindow.GAME_PAGE);
-            }
-        });
+        btnStartGame.addActionListener(e -> parent.setPage(MainWindow.GAME_PAGE));
     }
 }

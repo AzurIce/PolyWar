@@ -7,12 +7,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GamePage extends AbstractPage {
-//    private static PolyWarClient client;
-//    public GamePage(PolyWarClient client) {
-//        this.client = client;
-//    }
-
-
     // Views
     private MapView mapView;
 
@@ -22,13 +16,11 @@ public class GamePage extends AbstractPage {
 
     @Override
     void render() {
-//        System.out.println("GamePage - render");
         mapView.render();
     }
 
     @Override
     void tick() {
-//        System.out.println("GamePage - tick");
         mapView.tick();
     }
 
@@ -36,31 +28,17 @@ public class GamePage extends AbstractPage {
     // Overrides of AbstractView
     @Override
     public void initViews() {
-        System.out.println("GamePage-initViews");
         setPreferredSize(new Dimension(800, 800));
+        setFocusable(true);
 
         mapView = new MapView();
 
-        setFocusable(true);
         add(mapView);
     }
 
-//    @Override
-//    public void initListeners() {
-//        addKeyListener(new KeyAdapter() {
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                GamePage.this.keyPressed(e);
-//            }
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                GamePage.this.keyReleased(e);
-//            }
-//        });
-//    }
 
+    ////// KeyListener //////
     public void keyPressed(KeyEvent e) {
-//        System.out.println("Pressed: " + e);
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             parent.setPage(MainWindow.MAIN_PAGE);
         } else {
@@ -69,7 +47,6 @@ public class GamePage extends AbstractPage {
     }
 
     public void keyReleased(KeyEvent e) {
-//        System.out.println("Released: " + e);
         mapView.keyReleased(e);
     }
 }
