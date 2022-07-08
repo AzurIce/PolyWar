@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class MainPage extends PerformanceOverlayPage {
+public class MainPage extends PerformanceOverlayedPage {
     JButton btnStartGame;
     JButton btnCreateRoom;
     JButton btnJoinRoom;

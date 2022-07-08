@@ -7,7 +7,7 @@ import com.azurice.polywar.client.ui.component.MapView;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class GamePage extends PerformanceOverlayPage {
+public class GamePage extends PerformanceOverlayedPage {
     // Views
     private MapView mapView;
 

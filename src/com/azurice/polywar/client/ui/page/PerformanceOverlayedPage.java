@@ -5,10 +5,10 @@ import com.azurice.polywar.client.ui.MainWindow;
 
 import java.awt.*;
 
-public abstract class PerformanceOverlayPage extends AbstractPage {
+public abstract class PerformanceOverlayedPage extends AbstractPage {
     private final PolyWarClient client;
 
-    public PerformanceOverlayPage(PolyWarClient client, MainWindow parent) {
+    public PerformanceOverlayedPage(PolyWarClient client, MainWindow parent) {
         super(parent);
         this.client = client;
     }
