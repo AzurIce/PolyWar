@@ -28,12 +28,9 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
 
     public PolyWarClient client;
     private CardLayout cardLayout = new CardLayout();
-    //    private JPanel rootContainer = new JPanel();
     private JPanel pageContainer = new JPanel();
     private GamePage gamePage;
     private CreateRoomPage createRoomPage;
-    // Performance overlay
-//    private PerformanceView performanceView;
     // Pages
     private MainPage mainPage;
     private boolean stopped = false;
@@ -48,12 +45,10 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
 
     public void render() {
         curPage.render();
-//        performanceView.render();
     }
 
     public void tick() {
         curPage.tick();
-//        performanceView.tick();
     }
 
     public void initViews() {
@@ -69,16 +64,11 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
         pageContainer.setBorder(new LineBorder(new Color(0x00ff00)));
 
         pageContainer.setLocation(0, 0);
-//        rootContainer.add(pageContainer);
 
         setContentPane(pageContainer);
     }
 
     public void setPage(String pageName) {
-//        if (curPage != null) {
-//            curPage.stopAndWaitUntilStopped();
-//        }
-
         cardLayout.show(pageContainer, pageName);
         curPage = switch (pageName) {
             case MAIN_PAGE -> mainPage;
@@ -86,9 +76,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
             case CREATE_ROOM_PAGE -> createRoomPage;
             default -> null; // Never happens
         };
-//        curPage.requestFocus();
         curPage.requestFocusInWindow();
-//        curPage.start();
         System.out.println("[MainWindow/setPage]: " + pageName + " " + curPage);
     }
 
@@ -129,14 +117,11 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
      * Lifecycle - onClosing
      */
     public void onClosing() {
-//        performanceView.stopAndWaitUntilStopped();
-//        curPage.stopAndWaitUntilStopped();
         stopAndWaitUntilStopped();
-        System.exit(0);
+        client.stop();
     }
 
     public void display() {
-//        System.out.println("display");
         setPage(MAIN_PAGE);
         pack();
         setLocationRelativeTo(null);

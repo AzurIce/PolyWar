@@ -13,6 +13,7 @@ public class MainPage extends PerformanceOverlayedPage {
     JButton btnCreateRoom;
     JButton btnJoinRoom;
 
+
     public MainPage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
     }
@@ -25,6 +26,8 @@ public class MainPage extends PerformanceOverlayedPage {
     @Override
     public void tick() {
         super.tick();
+        btnCreateRoom.setEnabled(parent.client.isConnected());
+        btnJoinRoom.setEnabled(parent.client.isConnected());
     }
 
     @Override

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="log-config" status="INFO" monitorInterval="10">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5p] [%t] [%c{1}] %m%n"></PatternLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <root level="all">
+            <AppenderRef ref="Console"></AppenderRef>
+        </root>
+    </Loggers>
+</Configuration>

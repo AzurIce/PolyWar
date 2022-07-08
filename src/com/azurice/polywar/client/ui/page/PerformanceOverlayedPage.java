@@ -27,5 +27,6 @@ public abstract class PerformanceOverlayedPage extends AbstractPage {
     public void paint(Graphics g) {
         super.paint(g);
         g.drawString("FPS: " + (int) client.fps, 5, 14);
+        g.drawString("Server: " + (client.isConnected() ? "connected" : "connecting..."), 5, 28);
     }
 }
