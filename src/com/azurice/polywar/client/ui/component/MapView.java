@@ -6,6 +6,8 @@ import com.azurice.polywar.entity.predict.Player;
 import com.azurice.polywar.util.math.Util;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Random;
 
 public class MapView extends AbstractView {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Random r = new Random();
     private static final int MAP_SIZE = 4096;
     private static final int VIEWPORT_SIZE = 800;
@@ -35,10 +38,10 @@ public class MapView extends AbstractView {
 
     private void initGame() {
         playerList = new ArrayList<>();
-        System.out.println("Generating map...");
+        LOGGER.info("Generating map...");
         map = WorldMap.generateWorldMap(MAP_SIZE);
 
-        System.out.println("Creating player...");
+        LOGGER.info("Creating player...");
         mainPlayer = new Player(
                 new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)),
                 new Color(30, 144, 255),
@@ -74,7 +77,6 @@ public class MapView extends AbstractView {
     private void updateScreenLocation() {
         double x = mainPlayer.getPredictedCoord().x;
         double y = mainPlayer.getPredictedCoord().y;
-//        System.out.println(mainPlayer.getCoord());
         screenLocation = new Vec2d(
                 Util.clip(x - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE),
                 Util.clip(y - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE)
@@ -89,9 +91,9 @@ public class MapView extends AbstractView {
 
     @Override
     public void paint(Graphics g) {
-//        super.paint(g);
+        super.paint(g);
 
-        // For better visual ANTIALIASING
+        // For better visual(ANTIALIASING)
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -104,10 +106,10 @@ public class MapView extends AbstractView {
         if (debug) {
             g.setColor(new Color(0x3c3c3c));
             g.fillOval(VIEWPORT_SIZE / 2 - 5, VIEWPORT_SIZE / 2 - 5, 10, 10);
-            g.drawString("PlayerCoord: " + mainPlayer.getCoord(), 350, 20);
-            g.drawString("PredictedPlayerCoord: " + mainPlayer.getPredictedCoord(), 350, 40);
-            g.drawString("ScreenLocation: " + screenLocation, 350, 60);
-            g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 80);
+            g.drawString("PlayerCoord: " + mainPlayer.getCoord(), 350, 14);
+            g.drawString("PredictedPlayerCoord: " + mainPlayer.getPredictedCoord(), 350, 28);
+            g.drawString("ScreenLocation: " + screenLocation, 350, 42);
+            g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 56);
         }
     }
 

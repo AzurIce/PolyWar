@@ -1,6 +1,7 @@
 package com.azurice.polywar.server;
 
 import com.azurice.polywar.network.Packet;
+import com.azurice.polywar.network.PingPacket;
 import com.azurice.polywar.network.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,7 +77,7 @@ public class PolyWarServer {
                 if (key.isAcceptable()) { // OP_ACCEPT
                     handleAccept((ServerSocketChannel) key.channel());
                 } else if (key.isReadable() & key.isWritable()) { // OP_READ
-                    handleRead((SocketChannel) key.channel());
+                    handleRead(key);
                 }
             }
 //            try {
@@ -106,7 +107,8 @@ public class PolyWarServer {
         }
     }
 
-    public void handleRead(SocketChannel socketChannel) {
+    public void handleRead(SelectionKey key) {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
         try {
             Packet packet = Util.getPacket(socketChannel);
             if (packet == null) {
@@ -114,13 +116,19 @@ public class PolyWarServer {
                 socketChannel.close();
                 return;
             }
-
             LOGGER.info("[{}] Received {}: {}",
                     socketChannel.getRemoteAddress(),
                     packet.getTypeString(),
                     packet.toString());
+
+            if (packet instanceof PingPacket) {
+                LOGGER.info("[{}] Sending Ping response", socketChannel.getRemoteAddress());
+                socketChannel.write(new PingPacket().toByteBuffer());
+            }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
+            key.cancel();
+            LOGGER.error("Canceld key");
         }
     }
 }

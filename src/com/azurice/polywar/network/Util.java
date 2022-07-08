@@ -16,4 +16,11 @@ public class Util {
             case PING_PACKET -> new PingPacket();
         };
     }
+
+    public static void sendPacket(SocketChannel socketChannel, Packet packet) throws IOException {
+        ByteBuffer buffer = packet.toByteBuffer();
+        while (buffer.hasRemaining()) {
+            socketChannel.write(buffer);
+        }
+    }
 }

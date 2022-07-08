@@ -17,14 +17,14 @@ public class GamePage extends PerformanceOverlayedPage {
 
     @Override
     public void render() {
-        super.render();
         mapView.render();
+        super.render();
     }
 
     @Override
     public void tick() {
-        super.tick();
         mapView.tick();
+        super.tick();
     }
 
 
@@ -43,7 +43,7 @@ public class GamePage extends PerformanceOverlayedPage {
     ////// KeyListener //////
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            parent.setPage(MainWindow.MAIN_PAGE);
+            parent.setPage(MainWindow.Page.MAIN_PAGE);
         } else {
             mapView.keyPressed(e);
         }

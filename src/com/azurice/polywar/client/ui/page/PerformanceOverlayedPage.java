@@ -20,13 +20,21 @@ public abstract class PerformanceOverlayedPage extends AbstractPage {
 
     @Override
     public void tick() {
+    }
+
+    public void paintBg(Graphics g) {
 
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        g.drawString("FPS: " + (int) client.fps, 5, 14);
+    protected void paintChildren(Graphics g) {
+        // For better visual(ANTIALIASING)
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        paintBg(g2d);
+        super.paintChildren(g);
+        g.drawString("Fps: " + (int) Math.min(999, client.fps) + "    Ping: " + (int) client.ms + "ms", 5, 14);
         g.drawString("Server: " + (client.isConnected() ? "connected" : "connecting..."), 5, 28);
     }
 }
