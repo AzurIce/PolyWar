@@ -44,4 +44,9 @@ public class Packet {
     public String getTypeString() {
         return getType().toString();
     }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(unpack());
+    }
 }

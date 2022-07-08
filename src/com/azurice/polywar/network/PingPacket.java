@@ -6,4 +6,9 @@ public class PingPacket extends Packet {
     public PingPacket() {
         super(PING_PACKET, null);
     }
+
+    @Override
+    public String toString() {
+        return "Ping";
+    }
 }

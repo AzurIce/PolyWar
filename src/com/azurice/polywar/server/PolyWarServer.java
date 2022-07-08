@@ -1,13 +1,13 @@
 package com.azurice.polywar.server;
 
 import com.azurice.polywar.network.Packet;
+import com.azurice.polywar.network.Util;
 import com.azurice.polywar.server.network.Handler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -58,8 +58,8 @@ public class PolyWarServer {
             this.running = false;
         }
 
+        LOGGER.info("Handling for connection...");
         while (this.running) {
-            LOGGER.info("Waiting for connection...");
             try {
                 selector.select();
             } catch (IOException e) {
@@ -77,11 +77,11 @@ public class PolyWarServer {
 
                 if (key.isAcceptable()) { // OP_ACCEPT
                     ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-                    LOGGER.info("{} is Accept-ready", serverSocketChannel);
+//                    LOGGER.info("{} is Accept-ready", serverSocketChannel);
                     handleAccept(serverSocketChannel);
                 } else if (key.isReadable()) { // OP_READ
                     SocketChannel socketChannel = (SocketChannel) key.channel();
-                    LOGGER.info("{} is Read-ready", socketChannel);
+//                    LOGGER.info("{} is Read-ready", socketChannel);
                     handleRead(socketChannel);
                 }
             }
@@ -114,23 +114,13 @@ public class PolyWarServer {
 
     public void handleRead(SocketChannel socketChannel) {
         try {
-            LOGGER.info("Reading...");
-            ByteBuffer buffer = ByteBuffer.allocate(256);
-            int len = socketChannel.read(buffer);
-            if (len == -1) {
-                LOGGER.info("SocketChannel closing...");
-                socketChannel.close();
-                return;
-            }
+            Packet packet = Util.getPacket(socketChannel);
+            if (packet == null) return;
 
-            LOGGER.info("Read {}  bytes from {}: {}",
-                    len, socketChannel.getRemoteAddress(), new String(buffer.array()));
-
-            Packet packet = new Packet(buffer.array());
-            LOGGER.info("Get packet[{}] from {}: {}",
-                    packet.getTypeString(),
+            LOGGER.info("[{}] Received {}: {}",
                     socketChannel.getRemoteAddress(),
-                    packet.unpack());
+                    packet.getTypeString(),
+                    packet.toString());
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
         }
