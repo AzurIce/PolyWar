@@ -21,12 +21,12 @@ public class SimplePage extends AbstractPage {
     }
 
     @Override
-    void render() {
+    public void render() {
 
     }
 
     @Override
-    void tick() {
+    public void tick() {
 
     }
 }

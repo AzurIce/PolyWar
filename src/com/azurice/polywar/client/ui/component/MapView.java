@@ -24,15 +24,17 @@ public class MapView extends AbstractView {
 
 
     ////// Entities //////
-    //    private List<Missile> missileList = new ArrayList<>();
+//        private List<Missile> missileList = new ArrayList<>();
     private List<Player> playerList;
     // Player
     private Player mainPlayer;
 
     private Vec2d screenLocation = Vec2d.ZERO;
 
+    private boolean debug = false;
 
     private void initGame() {
+        playerList = new ArrayList<>();
         System.out.println("Generating map...");
         map = WorldMap.generateWorldMap(MAP_SIZE);
 
@@ -50,6 +52,9 @@ public class MapView extends AbstractView {
 
     // KeyListener
     public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_F3) {
+            debug = !debug;
+        }
         mainPlayer.keyPressed(e);
     }
 
@@ -84,7 +89,7 @@ public class MapView extends AbstractView {
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
+//        super.paint(g);
 
         // For better visual ANTIALIASING
         Graphics2D g2d = (Graphics2D) g;
@@ -96,20 +101,22 @@ public class MapView extends AbstractView {
             PlayerRenderer.render(player, g2d, screenLocation.negate(), new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
         }
 
-        g.setColor(new Color(0x3c3c3c));
-        g.fillOval(VIEWPORT_SIZE / 2, VIEWPORT_SIZE / 2, 10, 10);
-        g.drawString("PlayerCoord: " + mainPlayer.getCoord(), 350, 20);
-        g.drawString("PredictedPlayerCoord: " + mainPlayer.getPredictedCoord(), 350, 40);
-        g.drawString("ScreenLocation: " + screenLocation, 350, 60);
-        g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 80);
+        if (debug) {
+            g.setColor(new Color(0x3c3c3c));
+            g.fillOval(VIEWPORT_SIZE / 2 - 5, VIEWPORT_SIZE / 2 - 5, 10, 10);
+            g.drawString("PlayerCoord: " + mainPlayer.getCoord(), 350, 20);
+            g.drawString("PredictedPlayerCoord: " + mainPlayer.getPredictedCoord(), 350, 40);
+            g.drawString("ScreenLocation: " + screenLocation, 350, 60);
+            g.drawString("ScreenCenterLocation: " + screenLocation.add(400), 350, 80);
+        }
     }
 
 
     // Overrides of AbstractView
     @Override
     public void initViews() {
-        playerList = new ArrayList<>();
 
+        setOpaque(false);
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(VIEWPORT_SIZE, VIEWPORT_SIZE));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

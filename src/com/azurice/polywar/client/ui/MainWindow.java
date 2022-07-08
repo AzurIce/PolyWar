@@ -1,60 +1,85 @@
 package com.azurice.polywar.client.ui;
 
+import com.azurice.polywar.Renderable;
+import com.azurice.polywar.Tickable;
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.page.AbstractPage;
 import com.azurice.polywar.client.ui.page.CreateRoomPage;
 import com.azurice.polywar.client.ui.page.GamePage;
 import com.azurice.polywar.client.ui.page.MainPage;
+import com.azurice.polywar.util.Util;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class MainWindow extends JFrame {
+import static com.azurice.polywar.client.PolyWarClient.TICK_RATE;
+
+public class MainWindow extends JFrame implements Tickable, Renderable {
     public static final String MAIN_PAGE = "MainPage";
     public static final String GAME_PAGE = "GamePage";
     public static final String CREATE_ROOM_PAGE = "CreateRoomPage";
 
     private AbstractPage curPage;
 
-    private JPanel container = new JPanel();
+    public PolyWarClient client;
     private CardLayout cardLayout = new CardLayout();
-    private MainPage mainPage;
+    //    private JPanel rootContainer = new JPanel();
+    private JPanel pageContainer = new JPanel();
     private GamePage gamePage;
     private CreateRoomPage createRoomPage;
-
-
-    private PolyWarClient client;
+    // Performance overlay
+//    private PerformanceView performanceView;
+    // Pages
+    private MainPage mainPage;
+    private boolean stopped = false;
+    private boolean running = true;
 
     public MainWindow(PolyWarClient client) {
         super();
+        this.client = client;
         initViews();
         initListeners();
-        this.client = client;
+    }
+
+    public void render() {
+        curPage.render();
+//        performanceView.render();
+    }
+
+    public void tick() {
+        curPage.tick();
+//        performanceView.tick();
     }
 
     public void initViews() {
-        mainPage = new MainPage(this);
-        gamePage = new GamePage(this);
+        // Pages
+        mainPage = new MainPage(client, this);
+        gamePage = new GamePage(client, this);
         createRoomPage = new CreateRoomPage(this);
 
-        container.setLayout(cardLayout);
-        container.add(MAIN_PAGE, mainPage);
-        container.add(GAME_PAGE, gamePage);
-        container.add(CREATE_ROOM_PAGE, createRoomPage);
+        pageContainer.setLayout(cardLayout);
+        pageContainer.add(MAIN_PAGE, mainPage);
+        pageContainer.add(GAME_PAGE, gamePage);
+        pageContainer.add(CREATE_ROOM_PAGE, createRoomPage);
+        pageContainer.setBorder(new LineBorder(new Color(0x00ff00)));
 
-        setContentPane(container);
+        pageContainer.setLocation(0, 0);
+//        rootContainer.add(pageContainer);
+
+        setContentPane(pageContainer);
     }
 
     public void setPage(String pageName) {
-        if (curPage != null) {
-            curPage.stopAndWaitUntilStopped();
-        }
+//        if (curPage != null) {
+//            curPage.stopAndWaitUntilStopped();
+//        }
 
-        cardLayout.show(container, pageName);
+        cardLayout.show(pageContainer, pageName);
         curPage = switch (pageName) {
             case MAIN_PAGE -> mainPage;
             case GAME_PAGE -> gamePage;
@@ -63,7 +88,7 @@ public class MainWindow extends JFrame {
         };
 //        curPage.requestFocus();
         curPage.requestFocusInWindow();
-        curPage.start();
+//        curPage.start();
         System.out.println("[MainWindow/setPage]: " + pageName + " " + curPage);
     }
 
@@ -104,7 +129,9 @@ public class MainWindow extends JFrame {
      * Lifecycle - onClosing
      */
     public void onClosing() {
-        curPage.stopAndWaitUntilStopped();
+//        performanceView.stopAndWaitUntilStopped();
+//        curPage.stopAndWaitUntilStopped();
+        stopAndWaitUntilStopped();
         System.exit(0);
     }
 
@@ -114,6 +141,84 @@ public class MainWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        start();
+    }
+
+
+    // Runtime control
+    public void start() {
+        new Thread(this::run).start();
+    }
+
+    public final void stop() {
+        onStop();
+    }
+
+    public void stopAndWaitUntilStopped() {
+        System.out.println("Waiting for it to stop");
+        stop();
+        while (!isStopped()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private boolean isStopped() {
+        return stopped;
+    }
+
+    private void run() {
+        running = true;
+        stopped = false;
+        Thread logicThread = new Thread(() -> {
+            while (running) {
+                long timeTickStart = Util.getMeasuringTimeMs();
+                tick();
+                try {
+                    Thread.sleep(1000 / TICK_RATE - Util.getMeasuringTimeMs() + timeTickStart);
+                } catch (IllegalArgumentException ignored) {
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        logicThread.start();
+
+        while (running) {
+//            System.out.println("Page running");
+            long timeFrameStart = Util.getMeasuringTimeMs();
+            render();
+            try {
+                Thread.sleep(1);
+//                Thread.sleep(1000 / FRAME_RATE - Util.getMeasuringTimeMs() + timeFrameStart);
+            } catch (IllegalArgumentException ignored) {
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            long timeFrameEnd = Util.getMeasuringTimeMs();
+            client.fps = 1E3 / (timeFrameEnd - timeFrameStart);
+        }
+        onStopped();
+    }
+
+
+    ////// Lifecycles //////
+
+    /**
+     * Lifecycle - onStop
+     */
+    public void onStop() {
+        running = false;
+    }
+
+    /**
+     * Lifecycle - onStopped
+     */
+    public void onStopped() {
+        stopped = true;
     }
 
 }

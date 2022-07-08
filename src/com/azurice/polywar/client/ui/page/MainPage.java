@@ -1,28 +1,30 @@
 package com.azurice.polywar.client.ui.page;
 
+import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.Layout.Row;
 import com.azurice.polywar.client.ui.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
-public class MainPage extends AbstractPage {
+public class MainPage extends PerformanceOverlayPage {
     JButton btnStartGame;
     JButton btnCreateRoom;
     JButton btnJoinRoom;
 
-    public MainPage(MainWindow parent) {
-        super(parent);
+    public MainPage(PolyWarClient client, MainWindow parent) {
+        super(client, parent);
     }
 
     @Override
-    void render() {
-
+    public void render() {
+        super.render();
     }
 
     @Override
-    void tick() {
-
+    public void tick() {
+        super.tick();
     }
 
     @Override
@@ -49,5 +51,16 @@ public class MainPage extends AbstractPage {
         super.initListeners();
         btnStartGame.addActionListener(e -> parent.setPage(MainWindow.GAME_PAGE));
         btnCreateRoom.addActionListener(e -> parent.setPage(MainWindow.CREATE_ROOM_PAGE));
+    }
+
+    ////// Key Listener //////
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

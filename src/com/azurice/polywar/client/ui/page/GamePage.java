@@ -1,26 +1,29 @@
 package com.azurice.polywar.client.ui.page;
 
+import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.client.ui.component.MapView;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class GamePage extends AbstractPage {
+public class GamePage extends PerformanceOverlayPage {
     // Views
     private MapView mapView;
 
-    public GamePage(MainWindow parent) {
-        super(parent);
+    public GamePage(PolyWarClient client, MainWindow parent) {
+        super(client, parent);
     }
 
     @Override
-    void render() {
+    public void render() {
+        super.render();
         mapView.render();
     }
 
     @Override
-    void tick() {
+    public void tick() {
+        super.tick();
         mapView.tick();
     }
 

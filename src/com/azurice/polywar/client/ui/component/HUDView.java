@@ -1,13 +1,29 @@
 package com.azurice.polywar.client.ui.component;
 
-public class HUDView extends AbstractView {
-    @Override
+import com.azurice.polywar.Renderable;
+import com.azurice.polywar.Tickable;
+
+import javax.swing.*;
+
+public class HUDView extends JPanel implements Renderable, Tickable {
+
+
     public void initViews() {
 
     }
 
-    @Override
+
     public void initListeners() {
+
+    }
+
+    @Override
+    public void tick() {
+
+    }
+
+    @Override
+    public void render() {
 
     }
 }

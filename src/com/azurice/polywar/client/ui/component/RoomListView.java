@@ -11,4 +11,14 @@ public class RoomListView extends AbstractView {
     public void initListeners() {
 
     }
+
+    @Override
+    public void tick() {
+
+    }
+
+    @Override
+    public void render() {
+
+    }
 }
