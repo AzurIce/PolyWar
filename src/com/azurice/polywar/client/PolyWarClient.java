@@ -1,10 +1,10 @@
 package com.azurice.polywar.client;
 
 import com.azurice.polywar.client.ui.MainWindow;
+import com.azurice.polywar.network.Util;
 import com.azurice.polywar.network.packet.Packet;
 import com.azurice.polywar.network.packet.PingPacket;
 import com.azurice.polywar.network.packet.RoomListPacket;
-import com.azurice.polywar.network.packet.Util;
 import com.azurice.polywar.server.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

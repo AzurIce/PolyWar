@@ -1,5 +1,6 @@
-package com.azurice.polywar.network.packet;
+package com.azurice.polywar.network;
 
+import com.azurice.polywar.network.packet.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
