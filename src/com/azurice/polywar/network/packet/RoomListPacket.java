@@ -6,14 +6,20 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.azurice.polywar.network.packet.Packet.Type.ROOM_LIST_PACKET;
+
 public class RoomListPacket extends Packet {
 
-    public RoomListPacket(byte[] packetBytes) {
-        super(packetBytes);
+    public RoomListPacket(List<PacketBlock> blocks) {
+        super(ROOM_LIST_PACKET, blocks);
     }
 
-    public RoomListPacket(List<Room> roomList) {
-        super(PacketType.ROOM_LIST_PACKET, bytesOf(roomList));
+    public RoomListPacket(byte[] data) {
+        super(ROOM_LIST_PACKET, data);
+    }
+
+    public static RoomListPacket of(List<Room> roomList) {
+        return new RoomListPacket(bytesOf(roomList));
     }
 
     private static byte[] bytesOf(List<Room> roomList) {
@@ -26,6 +32,7 @@ public class RoomListPacket extends Packet {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Bytes of " + roomList + ": " + Arrays.toString(data));
         return data;
     }
 

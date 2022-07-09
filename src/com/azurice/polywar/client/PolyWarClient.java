@@ -138,13 +138,7 @@ public class PolyWarClient {
     private void handleRead(SelectionKey key) {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         try {
-            Packet packet = Util.getPacket(socketChannel);
-            if (packet == null) {
-                socketChannel.close();
-                connected = false;
-                return;
-            }
-
+            Packet packet = Util.readPacket(socketChannel);
 
             if (packet instanceof PingPacket) {
                 timePong = com.azurice.polywar.util.Util.getMeasuringTimeMs();

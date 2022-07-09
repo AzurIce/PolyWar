@@ -1,8 +1,10 @@
 package com.azurice.polywar.network.packet;
 
+import static com.azurice.polywar.network.packet.Packet.Type.CREATE_ROOM_PACKET;
+
 public class CreateRoomPacket extends Packet {
     public CreateRoomPacket() {
-        super(PacketType.CREATE_ROOM_PACKET, null);
+        super(CREATE_ROOM_PACKET);
     }
 
     @Override

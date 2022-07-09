@@ -1,8 +1,10 @@
 package com.azurice.polywar.network.packet;
 
+import static com.azurice.polywar.network.packet.Packet.Type.GET_ROOM_LIST_PACKET;
+
 public class GetRoomListPacket extends Packet {
     public GetRoomListPacket() {
-        super(PacketType.GET_ROOM_LIST_PACKET, null);
+        super(GET_ROOM_LIST_PACKET);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class PolyWarServer {
     ServerSocketChannel serverSocketChannel;
     Selector selector;
 
-    Set<Room> rooms = Collections.synchronizedSet(new HashSet<>());
+    List<Room> rooms = Collections.synchronizedList(new ArrayList<>());
     List<Integer> deletedRoomIds = Collections.synchronizedList(new ArrayList<>());
     Map<SocketChannel, Player> socketsToPlayers = Collections.synchronizedMap(new HashMap<>());
     List<Integer> deletedPlayerIds = Collections.synchronizedList(new ArrayList<>());
@@ -117,14 +117,7 @@ public class PolyWarServer {
     public void handleRead(SelectionKey key) {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         try {
-            Packet packet = Util.getPacket(socketChannel);
-            if (packet == null) {
-                LOGGER.info("[{}] Closed", socketChannel.getRemoteAddress());
-                socketsToPlayers.remove(socketChannel);
-                socketChannel.close();
-                return;
-            }
-
+            Packet packet = Util.readPacket(socketChannel);
 
             if (packet instanceof PingPacket) {
 //                LOGGER.info("[{}] Sending Ping response", socketChannel.getRemoteAddress());
@@ -136,7 +129,7 @@ public class PolyWarServer {
                         packet.toString());
                 if (packet instanceof GetRoomListPacket) {
                     LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
-                    socketChannel.write(new RoomListPacket(rooms.stream().toList()).toByteBuffer());
+                    Util.sendPacket(socketChannel, RoomListPacket.of(rooms));
                 } else if (packet instanceof CreateRoomPacket) {
                     if (deletedRoomIds.size() == 0) {
                         rooms.add(new Room(rooms.size(), socketsToPlayers.get(socketChannel)));
