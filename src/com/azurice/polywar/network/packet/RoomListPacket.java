@@ -1,14 +1,16 @@
 package com.azurice.polywar.network.packet;
 
 import com.azurice.polywar.server.Room;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.azurice.polywar.network.packet.Packet.Type.ROOM_LIST_PACKET;
 
 public class RoomListPacket extends Packet {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public RoomListPacket(List<PacketBlock> blocks) {
         super(ROOM_LIST_PACKET, blocks);
@@ -32,14 +34,13 @@ public class RoomListPacket extends Packet {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Bytes of " + roomList + ": " + Arrays.toString(data));
+//        LOGGER.info("Bytes of " + roomList + ": " + Arrays.toString(data));
         return data;
     }
 
     public List<Room> getRoomList() {
         Room[] roomList;
         try {
-            System.out.println(Arrays.toString(getData()));
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(getData());
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             try {
@@ -53,8 +54,8 @@ public class RoomListPacket extends Packet {
         return List.of(roomList);
     }
 
-//    @Override
-//    public String toString() {
-//        return getRoomList().toString();
-//    }
+    @Override
+    public String toString() {
+        return getRoomList().toString();
+    }
 }

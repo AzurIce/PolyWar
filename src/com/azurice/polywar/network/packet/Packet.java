@@ -34,13 +34,13 @@ public class Packet {
     }
 
     public byte[] getData() {
-        LOGGER.info("Type: {}, Blocks number: {}", getTypeString(), blocks.size());
+//        LOGGER.info("Type: {}, Blocks number: {}", getTypeString(), blocks.size());
         byte[] data = new byte[blocks.size() * (BLOCK_LEN - 1)];
         for (int i = 0; i < blocks.size(); i++) {
             System.arraycopy(blocks.get(i).getBytes(), 0, data, i * (BLOCK_LEN - 1), BLOCK_LEN - 1);
         }
-        LOGGER.info("Blocks: {}", blocks);
-        LOGGER.info("Data: {}", data);
+//        LOGGER.info("Blocks: {}", blocks);
+//        LOGGER.info("Data: {}", data);
         return data;
     }
 
