@@ -11,4 +11,9 @@ public class Player implements Serializable {
         this.id = id;
         this.socketChannel = socketChannel;
     }
+
+    @Override
+    public String toString() {
+        return "Player<id: " + id + ">";
+    }
 }
