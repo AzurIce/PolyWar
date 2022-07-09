@@ -1,8 +1,6 @@
 package com.azurice.polywar.server;
 
-import com.azurice.polywar.network.Packet;
-import com.azurice.polywar.network.PingPacket;
-import com.azurice.polywar.network.Util;
+import com.azurice.polywar.network.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,11 +55,11 @@ public class PolyWarServer {
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         } catch (IOException e) {
             LOGGER.error("Network initialize failed", e);
-            this.running = false;
+            running = false;
         }
 
         LOGGER.info("Handling connections...");
-        while (this.running) {
+        while (running) {
             try {
                 selector.select();
             } catch (IOException e) {
@@ -76,7 +74,7 @@ public class PolyWarServer {
 
                 if (key.isAcceptable()) { // OP_ACCEPT
                     handleAccept((ServerSocketChannel) key.channel());
-                } else if (key.isReadable() & key.isWritable()) { // OP_READ
+                } else if (key.isReadable() & key.isWritable()) { // OP_READ | OP_WRITE
                     handleRead(key);
                 }
             }
@@ -87,12 +85,12 @@ public class PolyWarServer {
 //            }
         }
 
-        try {
-            if (serverSocketChannel != null) {
+        if (serverSocketChannel != null) {
+            try {
                 serverSocketChannel.close();
+            } catch (IOException e) {
+                LOGGER.error("ServerSocketChannel close failed: ", e);
             }
-        } catch (IOException e) {
-            LOGGER.error("ServerSocketChannel close failed: ", e);
         }
     }
 
@@ -102,6 +100,7 @@ public class PolyWarServer {
             LOGGER.info("Accepted Client<{}>, registering...", socketChannel);
             socketChannel.configureBlocking(false);
             socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+//            socketChannel.write(new PingPacket().toByteBuffer());
         } catch (IOException e) {
             LOGGER.error("Accept failed: ", e);
         }
@@ -116,6 +115,7 @@ public class PolyWarServer {
                 socketChannel.close();
                 return;
             }
+
             LOGGER.info("[{}] Received {}: {}",
                     socketChannel.getRemoteAddress(),
                     packet.getTypeString(),
@@ -124,11 +124,14 @@ public class PolyWarServer {
             if (packet instanceof PingPacket) {
                 LOGGER.info("[{}] Sending Ping response", socketChannel.getRemoteAddress());
                 socketChannel.write(new PingPacket().toByteBuffer());
+            } else if (packet instanceof GetRoomListPacket) {
+                LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
+                socketChannel.write(new RoomListPacket(rooms).toByteBuffer());
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
             key.cancel();
-            LOGGER.error("Canceld key");
+            LOGGER.error("Canceled key");
         }
     }
 }

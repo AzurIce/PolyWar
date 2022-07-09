@@ -38,6 +38,10 @@ public abstract class AbstractPage extends JPanel implements Tickable, Renderabl
         });
     }
 
+    public void onShow() {
+
+    }
+
     ////// Key Listener //////
 
     public abstract void keyPressed(KeyEvent e);

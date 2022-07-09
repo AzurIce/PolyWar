@@ -77,6 +77,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
             case ROOM_LIST_PAGE -> roomListPage;
         };
         curPage.requestFocusInWindow();
+        curPage.onShow();
         LOGGER.info("SetPage: " + page.name());
     }
 
@@ -147,7 +148,6 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
         logicThread.start();
 
         while (running) {
-//            System.out.println("Page running");
             long timeFrameStart = Util.getMeasuringTimeMs();
             render();
 //            try {

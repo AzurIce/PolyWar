@@ -10,13 +10,22 @@ public class Packet {
     PacketType type;
     byte[] data;
 
-    public Packet(byte[] packet) {
-        this(PacketType.values()[packet[0]], (packet.length > 1) ? Arrays.copyOfRange(packet, 1, Math.min(256, packet.length)) : null);
+    public Packet(byte[] packetBytes) {
+        this(
+                PacketType.values()[packetBytes[0]],
+                (packetBytes.length > 1) ?
+                        Arrays.copyOfRange(packetBytes, 1, Math.min(256, packetBytes.length))
+                        : null
+        );
     }
 
     public Packet(PacketType type, byte[] data) {
         this.type = type;
         this.data = data == null ? null : Arrays.copyOfRange(data, 0, Math.min(255, data.length));
+    }
+
+    public byte[] getData() {
+        return data.clone();
     }
 
     public byte[] pack() {

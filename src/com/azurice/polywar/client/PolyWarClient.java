@@ -3,13 +3,20 @@ package com.azurice.polywar.client;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.Packet;
 import com.azurice.polywar.network.PingPacket;
+import com.azurice.polywar.network.RoomListPacket;
 import com.azurice.polywar.network.Util;
+import com.azurice.polywar.server.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class PolyWarClient {
     private static final String SERVER_IP = "127.0.0.1";
@@ -34,6 +41,8 @@ public class PolyWarClient {
     public double fps;
     public double ms;
     private boolean running = true;
+
+    public List<Room> roomList = new ArrayList<>();
     SocketChannel socketChannel;
     private MainWindow window;
     private boolean connected = false;
@@ -42,47 +51,75 @@ public class PolyWarClient {
         return connected;
     }
 
+    Selector selector;
+    private long timePing;
+    private long timePong;
+
     // Runtime control
     public void run() {
         window = new MainWindow(getInstance());
         window.display();
 
+        try {
+            LOGGER.info("Initializing network......");
+            selector = Selector.open();
+        } catch (IOException e) {
+            LOGGER.error("Network initialize failed", e);
+            running = false;
+        }
+
+        Thread pingThread = new Thread(() -> {
+            while (running) {
+                if (connected) {
+                    try {
+                        timePing = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+                        Util.sendPacket(socketChannel, new PingPacket());
+                    } catch (IOException e) {
+                        LOGGER.error("Ping error: ", e);
+                        connected = false;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        pingThread.start();
+
+        LOGGER.info("Handling connections...");
         while (running) {
-            if (!connected) {
+            if (!connected) { // Connect to server
                 try {
                     LOGGER.info("Connecting to Server...");
                     socketChannel = SocketChannel.open();
                     socketChannel.connect(SERVER_ADDRESS);
                     connected = true;
+                    socketChannel.configureBlocking(false);
+                    socketChannel.register(selector, SelectionKey.OP_READ);
                     LOGGER.info("Connected");
                 } catch (IOException e) {
                     connected = false;
-                    LOGGER.error("Server connect failed: {}, retrying in 3 seconds...", e.toString());
+                    LOGGER.error("Server connect failed: {}, retrying...", e.toString());
                 }
             } else {
                 try {
-                    long timeSend = com.azurice.polywar.util.Util.getMeasuringTimeMs();
-                    Util.sendPacket(socketChannel, new PingPacket());
-//                    LOGGER.info("Sent PingPacket: {}", timeSend);
-
-                    Packet packet = Util.getPacket(socketChannel);
-                    long timeReceived = com.azurice.polywar.util.Util.getMeasuringTimeMs();
-//                    LOGGER.info("Received PingPacket: {}", timeReceived);
-                    ms = timeReceived - timeSend;
-                    if (packet == null) {
-                        socketChannel.close();
-                        connected = false;
-                    }
+                    selector.select();
                 } catch (IOException e) {
-                    LOGGER.error("Ping error: ", e);
-                    connected = false;
+                    LOGGER.error("Select failed: ", e);
+                    continue;
                 }
-            }
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+                while (it.hasNext()) {
+                    SelectionKey key = it.next();
+                    it.remove();
+
+                    if (key.isReadable()) { // OP_READ
+                        handleRead(key);
+                    }
+                }
             }
         }
 
@@ -92,10 +129,35 @@ public class PolyWarClient {
                 LOGGER.info("Closing SocketChannel...");
                 socketChannel.close();
             } catch (IOException e) {
-                LOGGER.error("Cannot close SocketChannel: {}", e.toString());
+                LOGGER.error("SocketChannel close failed: {}", e.toString());
             }
         }
         onStopped();
+    }
+
+    private void handleRead(SelectionKey key) {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        try {
+            Packet packet = Util.getPacket(socketChannel);
+            if (packet == null) {
+                socketChannel.close();
+                connected = false;
+                return;
+            }
+
+            LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
+
+            if (packet instanceof PingPacket) {
+                timePong = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+                ms = timePong - timePing;
+            } else if (packet instanceof RoomListPacket) {
+                roomList = ((RoomListPacket) packet).getRoomList();
+            }
+        } catch (IOException e) {
+            LOGGER.error("Read failed: ", e);
+            key.cancel();
+            LOGGER.error("Canceled key");
+        }
     }
 
 
@@ -105,5 +167,16 @@ public class PolyWarClient {
 
     public void onStopped() {
         System.exit(0);
+    }
+
+
+    public void sendPacket(Packet packet) {
+        try {
+            Util.sendPacket(socketChannel, packet);
+        } catch (IOException e) {
+            LOGGER.error("Packet send failed: ", e);
+            connected = false;
+//            throw new RuntimeException(e);
+        }
     }
 }

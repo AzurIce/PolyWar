@@ -14,6 +14,8 @@ public class Util {
         byte[] bytes = buffer.array();
         return switch (PacketType.values()[bytes[0]]) {
             case PING_PACKET -> new PingPacket();
+            case GET_ROOM_LIST_PACKET -> new GetRoomListPacket();
+            case ROOM_LIST_PACKET -> new RoomListPacket(bytes);
         };
     }
 

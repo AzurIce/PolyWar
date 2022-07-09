@@ -26,6 +26,12 @@ public abstract class PerformanceOverlayedPage extends AbstractPage {
 
     }
 
+    public void paintOverlay(Graphics g) {
+        g.drawString("Fps: " + (int) Math.min(999, client.fps) + "    Ping: " + (int) client.ms + "ms", 5, 14);
+        g.drawString("Server: " + (client.isConnected() ? "connected" : "connecting..."), 5, 28);
+    }
+
+    // PaintBg -> paintChildren -> paintOverlay
     @Override
     protected void paintChildren(Graphics g) {
         // For better visual(ANTIALIASING)
@@ -34,7 +40,6 @@ public abstract class PerformanceOverlayedPage extends AbstractPage {
 
         paintBg(g2d);
         super.paintChildren(g);
-        g.drawString("Fps: " + (int) Math.min(999, client.fps) + "    Ping: " + (int) client.ms + "ms", 5, 14);
-        g.drawString("Server: " + (client.isConnected() ? "connected" : "connecting..."), 5, 28);
+        paintOverlay(g2d);
     }
 }

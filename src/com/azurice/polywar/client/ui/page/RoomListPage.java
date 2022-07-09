@@ -2,6 +2,7 @@ package com.azurice.polywar.client.ui.page;
 
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
+import com.azurice.polywar.network.GetRoomListPacket;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,9 +47,7 @@ public class RoomListPage extends AbstractPage {
     public void initListeners() {
         super.initListeners();
         btnEsc.addActionListener((e) -> parent.setPage(MainWindow.Page.MAIN_PAGE));
-        btnRefresh.addActionListener((e) -> {
-            // TODO: GetRoomList Packet
-        });
+        btnRefresh.addActionListener((e) -> parent.client.sendPacket(new GetRoomListPacket()));
         btnJoin.addActionListener((e) -> {
             // TODO: JoinROom Packet
         });
@@ -72,6 +71,11 @@ public class RoomListPage extends AbstractPage {
                 RoomListPage.this.keyPressed(e);
             }
         });
+    }
+
+    @Override
+    public void onShow() {
+        parent.client.sendPacket(new GetRoomListPacket());
     }
 
     @Override
