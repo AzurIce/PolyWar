@@ -1,10 +1,10 @@
 package com.azurice.polywar.client;
 
 import com.azurice.polywar.client.ui.MainWindow;
-import com.azurice.polywar.network.Packet;
-import com.azurice.polywar.network.PingPacket;
-import com.azurice.polywar.network.RoomListPacket;
-import com.azurice.polywar.network.Util;
+import com.azurice.polywar.network.packet.Packet;
+import com.azurice.polywar.network.packet.PingPacket;
+import com.azurice.polywar.network.packet.RoomListPacket;
+import com.azurice.polywar.network.packet.Util;
 import com.azurice.polywar.server.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -145,17 +145,21 @@ public class PolyWarClient {
                 return;
             }
 
-            LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
 
             if (packet instanceof PingPacket) {
                 timePong = com.azurice.polywar.util.Util.getMeasuringTimeMs();
                 ms = timePong - timePing;
-            } else if (packet instanceof RoomListPacket) {
-                roomList = ((RoomListPacket) packet).getRoomList();
+            } else {
+                LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
+                if (packet instanceof RoomListPacket) {
+                    roomList = ((RoomListPacket) packet).getRoomList();
+                }
+                LOGGER.info("RoomList: {}", roomList.toString());
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
             key.cancel();
+            connected = false;
             LOGGER.error("Canceled key");
         }
     }
@@ -163,6 +167,8 @@ public class PolyWarClient {
 
     public void stop() {
         running = false;
+        LOGGER.info("Set running to false");
+        selector.wakeup();
     }
 
     public void onStopped() {

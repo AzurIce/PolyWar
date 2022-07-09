@@ -1,6 +1,6 @@
 package com.azurice.polywar.server;
 
-import com.azurice.polywar.network.*;
+import com.azurice.polywar.network.packet.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,10 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class PolyWarServer {
     ////// Constants //////
@@ -26,7 +23,11 @@ public class PolyWarServer {
     ////// Properties //////
     ServerSocketChannel serverSocketChannel;
     Selector selector;
-    List<Room> rooms = Collections.synchronizedList(new ArrayList<>());
+
+    Set<Room> rooms = Collections.synchronizedSet(new HashSet<>());
+    List<Integer> deletedRoomIds = Collections.synchronizedList(new ArrayList<>());
+    Map<SocketChannel, Player> socketsToPlayers = Collections.synchronizedMap(new HashMap<>());
+    List<Integer> deletedPlayerIds = Collections.synchronizedList(new ArrayList<>());
 
     private PolyWarServer() {
     }
@@ -100,6 +101,13 @@ public class PolyWarServer {
             LOGGER.info("Accepted Client<{}>, registering...", socketChannel);
             socketChannel.configureBlocking(false);
             socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            if (deletedPlayerIds.size() == 0) {
+                socketsToPlayers.put(socketChannel, new Player(socketsToPlayers.size(), socketChannel));
+            } else {
+                socketsToPlayers.put(socketChannel, new Player(deletedPlayerIds.get(0), socketChannel));
+                deletedPlayerIds.remove(0);
+            }
+            LOGGER.info("Created Player, total {} Players: {}", socketsToPlayers.size(), socketsToPlayers);
 //            socketChannel.write(new PingPacket().toByteBuffer());
         } catch (IOException e) {
             LOGGER.error("Accept failed: ", e);
@@ -112,25 +120,37 @@ public class PolyWarServer {
             Packet packet = Util.getPacket(socketChannel);
             if (packet == null) {
                 LOGGER.info("[{}] Closed", socketChannel.getRemoteAddress());
+                socketsToPlayers.remove(socketChannel);
                 socketChannel.close();
                 return;
             }
 
-            LOGGER.info("[{}] Received {}: {}",
-                    socketChannel.getRemoteAddress(),
-                    packet.getTypeString(),
-                    packet.toString());
 
             if (packet instanceof PingPacket) {
-                LOGGER.info("[{}] Sending Ping response", socketChannel.getRemoteAddress());
+//                LOGGER.info("[{}] Sending Ping response", socketChannel.getRemoteAddress());
                 socketChannel.write(new PingPacket().toByteBuffer());
-            } else if (packet instanceof GetRoomListPacket) {
-                LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
-                socketChannel.write(new RoomListPacket(rooms).toByteBuffer());
+            } else {
+                LOGGER.info("[{}] Received {}: {}",
+                        socketChannel.getRemoteAddress(),
+                        packet.getTypeString(),
+                        packet.toString());
+                if (packet instanceof GetRoomListPacket) {
+                    LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
+                    socketChannel.write(new RoomListPacket(rooms.stream().toList()).toByteBuffer());
+                } else if (packet instanceof CreateRoomPacket) {
+                    if (deletedRoomIds.size() == 0) {
+                        rooms.add(new Room(rooms.size(), socketsToPlayers.get(socketChannel)));
+                    } else {
+                        socketsToPlayers.put(socketChannel, new Player(deletedRoomIds.get(0), socketChannel));
+                        deletedRoomIds.remove(0);
+                    }
+                    LOGGER.info("Created Room, total {} Rooms: {}", rooms.size(), rooms);
+                }
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
             key.cancel();
+            socketsToPlayers.remove((SocketChannel) key.channel());
             LOGGER.error("Canceled key");
         }
     }

@@ -1,4 +1,4 @@
-package com.azurice.polywar.network;
+package com.azurice.polywar.network.packet;
 
 public class GetRoomListPacket extends Packet {
     public GetRoomListPacket() {

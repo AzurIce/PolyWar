@@ -2,7 +2,7 @@ package com.azurice.polywar.client.ui.page;
 
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
-import com.azurice.polywar.network.GetRoomListPacket;
+import com.azurice.polywar.network.packet.GetRoomListPacket;
 
 import javax.swing.*;
 import java.awt.*;

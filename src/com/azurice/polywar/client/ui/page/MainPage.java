@@ -4,6 +4,7 @@ import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.Layout.VerticalFlowLayout;
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
+import com.azurice.polywar.network.packet.CreateRoomPacket;
 
 import javax.swing.*;
 import java.awt.*;
@@ -98,9 +99,7 @@ public class MainPage extends PerformanceOverlayedPage {
     public void initListeners() {
         super.initListeners();
         btnStartGame.addActionListener(e -> parent.setPage(MainWindow.Page.GAME_PAGE));
-        btnCreateRoom.addActionListener(e -> {
-            // TODO: CreateRoom Packet
-        });
+        btnCreateRoom.addActionListener(e -> parent.client.sendPacket(new CreateRoomPacket()));
         btnJoinRoom.addActionListener(e -> parent.setPage(MainWindow.Page.ROOM_LIST_PAGE));
     }
 

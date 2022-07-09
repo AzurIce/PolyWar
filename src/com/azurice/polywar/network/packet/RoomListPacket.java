@@ -1,8 +1,9 @@
-package com.azurice.polywar.network;
+package com.azurice.polywar.network.packet;
 
 import com.azurice.polywar.server.Room;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class RoomListPacket extends Packet {
@@ -31,6 +32,7 @@ public class RoomListPacket extends Packet {
     public List<Room> getRoomList() {
         Room[] roomList;
         try {
+            System.out.println(Arrays.toString(getData()));
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(getData());
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             try {
@@ -44,8 +46,8 @@ public class RoomListPacket extends Packet {
         return List.of(roomList);
     }
 
-    @Override
-    public String toString() {
-        return getRoomList().toString();
-    }
+//    @Override
+//    public String toString() {
+//        return getRoomList().toString();
+//    }
 }

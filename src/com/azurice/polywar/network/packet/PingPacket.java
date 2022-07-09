@@ -1,6 +1,6 @@
-package com.azurice.polywar.network;
+package com.azurice.polywar.network.packet;
 
-import static com.azurice.polywar.network.PacketType.PING_PACKET;
+import static com.azurice.polywar.network.packet.PacketType.PING_PACKET;
 
 public class PingPacket extends Packet {
     public PingPacket() {

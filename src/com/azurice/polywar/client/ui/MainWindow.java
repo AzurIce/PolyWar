@@ -174,7 +174,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
     }
 
     public void stopAndWaitUntilStopped() {
-        System.out.println("Waiting for it to stop");
+        LOGGER.info("Waiting for window to stop...");
         stop();
         while (!isStopped()) {
             try {
@@ -183,6 +183,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
                 throw new RuntimeException(e);
             }
         }
+        LOGGER.info("Window stopped");
     }
 
     private boolean isStopped() {
