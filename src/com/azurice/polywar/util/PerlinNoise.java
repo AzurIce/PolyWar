@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 public final class PerlinNoise {
-    private static int[] p = new int[512];
+    private static final int[] p = new int[512];
     private static final int[] permutation = {
             151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225,
             140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148,
@@ -47,40 +47,31 @@ public final class PerlinNoise {
             HashSet<Integer> set = new HashSet<>();
             for (int i = 0; set.size() < 256;) {
                 p[i] = r.nextInt(0, 256);
-//                System.out.print("(" + i + ", " + set.size() + "): " + p[i] + " ");
                 if (!set.contains(p[i])) {
-                    p[i+256] = p[i];
+                    p[i + 256] = p[i];
                     set.add(p[i]);
                     i++;
                 }
             }
-//            for (int i = 0; i < 256; i++) {
-//                System.out.print(p[i] + " ");
-//            }
-//            System.out.println("");
         }
     }
 
-    static {
-        shuffle();
-    }
+//    static {
+//        shuffle();
+//    }
 
     public static double noise(double x, double y) {
         // Find unit square that contains point
         int X = (int) Math.floor(x) & 255;
         int Y = (int) Math.floor(y) & 255;
-//        System.out.println("X: " + X + " Y: " + Y);
 
         // Find relative x, y of the point in square
         x -= Math.floor(x);
         y -= Math.floor(y);
-//        System.out.println("x: " + x + " y: " + y);
 
         // Compute fade curves for each of x, y
         double u = fade(x);
         double v = fade(y);
-//        System.out.println("Fade(" + x + ") = " + u);
-//        System.out.println("Fade(" + y + ") = " + v);
 
         // Hash coordinates of the 4 square corners
         int p0, p1, p2, p3;
@@ -97,7 +88,7 @@ public final class PerlinNoise {
             2---23-----3
          */
 
-        // Add blended results from 8 corners of cube
+        // Add blended results from 4 square corners
         return lerp(v,
                 lerp(u, grad(p0, x, y), grad(p1, x - 1, y)),
                 lerp(u, grad(p2, x, y - 1), grad(p3, x - 1, y - 1))
@@ -109,7 +100,6 @@ public final class PerlinNoise {
     }
 
     private static double lerp(double t, double a, double b) {
-//        System.out.println("Lerp: " + t + " " + a + " " + b + ": " + (a + t * (b - a)));
         return a + t * (b - a);
     }
 
@@ -125,15 +115,15 @@ public final class PerlinNoise {
             (1, 2) (1, -2) (-1, 2) (-1, -2)
             (2, 1) (2, -1) (-2, 1) (-2, -1)
          */
-        return switch (hash&7) {
-            case 0b000 -> x + 2*y;
-            case 0b001 -> x + -2*y;
-            case 0b010 -> -x + 2*y;
-            case 0b011 -> -x + -2*y;
-            case 0b100 -> y + 2*x;
-            case 0b101 -> y + -2*x;
-            case 0b110 -> -y + 2*x;
-            case 0b111 -> -y + -2*x;
+        return switch (hash & 0b111) {
+            case 0b000 -> x + 2 * y;
+            case 0b001 -> x + -2 * y;
+            case 0b010 -> -x + 2 * y;
+            case 0b011 -> -x + -2 * y;
+            case 0b100 -> y + 2 * x;
+            case 0b101 -> y + -2 * x;
+            case 0b110 -> -y + 2 * x;
+            case 0b111 -> -y + -2 * x;
             default -> 0; // Never
         } / Math.sqrt(5);
     }
