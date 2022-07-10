@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 
 public class MapView extends AbstractView {
+    private static final int MAP_SIZE = 4096;
     private static final Logger LOGGER = LogManager.getLogger();
     private WorldMap map;
 
@@ -40,7 +41,7 @@ public class MapView extends AbstractView {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        MapRenderer.render(map, g2d);
+        MapRenderer.render(map, g2d, getWidth() / (double) MAP_SIZE);
     }
 
 

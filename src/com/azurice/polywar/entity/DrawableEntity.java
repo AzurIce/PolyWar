@@ -51,6 +51,13 @@ public class DrawableEntity extends AbstractEntity implements Serializable {
         g2d.fillPolygon(getRenderPolygon().add(offset).toAwtPolygon());
     }
 
+    public void paint(Graphics g, double scale) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setColor(color);
+        g2d.fillPolygon(getRenderPolygon().multiply(scale).toAwtPolygon());
+    }
+
     /**
      * Get the Polygon of the current entity model.
      *

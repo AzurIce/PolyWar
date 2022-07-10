@@ -28,6 +28,9 @@ public class Util {
         if (socketChannel.read(buf) == -1) {
             throw new IOException("Remote Closed");
         }
+        while (buf.hasRemaining()) {
+            socketChannel.read(buf);
+        }
         return buf.array();
     }
 
