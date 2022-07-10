@@ -7,10 +7,11 @@ import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Util;
 import com.azurice.polywar.util.math.Vec2d;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorldMap {
+public class WorldMap implements Serializable {
     //vvvvvv CONSTANTS vvvvvv//
     private static final int WALL_THICK = 10;
     private static final int[] dirX = new int[]{0, 0, 1, 1};
@@ -19,7 +20,7 @@ public class WorldMap {
     //^^^^^^ CONSTANTS ^^^^^^//
 
     public List<Wall> walls = new ArrayList<>();
-    public int mapSize;
+    public transient int mapSize;
 
     private WorldMap(int mapSize) {
         this.mapSize = mapSize;

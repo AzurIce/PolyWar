@@ -4,14 +4,19 @@ import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class DrawableEntity extends AbstractEntity {
+public class DrawableEntity extends AbstractEntity implements Serializable {
     protected final Polygon MODEL;
     protected Color color;
 
     ////// Constructors //////
     public DrawableEntity(Polygon model) {
         this(Vec2d.ZERO, model);
+    }
+
+    public DrawableEntity(Polygon model, Color color) {
+        this(Vec2d.ZERO, model, color);
     }
 
     public DrawableEntity(Vec2d coord, Polygon model) {

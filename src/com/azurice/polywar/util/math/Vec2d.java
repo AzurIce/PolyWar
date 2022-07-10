@@ -1,12 +1,14 @@
 package com.azurice.polywar.util.math;
 
 
+import java.io.Serializable;
+
 import static java.lang.Math.acos;
 
 /**
  * An immutable vector composed of 2 floats.
  */
-public class Vec2d implements Comparable<Vec2d> {
+public class Vec2d implements Comparable<Vec2d>, Serializable {
     public static final Vec2d ZERO = new Vec2d(0, 0);
 
     public static final Vec2d U = new Vec2d(0, -1);

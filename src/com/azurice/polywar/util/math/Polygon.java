@@ -1,12 +1,13 @@
 package com.azurice.polywar.util.math;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Polygon {
+public class Polygon implements Serializable {
     public List<Vec2d> pointList = new ArrayList<>();
-    private double precision = 1;
+    private static final double precision = 1;
 
     /**
      * !!!IMPORTANT

@@ -3,9 +3,11 @@ package com.azurice.polywar.client.ui.page;
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
+import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.network.packet.ExitRoomPacket;
 import com.azurice.polywar.server.Player;
 import com.azurice.polywar.server.Room;
+import com.azurice.polywar.world.WorldMap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +23,10 @@ public class RoomPage extends PerformanceOverlayedPage {
     private JButton btnEsc;
     private JScrollPane scrollPane;
     private JList<Player> playerList;
+    private MapView mapView;
     private Player owner;
+
+    private WorldMap map;
 
     public RoomPage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
@@ -31,7 +36,9 @@ public class RoomPage extends PerformanceOverlayedPage {
         // Map
         // Player
         updatePlayerList(room.players);
-        this.owner = owner;
+        this.owner = room.owner;
+        this.map = room.map;
+        mapView.setMap(room.map);
         // repaint(); // ?
     }
 
@@ -48,6 +55,8 @@ public class RoomPage extends PerformanceOverlayedPage {
         Row topContainer = new Row(Row.Alignment.START);
         topContainer.add(btnEsc);
 
+        mapView = new MapView(map);
+        add(mapView, BorderLayout.CENTER);
 
         playerList = new JList<>();
         playerList.setCellRenderer(new CellRender());

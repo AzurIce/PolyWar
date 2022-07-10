@@ -2,14 +2,14 @@ package com.azurice.polywar.client.ui.page;
 
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.MainWindow;
-import com.azurice.polywar.client.ui.component.MapView;
+import com.azurice.polywar.client.ui.component.GameView;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GamePage extends PerformanceOverlayedPage {
     // Views
-    private MapView mapView;
+    private GameView gameView;
 
     public GamePage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
@@ -17,13 +17,13 @@ public class GamePage extends PerformanceOverlayedPage {
 
     @Override
     public void render() {
-        mapView.render();
+        gameView.render();
         super.render();
     }
 
     @Override
     public void tick() {
-        mapView.tick();
+        gameView.tick();
         super.tick();
     }
 
@@ -34,9 +34,9 @@ public class GamePage extends PerformanceOverlayedPage {
         setPreferredSize(new Dimension(800, 800));
         setFocusable(true);
 
-        mapView = new MapView();
+        gameView = new GameView();
 
-        add(mapView);
+        add(gameView);
     }
 
 
@@ -45,11 +45,11 @@ public class GamePage extends PerformanceOverlayedPage {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             parent.setPage(MainWindow.Page.MAIN_PAGE);
         } else {
-            mapView.keyPressed(e);
+            gameView.keyPressed(e);
         }
     }
 
     public void keyReleased(KeyEvent e) {
-        mapView.keyReleased(e);
+        gameView.keyReleased(e);
     }
 }

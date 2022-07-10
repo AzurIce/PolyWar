@@ -2,7 +2,9 @@ package com.azurice.polywar.entity;
 
 import com.azurice.polywar.util.math.Vec2d;
 
-public abstract class AbstractEntity {
+import java.io.Serializable;
+
+public abstract class AbstractEntity implements Serializable {
 
     protected Vec2d coord;
     protected Vec2d speed = Vec2d.ZERO;

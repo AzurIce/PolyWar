@@ -7,7 +7,12 @@ import com.azurice.polywar.world.WorldMap;
 import java.awt.*;
 
 public class MapRenderer {
-    public static void render(WorldMap map, Graphics g, Vec2d screenLocation, Vec2d screenSize) {
+
+    public static void render(WorldMap map, Graphics g) {
+        render(map, g, Vec2d.ZERO);
+    }
+
+    public static void render(WorldMap map, Graphics g, Vec2d screenLocation) {
         Graphics2D g2d = (Graphics2D) g;
 
         // Draw noise
