@@ -8,7 +8,12 @@ public class PacketBlock {
     private final byte[] bytes;
 
     public PacketBlock(byte[] bytes) {
-        this.bytes = bytes;
+        this.bytes = Arrays.copyOfRange(bytes, 0, BLOCK_LEN);
+    }
+
+    public PacketBlock(byte[] bytes, boolean isFinished) {
+        this.bytes = Arrays.copyOfRange(bytes, 0, BLOCK_LEN);
+        this.bytes[BLOCK_LEN - 1] = (byte) (isFinished ? 0 : 1);
     }
 
     public byte[] getBytes() {

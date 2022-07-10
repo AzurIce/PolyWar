@@ -3,10 +3,7 @@ package com.azurice.polywar.client.ui;
 import com.azurice.polywar.Renderable;
 import com.azurice.polywar.Tickable;
 import com.azurice.polywar.client.PolyWarClient;
-import com.azurice.polywar.client.ui.page.AbstractPage;
-import com.azurice.polywar.client.ui.page.GamePage;
-import com.azurice.polywar.client.ui.page.MainPage;
-import com.azurice.polywar.client.ui.page.RoomListPage;
+import com.azurice.polywar.client.ui.page.*;
 import com.azurice.polywar.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,12 +20,17 @@ import static com.azurice.polywar.client.PolyWarClient.TICK_RATE;
 
 public class MainWindow extends JFrame implements Tickable, Renderable {
     private static Logger LOGGER = LogManager.getLogger();
-    public RoomListPage roomListPage;
     private AbstractPage curPage;
 
     public PolyWarClient client;
     private CardLayout cardLayout = new CardLayout();
     private JPanel pageContainer = new JPanel();
+
+    public RoomListPage roomListPage;
+
+    // Pages
+    private MainPage mainPage;
+    public RoomPage roomPage;
     private GamePage gamePage;
 
     public void initViews() {
@@ -37,20 +39,19 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
         mainPage = new MainPage(client, this);
         gamePage = new GamePage(client, this);
         roomListPage = new RoomListPage(this);
+        roomPage = new RoomPage(client, this);
 
         pageContainer.setLayout(cardLayout);
         pageContainer.add(Page.MAIN_PAGE.name(), mainPage);
         pageContainer.add(Page.GAME_PAGE.name(), gamePage);
         pageContainer.add(Page.ROOM_LIST_PAGE.name(), roomListPage);
+        pageContainer.add(Page.ROOM_PAGE.name(), roomPage);
         pageContainer.setBorder(new LineBorder(new Color(0x00ff00)));
 
         pageContainer.setLocation(0, 0);
 
         setContentPane(pageContainer);
     }
-
-    // Pages
-    private MainPage mainPage;
     private boolean stopped = false;
     private boolean running = true;
 
@@ -75,6 +76,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
             case MAIN_PAGE -> mainPage;
             case GAME_PAGE -> gamePage;
             case ROOM_LIST_PAGE -> roomListPage;
+            case ROOM_PAGE -> roomPage;
         };
         curPage.requestFocusInWindow();
         curPage.onShow();
@@ -191,7 +193,10 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
     }
 
     public enum Page {
-        MAIN_PAGE, GAME_PAGE, ROOM_LIST_PAGE
+        MAIN_PAGE,
+        GAME_PAGE,
+        ROOM_LIST_PAGE,
+        ROOM_PAGE
     }
 
 

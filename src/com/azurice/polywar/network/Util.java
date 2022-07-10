@@ -40,7 +40,8 @@ public class Util {
     }
 
     public static Packet readPacket(SocketChannel socketChannel) throws IOException {
-//        LOGGER.info("Reading PacketType...");
+//        LOGGER.info("");
+//        LOGGER.info("======Read Packet======");
         Packet.Type type = readPacketType(socketChannel);
 //        LOGGER.info("Type: {}", type.toString());
 
@@ -56,9 +57,11 @@ public class Util {
 //                LOGGER.info("Block bytes: {}", bytes);
                 blocks.add(new PacketBlock(bytes));
             }
-//            LOGGER.info("Blocks End");
+//            LOGGER.info("Finished reading Blocks");
         }
 
+//        LOGGER.info("======Read Packet End======");
+//        LOGGER.info("");
         return switch (type) {
             case PING_PACKET -> new PingPacket();
 
@@ -66,11 +69,10 @@ public class Util {
             case ROOM_LIST_PACKET -> new RoomListPacket(blocks);
 
             case CREATE_ROOM_PACKET -> new CreateRoomPacket();
-            case JOIN_ROOM_PACKET -> null;
-            case EXIT_ROOM_PACKET -> null;
+            case ROOM_PACKET -> new RoomPacket(blocks);
+            case EXIT_ROOM_PACKET -> new ExitRoomPacket();
+            case PLAYER_LIST_PACKET -> new PlayerListPacket(blocks);
         };
-
-
     }
 
     public static void sendPacket(SocketChannel socketChannel, Packet packet) throws IOException {

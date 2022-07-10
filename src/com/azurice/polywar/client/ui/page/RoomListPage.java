@@ -3,6 +3,7 @@ package com.azurice.polywar.client.ui.page;
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.packet.GetRoomListPacket;
+import com.azurice.polywar.network.packet.RoomPacket;
 import com.azurice.polywar.server.Room;
 import com.azurice.polywar.util.MyColor;
 
@@ -16,18 +17,18 @@ import java.util.List;
 public class RoomListPage extends AbstractPage {
 
 
-    JButton btnEsc;
-    JScrollPane scrollPane;
-    JList<Room> roomList;
-    JButton btnRefresh;
-    JButton btnJoin;
+    private JButton btnEsc;
+    private JScrollPane scrollPane;
+    private JList<Room> roomList;
+    private JButton btnRefresh;
+    private JButton btnJoin;
 
     public RoomListPage(MainWindow parent) {
         super(parent);
     }
 
     public void updateRoomList(List<Room> rooms) {
-        roomList.setModel(new ListModel(rooms));
+        roomList.setModel(ListModel.from(rooms));
     }
 
     @Override
@@ -60,7 +61,9 @@ public class RoomListPage extends AbstractPage {
         btnEsc.addActionListener((e) -> parent.setPage(MainWindow.Page.MAIN_PAGE));
         btnRefresh.addActionListener((e) -> parent.client.sendPacket(new GetRoomListPacket()));
         btnJoin.addActionListener((e) -> {
-            // TODO: JoinROom Packet
+            if (roomList.getSelectedValue() != null) {
+                parent.client.sendPacket(RoomPacket.of(roomList.getSelectedValue()));
+            }
         });
 
         // Bad Swing focus problem......
@@ -146,7 +149,7 @@ public class RoomListPage extends AbstractPage {
             rooms = List.of(roomList.toArray(new Room[0]));
         }
 
-        public ListModel from(List<Room> roomList) {
+        public static ListModel from(List<Room> roomList) {
             return new ListModel(roomList);
         }
 

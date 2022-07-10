@@ -27,13 +27,21 @@ public class Packet {
     }
 
     public Packet(Type type, byte[] data) {
+//        LOGGER.info("");
+//        LOGGER.info("======Constructor======");
         this.type = type;
         for (int i = 0; i * (BLOCK_LEN - 1) < data.length; i++) {
-            blocks.add(new PacketBlock(Arrays.copyOfRange(data, i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN)));
+            byte[] dataBlock = Arrays.copyOfRange(data, i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN);
+//            LOGGER.info("DataBlock from {} to {}: {}", i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN - 1, dataBlock);
+            blocks.add(new PacketBlock(dataBlock, (i + 1) * BLOCK_LEN > data.length));
         }
+//        LOGGER.info("======Constructor End======");
+////        LOGGER.info("");
     }
 
     public byte[] getData() {
+//        LOGGER.info("");
+//        LOGGER.info("======Get Data======");
 //        LOGGER.info("Type: {}, Blocks number: {}", getTypeString(), blocks.size());
         byte[] data = new byte[blocks.size() * (BLOCK_LEN - 1)];
         for (int i = 0; i < blocks.size(); i++) {
@@ -41,6 +49,8 @@ public class Packet {
         }
 //        LOGGER.info("Blocks: {}", blocks);
 //        LOGGER.info("Data: {}", data);
+//        LOGGER.info("======GetData End======");
+//        LOGGER.info("");
         return data;
     }
 
@@ -69,9 +79,11 @@ public class Packet {
 
     public enum Type {
         PING_PACKET(false),
-        ROOM_LIST_PACKET(true), JOIN_ROOM_PACKET(false), EXIT_ROOM_PACKET(false),
-        GET_ROOM_LIST_PACKET(false),
-        CREATE_ROOM_PACKET(false);
+
+        GET_ROOM_LIST_PACKET(false), ROOM_LIST_PACKET(true),
+        CREATE_ROOM_PACKET(false), ROOM_PACKET(true), EXIT_ROOM_PACKET(false),
+
+        PLAYER_LIST_PACKET(true);
 
         public final boolean hasContent;
 

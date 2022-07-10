@@ -2,9 +2,8 @@ package com.azurice.polywar.client;
 
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.Util;
-import com.azurice.polywar.network.packet.Packet;
-import com.azurice.polywar.network.packet.PingPacket;
-import com.azurice.polywar.network.packet.RoomListPacket;
+import com.azurice.polywar.network.packet.*;
+import com.azurice.polywar.server.Player;
 import com.azurice.polywar.server.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +41,7 @@ public class PolyWarClient {
     public double ms;
     private boolean running = true;
 
+    public Room curRoom;
     public List<Room> roomList = new ArrayList<>();
     SocketChannel socketChannel;
     private MainWindow window;
@@ -100,7 +100,6 @@ public class PolyWarClient {
                     socketChannel.register(selector, SelectionKey.OP_READ);
                     LOGGER.info("Connected");
                 } catch (IOException e) {
-                    connected = false;
                     LOGGER.error("Server connect failed: {}, retrying...", e.toString());
                 }
             } else {
@@ -147,13 +146,26 @@ public class PolyWarClient {
                 LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
                 if (packet instanceof RoomListPacket) {
                     roomList = ((RoomListPacket) packet).getRoomList();
+                    window.roomListPage.updateRoomList(roomList);
+                    LOGGER.info("Updated roomList, {} Rooms: {}", roomList.size(), roomList.toString());
+                } else if (packet instanceof RoomPacket) {
+                    curRoom = ((RoomPacket) packet).getRoom();
+                    window.roomPage.updateRoom(curRoom);
+                    LOGGER.info("Updated curRoom: {}", curRoom);
+                    window.setPage(MainWindow.Page.ROOM_PAGE);
+                } else if (packet instanceof ExitRoomPacket) {
+                    LOGGER.info("Exited room");
+                    window.setPage(window.roomPage.getFromPage());
+                } else if (packet instanceof PlayerListPacket) {
+                    List<Player> playerList = ((PlayerListPacket) packet).getPlayerList();
+                    window.roomPage.updatePlayerList(playerList);
+                    LOGGER.info("Updated playerList: {}", playerList);
                 }
-                window.roomListPage.updateRoomList(roomList);
-                LOGGER.info("RoomList: {}", roomList.toString());
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
             key.cancel();
+            window.setPage(MainWindow.Page.MAIN_PAGE);
             connected = false;
             LOGGER.error("Canceled key");
         }

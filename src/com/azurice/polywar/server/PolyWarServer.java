@@ -27,6 +27,7 @@ public class PolyWarServer {
 
     List<Room> rooms = Collections.synchronizedList(new ArrayList<>());
     List<Integer> deletedRoomIds = Collections.synchronizedList(new ArrayList<>());
+    Map<Player, Room> playersToRooms = Collections.synchronizedMap(new HashMap<>());
     Map<SocketChannel, Player> socketsToPlayers = Collections.synchronizedMap(new HashMap<>());
     List<Integer> deletedPlayerIds = Collections.synchronizedList(new ArrayList<>());
 
@@ -149,16 +150,17 @@ public class PolyWarServer {
                         packet.getTypeString(),
                         packet.toString());
                 if (packet instanceof GetRoomListPacket) {
-                    LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
-                    Util.sendPacket(socketChannel, RoomListPacket.of(rooms));
+                    handleGetRoom(socketChannel);
                 } else if (packet instanceof CreateRoomPacket) {
-                    if (deletedRoomIds.size() == 0) {
-                        rooms.add(new Room(rooms.size(), socketsToPlayers.get(socketChannel)));
-                    } else {
-                        socketsToPlayers.put(socketChannel, new Player(deletedRoomIds.get(0), socketChannel));
-                        deletedRoomIds.remove(0);
-                    }
-                    LOGGER.info("Created Room, total {} Rooms: {}", rooms.size(), rooms);
+                    handleCreateRoom(socketChannel);
+                } else if (packet instanceof RoomPacket) {
+                    Room room = ((RoomPacket) packet).getRoom();
+
+                    handleJoinRoom(socketChannel, getRoomById(room.id));
+                    // TODO: broadcast the player list to players in this room
+                } else if (packet instanceof ExitRoomPacket) {
+                    handleExitRoom(socketChannel);
+                    // TODO: broadcast the player list to players in this room
                 }
             }
         } catch (IOException e) {
@@ -167,5 +169,79 @@ public class PolyWarServer {
             socketsToPlayers.remove((SocketChannel) key.channel());
             LOGGER.error("Canceled key");
         }
+    }
+
+    private void sendRoomPlayersInfo(Room room) throws IOException {
+        for (int i = 0; i < room.players.size(); i++) {
+            Util.sendPacket(room.players.get(i).socketChannel, PlayerListPacket.of(room.players));
+        }
+    }
+
+    private void handleGetRoom(SocketChannel socketChannel) throws IOException {
+        LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
+        Util.sendPacket(socketChannel, RoomListPacket.of(rooms));
+    }
+
+    private void handleCreateRoom(SocketChannel socketChannel) throws IOException {
+        Player player = socketsToPlayers.get(socketChannel);
+        Room room;
+        if (deletedRoomIds.size() == 0) {
+            room = new Room(rooms.size(), player);
+        } else {
+            room = new Room(deletedRoomIds.get(0), player);
+            deletedRoomIds.remove(0);
+        }
+        rooms.add(room);
+        LOGGER.info("Created Room, total {} Rooms: {}", rooms.size(), rooms);
+
+        playersToRooms.put(player, room);
+        LOGGER.info("Sending RoomPacket");
+        Util.sendPacket(socketChannel, RoomPacket.of(room));
+    }
+
+    private void handleJoinRoom(SocketChannel socketChannel, Room room) throws IOException {
+        Player player = socketsToPlayers.get(socketChannel);
+        LOGGER.info("Player{{}} Joining room {{}}", player.id, room.id);
+        room.addPlayer(socketsToPlayers.get(socketChannel));
+        playersToRooms.put(player, room);
+        LOGGER.info("Room: {}", room);
+        LOGGER.info("Sending RoomPacket");
+        Util.sendPacket(socketChannel, RoomPacket.of(room));
+        LOGGER.info("Sending PlayerListPackets");
+        sendRoomPlayersInfo(room);
+    }
+
+    private void handleExitRoom(SocketChannel socketChannel) throws IOException {
+        Player player = socketsToPlayers.get(socketChannel);
+        Room room = playersToRooms.get(player);
+        LOGGER.info("Player{{}} Exiting room {{}}", player.id, room.id);
+        room.removePlayer(player);
+        playersToRooms.remove(player);
+
+        LOGGER.info("Sending ExitRoomPacket");
+        Util.sendPacket(socketChannel, new ExitRoomPacket());
+
+        if (room.players.size() == 0) {
+            LOGGER.info("No player left, deleting room...");
+            rooms.remove(room);
+        } else if (room.owner.id == player.id) {
+            LOGGER.info("Owner exit, deleting room...");
+            for (int i = 0; i < room.players.size(); i++) {
+                Util.sendPacket(room.players.get(i).socketChannel, new ExitRoomPacket());
+            }
+            rooms.remove(room);
+        } else {
+            LOGGER.info("Sending PlayerListPackets");
+            sendRoomPlayersInfo(room);
+        }
+    }
+
+    private Room getRoomById(int id) {
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).id == id) {
+                return rooms.get(i);
+            }
+        }
+        return null;
     }
 }

@@ -15,6 +15,14 @@ public class Room implements Serializable {
         this.players.add(owner);
     }
 
+    public void addPlayer(Player player) {
+        this.players.add(player);
+    }
+
+    public void removePlayer(Player player) {
+        this.players.remove(player);
+    }
+
     @Override
     public String toString() {
         return "Room<Id: " + id + ", owner: " + owner + ", players: " + players + ">";
