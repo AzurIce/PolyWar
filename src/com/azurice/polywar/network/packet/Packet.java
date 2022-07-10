@@ -31,12 +31,12 @@ public class Packet {
 //        LOGGER.info("======Constructor======");
         this.type = type;
         for (int i = 0; i * (BLOCK_LEN - 1) < data.length; i++) {
-            byte[] dataBlock = Arrays.copyOfRange(data, i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN);
+            byte[] dataBlock = Arrays.copyOfRange(data, i * (BLOCK_LEN - 1), (i + 1) * (BLOCK_LEN - 1));
 //            LOGGER.info("DataBlock from {} to {}: {}", i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN - 1, dataBlock);
-            blocks.add(new PacketBlock(dataBlock, (i + 1) * BLOCK_LEN > data.length));
+            blocks.add(new PacketBlock(dataBlock, (i + 1) * (BLOCK_LEN - 1) > data.length));
         }
 //        LOGGER.info("======Constructor End======");
-////        LOGGER.info("");
+//        LOGGER.info("");
     }
 
     public byte[] getData() {
