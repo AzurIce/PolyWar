@@ -5,6 +5,7 @@ import com.azurice.polywar.network.Util;
 import com.azurice.polywar.network.packet.*;
 import com.azurice.polywar.server.Player;
 import com.azurice.polywar.server.Room;
+import com.azurice.polywar.world.WorldMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -160,6 +161,10 @@ public class PolyWarClient {
                     List<Player> playerList = ((PlayerListPacket) packet).getPlayerList();
                     window.roomPage.updatePlayerList(playerList);
                     LOGGER.info("Updated playerList: {}", playerList);
+                } else if (packet instanceof MapPacket) {
+                    WorldMap map = ((MapPacket) packet).getMap();
+                    window.roomPage.updateMap(map);
+                    LOGGER.info("Updated map: {}", map);
                 }
             }
         } catch (IOException e) {

@@ -5,6 +5,8 @@ import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.client.ui.component.MapView;
 import com.azurice.polywar.network.packet.ExitRoomPacket;
+import com.azurice.polywar.network.packet.RegenerateMapPacket;
+import com.azurice.polywar.network.packet.StartGamePacket;
 import com.azurice.polywar.server.Player;
 import com.azurice.polywar.server.Room;
 import com.azurice.polywar.world.WorldMap;
@@ -21,6 +23,8 @@ public class RoomPage extends PerformanceOverlayedPage {
     private MainWindow.Page fromPage = MainWindow.Page.MAIN_PAGE;
 
     private JButton btnEsc;
+    private JButton btnRegenerate;
+    private JButton btnStart;
     private JScrollPane scrollPane;
     private JList<Player> playerList;
     private MapView mapView;
@@ -46,6 +50,11 @@ public class RoomPage extends PerformanceOverlayedPage {
         playerList.setModel(ListModel.from(players));
     }
 
+    public void updateMap(WorldMap map) {
+        this.map = map;
+        mapView.setMap(map);
+    }
+
     @Override
     public void initViews() {
         super.initViews();
@@ -62,24 +71,38 @@ public class RoomPage extends PerformanceOverlayedPage {
         playerList.setCellRenderer(new CellRender());
         scrollPane = new JScrollPane(playerList);
 
-//        btnRefresh = new JButton("Refresh");
-//        btnJoin = new JButton("Join");
-//        Row bottomContainer = new Row();
-//        bottomContainer.add(btnRefresh);
-//        bottomContainer.add(btnJoin);
+        btnRegenerate = new JButton("Regenerate");
+        btnStart = new JButton("Start");
+        Row bottomContainer = new Row();
+        bottomContainer.add(btnRegenerate);
+        bottomContainer.add(btnStart);
 
         add(topContainer, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.EAST);
-//        add(bottomContainer, BorderLayout.SOUTH);
+        add(bottomContainer, BorderLayout.SOUTH);
     }
 
     @Override
     public void initListeners() {
         super.initListeners();
         btnEsc.addActionListener((e) -> parent.client.sendPacket(new ExitRoomPacket()));
+        btnRegenerate.addActionListener((e) -> parent.client.sendPacket(new RegenerateMapPacket()));
+        btnStart.addActionListener((e) -> parent.client.sendPacket(new StartGamePacket()));
 
         // Bad Swing focus problem......
         btnEsc.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                RoomPage.this.keyPressed(e);
+            }
+        });
+        btnRegenerate.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                RoomPage.this.keyPressed(e);
+            }
+        });
+        btnStart.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 RoomPage.this.keyPressed(e);

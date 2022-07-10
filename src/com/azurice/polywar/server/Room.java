@@ -20,6 +20,14 @@ public class Room implements Serializable {
         this.map = map;
     }
 
+    public void regenerateMap() {
+        map = WorldMap.generateWorldMap();
+    }
+
+    public void startGame() {
+
+    }
+
     public Room(int id, Player owner) {
         this(id, owner, WorldMap.generateWorldMap(MAP_SIZE));
     }

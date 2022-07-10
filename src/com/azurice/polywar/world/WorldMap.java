@@ -13,6 +13,7 @@ import java.util.List;
 
 public class WorldMap implements Serializable {
     //vvvvvv CONSTANTS vvvvvv//
+    private static final int MAP_SIZE = 4096;
     private static final int WALL_THICK = 10;
     private static final int[] dirX = new int[]{0, 0, 1, 1};
     private static final int[] dirY = new int[]{1, 0, 0, 1};
@@ -24,6 +25,10 @@ public class WorldMap implements Serializable {
 
     private WorldMap(int mapSize) {
         this.mapSize = mapSize;
+    }
+
+    public static WorldMap generateWorldMap() {
+        return generateWorldMap(MAP_SIZE);
     }
 
     public static WorldMap generateWorldMap(int mapSize) {

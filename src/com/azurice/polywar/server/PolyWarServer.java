@@ -155,12 +155,20 @@ public class PolyWarServer {
                     handleCreateRoom(socketChannel);
                 } else if (packet instanceof RoomPacket) {
                     Room room = ((RoomPacket) packet).getRoom();
-
                     handleJoinRoom(socketChannel, getRoomById(room.id));
-                    // TODO: broadcast the player list to players in this room
                 } else if (packet instanceof ExitRoomPacket) {
                     handleExitRoom(socketChannel);
-                    // TODO: broadcast the player list to players in this room
+                } else if (packet instanceof RegenerateMapPacket) {
+                    Player player = socketsToPlayers.get(socketChannel);
+                    Room room = playersToRooms.get(player);
+                    LOGGER.info("Regenerating WorldMap...");
+                    room.regenerateMap();
+                    LOGGER.info("Sending MapPacket...");
+                    sendRoomMapInfo(room);
+                } else if (packet instanceof StartGamePacket) {
+                    Player player = socketsToPlayers.get(socketChannel);
+                    Room room = playersToRooms.get(player);
+                    room.startGame();
                 }
             }
         } catch (IOException e) {
@@ -168,6 +176,12 @@ public class PolyWarServer {
             key.cancel();
             socketsToPlayers.remove((SocketChannel) key.channel());
             LOGGER.error("Canceled key");
+        }
+    }
+
+    private void sendRoomMapInfo(Room room) throws IOException {
+        for (int i = 0; i < room.players.size(); i++) {
+            Util.sendPacket(room.players.get(i).socketChannel, MapPacket.of(room.map));
         }
     }
 

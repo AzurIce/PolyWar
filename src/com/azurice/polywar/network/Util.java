@@ -74,7 +74,12 @@ public class Util {
             case CREATE_ROOM_PACKET -> new CreateRoomPacket();
             case ROOM_PACKET -> new RoomPacket(blocks);
             case EXIT_ROOM_PACKET -> new ExitRoomPacket();
+
             case PLAYER_LIST_PACKET -> new PlayerListPacket(blocks);
+            case REGENERATE_MAP_PACKET -> new RegenerateMapPacket();
+            case MAP_PACKET -> new MapPacket(blocks);
+
+            case START_GAME_PACKET -> new StartGamePacket();
         };
     }
 
