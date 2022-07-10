@@ -148,6 +148,7 @@ public class PolyWarClient {
                 if (packet instanceof RoomListPacket) {
                     roomList = ((RoomListPacket) packet).getRoomList();
                 }
+                window.roomListPage.updateRoomList(roomList);
                 LOGGER.info("RoomList: {}", roomList.toString());
             }
         } catch (IOException e) {

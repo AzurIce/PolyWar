@@ -23,7 +23,7 @@ import static com.azurice.polywar.client.PolyWarClient.TICK_RATE;
 
 public class MainWindow extends JFrame implements Tickable, Renderable {
     private static Logger LOGGER = LogManager.getLogger();
-    private RoomListPage roomListPage;
+    public RoomListPage roomListPage;
     private AbstractPage curPage;
 
     public PolyWarClient client;

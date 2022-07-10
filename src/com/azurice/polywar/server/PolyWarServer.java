@@ -39,6 +39,10 @@ public class PolyWarServer {
         return instance;
     }
 
+    public void tick() {
+
+    }
+
     public void run() {
         this.running = true;
 
@@ -59,6 +63,22 @@ public class PolyWarServer {
             LOGGER.error("Network initialize failed", e);
             running = false;
         }
+
+        LOGGER.info("Starting ticking thread...");
+        Thread tickThread = new Thread(() -> {
+            while (running) {
+                long timeTickStart = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+                tick();
+                long timeTickFinished = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+                try {
+                    Thread.sleep(Math.max(0, 1000 / 20 - timeTickFinished + timeTickStart));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        tickThread.start();
+
 
         LOGGER.info("Handling connections...");
         while (running) {

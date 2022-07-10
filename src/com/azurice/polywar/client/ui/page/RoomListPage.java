@@ -3,22 +3,31 @@ package com.azurice.polywar.client.ui.page;
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.packet.GetRoomListPacket;
+import com.azurice.polywar.server.Room;
+import com.azurice.polywar.util.MyColor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoomListPage extends AbstractPage {
 
 
     JButton btnEsc;
     JScrollPane scrollPane;
+    JList<Room> roomList;
     JButton btnRefresh;
     JButton btnJoin;
 
     public RoomListPage(MainWindow parent) {
         super(parent);
+    }
+
+    public void updateRoomList(List<Room> rooms) {
+        roomList.setModel(new ListModel(rooms));
     }
 
     @Override
@@ -30,7 +39,9 @@ public class RoomListPage extends AbstractPage {
         Row topContainer = new Row(Row.Alignment.START);
         topContainer.add(btnEsc);
 
-        scrollPane = new JScrollPane();
+        roomList = new JList<>();
+        roomList.setCellRenderer(new CellRender());
+        scrollPane = new JScrollPane(roomList);
 
         btnRefresh = new JButton("Refresh");
         btnJoin = new JButton("Join");
@@ -71,6 +82,18 @@ public class RoomListPage extends AbstractPage {
                 RoomListPage.this.keyPressed(e);
             }
         });
+        scrollPane.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                RoomListPage.this.keyPressed(e);
+            }
+        });
+        roomList.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                RoomListPage.this.keyPressed(e);
+            }
+        });
     }
 
     @Override
@@ -99,5 +122,42 @@ public class RoomListPage extends AbstractPage {
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    private static class CellRender extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//            setText(value.toString());
+            Room room = (Room) value;
+            setText("Room " + room.id + "    Players: " + room.players.size());
+            if (isSelected) {
+                setBackground(new Color(MyColor.BLUE | 0x77 << 24, true));
+            } else {
+                setBackground(new Color(0xfcfcfc));
+            }
+            return this;
+        }
+    }
+
+    private static class ListModel extends DefaultListModel<Room> {
+        private List<Room> rooms = new ArrayList<>();
+
+        private ListModel(List<Room> roomList) {
+            rooms = List.of(roomList.toArray(new Room[0]));
+        }
+
+        public ListModel from(List<Room> roomList) {
+            return new ListModel(roomList);
+        }
+
+        @Override
+        public int getSize() {
+            return rooms.size();
+        }
+
+        @Override
+        public Room getElementAt(int index) {
+            return rooms.get(index);
+        }
     }
 }
