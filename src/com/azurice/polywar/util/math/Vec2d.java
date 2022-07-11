@@ -2,6 +2,7 @@ package com.azurice.polywar.util.math;
 
 
 import java.io.Serializable;
+import java.util.Random;
 
 import static java.lang.Math.acos;
 
@@ -9,6 +10,7 @@ import static java.lang.Math.acos;
  * An immutable vector composed of 2 floats.
  */
 public class Vec2d implements Comparable<Vec2d>, Serializable {
+    private static final Random r = new Random();
     public static final Vec2d ZERO = new Vec2d(0, 0);
 
     public static final Vec2d U = new Vec2d(0, -1);
@@ -102,6 +104,10 @@ public class Vec2d implements Comparable<Vec2d>, Serializable {
 
     public Vec2d negate() {
         return new Vec2d(-x, -y);
+    }
+
+    public static Vec2d rand(int bound) {
+        return new Vec2d(r.nextInt(0, bound), r.nextInt(0, bound));
     }
 
     @Override

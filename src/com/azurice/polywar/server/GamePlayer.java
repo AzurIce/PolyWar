@@ -1,6 +1,7 @@
 package com.azurice.polywar.server;
 
 import com.azurice.polywar.entity.Wall;
+import com.azurice.polywar.entity.predict.Missile;
 import com.azurice.polywar.entity.predict.SpeedDirectionEntity;
 import com.azurice.polywar.model.Model;
 import com.azurice.polywar.network.data.GamePlayerControlData;
@@ -22,9 +23,10 @@ public class GamePlayer extends SpeedDirectionEntity {
     protected Vec2d acceleration = Vec2d.ZERO;
     GamePlayerControlData gamePlayerControlData = new GamePlayerControlData();
     //vvvvvv PROPERTIES vvvvvv//
-    private int id;
+    public int id;
+    private int health = 100;
+    private int shootCoolDown = 0;
     //^^^^^^ PROPERTIES ^^^^^^//
-    private int health;
     //^^^^^^ CONSTRUCTOR ^^^^^^//
 
 
@@ -45,8 +47,13 @@ public class GamePlayer extends SpeedDirectionEntity {
         this.gamePlayerControlData = gamePlayerControlData;
     }
 
-    @Override
-    public void tick() {
+    public void tick(Room room) {
+        shootCoolDown--;
+        if (gamePlayerControlData.keyShootPressed && shootCoolDown <= 0) {
+            room.addMissile(new Missile(coord, speed.add(Vec2d.D.rotate(getAngle()).multiply(Missile.SPEED)), id));
+            shootCoolDown = 10;
+        }
+
 //        LOGGER.info("Ticking GamePlayer: {}", this);
         acceleration = Vec2d.ZERO;
         if (gamePlayerControlData.keyUpPressed) {
@@ -87,6 +94,11 @@ public class GamePlayer extends SpeedDirectionEntity {
         }
 
         super.tick();
+    }
+
+
+    public void decHealth() {
+        health -= 10;
     }
 
 

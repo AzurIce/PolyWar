@@ -40,6 +40,11 @@ public class GamePlayer extends SpeedDirectionEntity {
         this.id = id;
     }
 
+    public GamePlayer(Vec2d coord, Color color, WorldMap map, int id) {
+        this(coord, color, map);
+        this.id = id;
+    }
+
     private int health = 100;
 
     public GamePlayer(Vec2d coord, WorldMap map) {
@@ -63,58 +68,7 @@ public class GamePlayer extends SpeedDirectionEntity {
 
     @Override
     public void tick() {
-//        LOGGER.info("GameControlData of player {}: {}", this, gamePlayerControlData);
         PolyWarClient.getInstance().sendPacket(GamePlayerControlDataPacket.of(gamePlayerControlData));
-//        System.out.println("Coord: " + coord + ", Speed: " + speed + ", Acceleration: " + acceleration);
-
-//        acceleration = Vec2d.ZERO;
-//        if (gamePlayerControlData.keyUpPressed) {
-//            acceleration = acceleration.add(new Vec2d(0, -ACC));
-//        }
-//        if (gamePlayerControlData.keyDownPressed) {
-//            acceleration = acceleration.add(new Vec2d(0, ACC));
-//        }
-//        if (gamePlayerControlData.keyLeftPressed) {
-//            acceleration = acceleration.add(new Vec2d(-ACC, 0));
-//        }
-//        if (gamePlayerControlData.keyRightPressed) {
-//            acceleration = acceleration.add(new Vec2d(+ACC, 0));
-//        }
-//
-//        for (Wall wall : worldMap.walls) {
-//            Vec2d collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
-////            Vec2d sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why not working?
-//            if (collisionPoint != Vec2d.ZERO) {
-////                System.out.println(getModel() + " + " + coord);
-////                System.out.println(getPolygon());
-//                while (collisionPoint != Vec2d.ZERO) {
-////                    System.out.println("Intersect!");
-////                    coord = coord.minus(speed.normalize()); // Not working...
-////                    coord = coord.minus(sp.minus(coord).normalize()); // Which is better?
-//                    coord = coord.minus(collisionPoint.minus(coord).normalize().add(speed.normalize())); // Which is better?
-//                    collisionPoint = getPolygon().intersect(wall.getPolygon()); // Which is better?
-////                    sp = wall.getPolygon().intersect(getPolygon()); // Which is better? Why not working?
-//                }
-//                speed = Vec2d.ZERO; // Do we need it?
-////                speed = speed.negate();
-////                speed = speed.multiply(0.1);
-//            }
-//        }
-//
-//        speed = speed.add(acceleration);
-//        if (abs(speed.length()) < FRICTION * (speed.length() * speed.length() + 2 * speed.length())) {
-//            speed = Vec2d.ZERO;
-//        } else {
-//            speed = speed.minus(speed.normalize().multiply(FRICTION * (1.2 * speed.length() * speed.length() + 2 * speed.length())));
-//        }
-//        if (abs(speed.x) < 0.5) {
-//            speed = new Vec2d(0, speed.y);
-//        }
-//        if (abs(speed.y) < 0.5) {
-//            speed = new Vec2d(speed.x, 0);
-//        }
-//
-//        super.tick();
     }
 
     ////// Key listeners //////
@@ -124,6 +78,7 @@ public class GamePlayer extends SpeedDirectionEntity {
             case KEY_DOWN -> gamePlayerControlData.keyDownPressed = true;
             case KEY_LEFT -> gamePlayerControlData.keyLeftPressed = true;
             case KEY_RIGHT -> gamePlayerControlData.keyRightPressed = true;
+            case KEY_SHOOT -> gamePlayerControlData.keyShootPressed = true;
             default -> {
             } // Never happens
         }
@@ -136,6 +91,7 @@ public class GamePlayer extends SpeedDirectionEntity {
             case KEY_DOWN -> gamePlayerControlData.keyDownPressed = false;
             case KEY_LEFT -> gamePlayerControlData.keyLeftPressed = false;
             case KEY_RIGHT -> gamePlayerControlData.keyRightPressed = false;
+            case KEY_SHOOT -> gamePlayerControlData.keyShootPressed = false;
             default -> {
             } // Never happens
         }

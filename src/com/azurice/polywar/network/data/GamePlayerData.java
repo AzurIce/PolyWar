@@ -16,4 +16,9 @@ public class GamePlayerData implements Serializable {
         this.coord = coord;
         this.speed = speed;
     }
+
+    @Override
+    public String toString() {
+        return "GamePlayerData<id: " + id + ", health: " + health + ", coord: " + coord + ", speed: " + speed + ">";
+    }
 }

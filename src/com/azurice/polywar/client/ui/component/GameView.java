@@ -2,9 +2,12 @@ package com.azurice.polywar.client.ui.component;
 
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.render.MapRenderer;
+import com.azurice.polywar.client.render.MissileRenderer;
 import com.azurice.polywar.client.render.PlayerRenderer;
 import com.azurice.polywar.entity.predict.GamePlayer;
+import com.azurice.polywar.entity.predict.Missile;
 import com.azurice.polywar.network.data.GamePlayerData;
+import com.azurice.polywar.network.data.MissileData;
 import com.azurice.polywar.util.MyColor;
 import com.azurice.polywar.util.math.Util;
 import com.azurice.polywar.util.math.Vec2d;
@@ -30,6 +33,7 @@ public class GameView extends AbstractView {
     ////// Entities //////
 //        private List<Missile> missileList = new ArrayList<>();
     private Map<Integer, GamePlayer> gamePlayers;
+    private List<Missile> missileList = new ArrayList<>();
     // Player
     private GamePlayer mainGamePlayer;
 
@@ -44,7 +48,7 @@ public class GameView extends AbstractView {
 
     public void setMainGamePlayerData(GamePlayerData data) {
         gamePlayers = Collections.synchronizedMap(new HashMap<>());
-        mainGamePlayer = new GamePlayer(data.coord, new Color(MyColor.BLUE), worldMap);
+        mainGamePlayer = new GamePlayer(data.coord, new Color(MyColor.BLUE), worldMap, data.id);
         gamePlayers.put(data.id, mainGamePlayer);
         LOGGER.info("Set mainGamePlayer: {}", mainGamePlayer);
     }
@@ -63,6 +67,19 @@ public class GameView extends AbstractView {
         }
     }
 
+    public void updateMissilesData(List<MissileData> missileDataList) {
+        List<Missile> missiles = new ArrayList<>();
+        for (MissileData missileData : missileDataList) {
+            if (missileData.ownerId == mainGamePlayer.id) {
+                missiles.add(
+                        new Missile(missileData.coord, missileData.speed, missileData.ownerId, new Color(MyColor.BLUE))
+                );
+            } else {
+                missiles.add(new Missile(missileData.coord, missileData.speed, missileData.ownerId));
+            }
+        }
+        this.missileList = missiles;
+    }
 
     private void initGame() {
         gamePlayers = Collections.synchronizedMap(new HashMap<>());
@@ -130,6 +147,10 @@ public class GameView extends AbstractView {
 
         for (GamePlayer gamePlayer : gamePlayers.values()) {
             PlayerRenderer.render(gamePlayer, g2d, screenLocation.negate(), new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
+        }
+
+        for (Missile missile : missileList) {
+            MissileRenderer.render(missile, g2d, screenLocation.negate(), new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
         }
 
         g.setColor(new Color(0xeeDC143C, true));

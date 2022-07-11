@@ -1,7 +1,6 @@
 package com.azurice.polywar.server;
 
 import com.azurice.polywar.network.Util;
-import com.azurice.polywar.network.data.GamePlayerControlData;
 import com.azurice.polywar.network.packet.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -144,49 +143,38 @@ public class PolyWarServer {
         try {
             Packet packet = Util.readPacket(socketChannel);
 
-            if (packet instanceof PingPacket) {
-//                LOGGER.info("[{}] Sending Ping response", socketChannel.getRemoteAddress());
-                socketChannel.write(new PingPacket().toByteBuffer());
-            } else {
-//                LOGGER.info("[{}] Received {}: {}",
-//                        socketChannel.getRemoteAddress(),
-//                        packet.getTypeString(),
-//                        packet.toString());
-                if (packet instanceof GetRoomListPacket) {
-                    handleGetRoom(socketChannel);
-                } else if (packet instanceof CreateRoomPacket) {
-                    handleCreateRoom(socketChannel);
-                } else if (packet instanceof RoomPacket) {
-                    Room room = ((RoomPacket) packet).getData();
-                    handleJoinRoom(socketChannel, getRoomById(room.id));
-                } else if (packet instanceof ExitRoomPacket) {
-                    handleExitRoom(socketChannel);
-                } else if (packet instanceof RegenerateMapPacket) {
+            switch (packet) {
+                case PingPacket p -> socketChannel.write(new PingPacket().toByteBuffer());
+                case GetRoomListPacket p -> handleGetRoom(socketChannel);
+                case CreateRoomPacket p -> handleCreateRoom(socketChannel);
+                case RoomPacket p -> handleJoinRoom(socketChannel, Objects.requireNonNull(getRoomById(p.getData().id)));
+                case ExitRoomPacket p -> handleExitRoom(socketChannel);
+                case RegenerateMapPacket p -> {
                     Player player = socketsToPlayers.get(socketChannel);
                     Room room = playersToRooms.get(player);
                     LOGGER.info("Regenerating WorldMap...");
                     room.regenerateMap();
                     LOGGER.info("Sending MapPacket...");
                     sendRoomMapInfo(room);
-                } else if (packet instanceof StartGamePacket) {
+                }
+                case StartGamePacket p -> {
                     Player player = socketsToPlayers.get(socketChannel);
                     Room room = playersToRooms.get(player);
                     room.startGame();
-                } else if (packet instanceof GamePlayerControlDataPacket) {
+                }
+                case GamePlayerControlDataPacket p -> {
                     Player player = socketsToPlayers.get(socketChannel);
                     Room room = playersToRooms.get(player);
-                    GamePlayerControlData gamePlayerControlData = ((GamePlayerControlDataPacket) packet).getData();
-//                    LOGGER.info("");
-//                    LOGGER.info("Get GamePlayerControlDataPacket from player {}: {}", player, gamePlayerControlData);
-//                    LOGGER.info("");
-                    room.updatePlayerControlData(player, gamePlayerControlData);
+                    room.updatePlayerControlData(player, p.getData());
+                }
+                default -> {
                 }
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
             key.cancel();
             Player player = socketsToPlayers.get((SocketChannel) key.channel());
-            socketsToPlayers.remove(player);
+            socketsToPlayers.remove((SocketChannel) key.channel());
             deletedPlayerIds.add(player.id);
             LOGGER.error("Canceled key");
         }
@@ -197,14 +185,14 @@ public class PolyWarServer {
             Util.sendPacket(socketChannel, packet);
         } catch (IOException e) {
             LOGGER.error("Write failed: ", e);
-            socketsToKeys.get(socketChannel).cancel();
-            socketsToKeys.remove(socketChannel);
             Player player = socketsToPlayers.get(socketChannel);
-            socketsToPlayers.remove(player);
             deletedPlayerIds.add(player.id);
             Room room = playersToRooms.get(player);
             room.removePlayer(player);
             playersToRooms.remove(player);
+            socketsToKeys.get(socketChannel).cancel();
+            socketsToKeys.remove(socketChannel);
+            socketsToPlayers.remove(socketChannel);
         }
     }
 
