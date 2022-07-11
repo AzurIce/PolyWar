@@ -64,22 +64,22 @@ public class GameView extends AbstractView {
     }
 
 
-//    private void initGame() {
-//        gamePlayerList = new ArrayList<>();
-//        LOGGER.info("Generating map...");
-//        map = WorldMap.generateWorldMap(MAP_SIZE);
-//
-//        LOGGER.info("Creating player...");
-//        mainGamePlayer = new GamePlayer(
-//                new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)),
-//                new Color(30, 144, 255),
-//                map
-//        );
-//        while (!map.isAvailableToSpawnAt(mainGamePlayer.getCoord())) {
-//            mainGamePlayer.setCoord(new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)));
-//        }
-//        gamePlayerList.add(mainGamePlayer);
-//    }
+    private void initGame() {
+        gamePlayers = Collections.synchronizedMap(new HashMap<>());
+        LOGGER.info("Generating worldMap...");
+        worldMap = WorldMap.generateWorldMap(MAP_SIZE);
+
+        LOGGER.info("Creating player...");
+        mainGamePlayer = new GamePlayer(
+                new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)),
+                new Color(30, 144, 255),
+                worldMap
+        );
+        while (!worldMap.isAvailableToSpawnAt(mainGamePlayer.getCoord())) {
+            mainGamePlayer.setCoord(new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)));
+        }
+        gamePlayers.put(0, mainGamePlayer);
+    }
 
     // KeyListener
     public void keyPressed(KeyEvent e) {
@@ -132,6 +132,12 @@ public class GameView extends AbstractView {
             PlayerRenderer.render(gamePlayer, g2d, screenLocation.negate(), new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
         }
 
+        g.setColor(new Color(0xeeDC143C, true));
+        g.drawRect(10, 10, 200, 20);
+        for (int i = 0; (i + 1) * 10 <= mainGamePlayer.getHealth(); i++) {
+            g.fillRect(10 + i * (20) + 2, 12, 16, 16);
+        }
+
         if (debug) {
             g.setColor(new Color(0x3c3c3c));
             g.fillOval(VIEWPORT_SIZE / 2 - 5, VIEWPORT_SIZE / 2 - 5, 10, 10);
@@ -151,6 +157,9 @@ public class GameView extends AbstractView {
         setPreferredSize(new Dimension(VIEWPORT_SIZE, VIEWPORT_SIZE));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 //        initGame();
+        if (worldMap == null) {
+            initGame();
+        }
     }
 
     @Override
