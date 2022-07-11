@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoomPage extends PerformanceOverlayedPage {
+    private static final PolyWarClient client = PolyWarClient.getInstance();
 
     private MainWindow.Page fromPage = MainWindow.Page.MAIN_PAGE;
 
@@ -30,20 +31,14 @@ public class RoomPage extends PerformanceOverlayedPage {
     private MapView mapView;
     private Player owner;
 
-    private WorldMap map;
-
     public RoomPage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
     }
 
     public void updateRoom(Room room) {
-        // Map
-        // Player
+        client.handleMap(room.map);
         updatePlayerList(room.playerList);
         this.owner = room.owner;
-        this.map = room.map;
-        mapView.setMap(room.map);
-        // repaint(); // ?
     }
 
     public void updatePlayerList(List<Player> players) {
@@ -51,7 +46,6 @@ public class RoomPage extends PerformanceOverlayedPage {
     }
 
     public void updateMap(WorldMap map) {
-        this.map = map;
         mapView.setMap(map);
     }
 
@@ -64,7 +58,7 @@ public class RoomPage extends PerformanceOverlayedPage {
         Row topContainer = new Row(Row.Alignment.START);
         topContainer.add(btnEsc);
 
-        mapView = new MapView(map);
+        mapView = new MapView();
         add(mapView, BorderLayout.CENTER);
 
         playerList = new JList<>();

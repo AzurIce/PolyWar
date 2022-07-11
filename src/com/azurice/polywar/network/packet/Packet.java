@@ -23,19 +23,19 @@ public abstract class Packet {
         this.blocks = blocks;
     }
 
-    public Packet(byte[] data) {
+    public Packet(byte[] dataBytes) {
 //        LOGGER.info("");
 //        LOGGER.info("======Constructor======");
-        for (int i = 0; i * (BLOCK_LEN - 1) < data.length; i++) {
-            byte[] dataBlock = Arrays.copyOfRange(data, i * (BLOCK_LEN - 1), (i + 1) * (BLOCK_LEN - 1));
+        for (int i = 0; i * (BLOCK_LEN - 1) < dataBytes.length; i++) {
+            byte[] dataBlock = Arrays.copyOfRange(dataBytes, i * (BLOCK_LEN - 1), (i + 1) * (BLOCK_LEN - 1));
 //            LOGGER.info("DataBlock from {} to {}: {}", i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN - 1, dataBlock);
-            blocks.add(new PacketBlock(dataBlock, (i + 1) * (BLOCK_LEN - 1) > data.length));
+            blocks.add(new PacketBlock(dataBlock, (i + 1) * (BLOCK_LEN - 1) > dataBytes.length));
         }
 //        LOGGER.info("======Constructor End======");
 //        LOGGER.info("");
     }
 
-    public byte[] getData() {
+    public byte[] getDataBytes() {
 //        LOGGER.info("");
 //        LOGGER.info("======Get Data======");
 //        LOGGER.info("Type: {}, Blocks number: {}", getTypeString(), blocks.size());
@@ -48,6 +48,10 @@ public abstract class Packet {
 //        LOGGER.info("======GetData End======");
 //        LOGGER.info("");
         return data;
+    }
+
+    public Object getData() {
+        return getDataBytes();
     }
 
     public abstract Type getType();

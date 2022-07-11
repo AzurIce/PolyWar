@@ -4,7 +4,6 @@ import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.Util;
 import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.network.packet.*;
-import com.azurice.polywar.server.Player;
 import com.azurice.polywar.server.Room;
 import com.azurice.polywar.world.WorldMap;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +14,9 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+
+import static com.azurice.polywar.util.Util.getMeasuringTimeMs;
 
 public class PolyWarClient {
     private static final String SERVER_IP = "127.0.0.1";
@@ -45,9 +44,6 @@ public class PolyWarClient {
     public double fps;
     public double ms;
     private boolean running = true;
-
-    public Room curRoom;
-    public List<Room> roomList = new ArrayList<>();
     SocketChannel socketChannel;
     private MainWindow window;
     private boolean connected = false;
@@ -77,7 +73,7 @@ public class PolyWarClient {
             while (running) {
                 if (connected) {
                     try {
-                        timePing = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+                        timePing = getMeasuringTimeMs();
                         Util.sendPacket(socketChannel, new PingPacket());
                     } catch (IOException e) {
                         LOGGER.error("Ping error: ", e);
@@ -145,45 +141,17 @@ public class PolyWarClient {
         try {
             Packet packet = Util.readPacket(socketChannel);
 
-            if (packet instanceof PingPacket) {
-                timePong = com.azurice.polywar.util.Util.getMeasuringTimeMs();
-                ms = timePong - timePing;
-            } else {
-//                LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
-                if (packet instanceof RoomListPacket) {
-                    roomList = ((RoomListPacket) packet).getRoomList();
-                    window.roomListPage.updateRoomList(roomList);
-//                    LOGGER.info("Updated roomList, {} Rooms: {}", roomList.size(), roomList.toString());
-                } else if (packet instanceof RoomPacket) {
-                    curRoom = ((RoomPacket) packet).getRoom();
-                    window.roomPage.updateRoom(curRoom);
-                    updateWorldMap(curRoom.map);
-//                    LOGGER.info("Updated curRoom: {}", curRoom);
-                    window.setPage(MainWindow.Page.ROOM_PAGE);
-                } else if (packet instanceof ExitRoomPacket) {
-//                    LOGGER.info("Exited room");
-                    window.setPage(window.roomPage.getFromPage());
-                } else if (packet instanceof PlayerListPacket) {
-                    List<Player> playerList = ((PlayerListPacket) packet).getPlayerList();
-                    window.roomPage.updatePlayerList(playerList);
-//                    LOGGER.info("Updated playerList: {}", playerList);
-                } else if (packet instanceof MapPacket) {
-                    WorldMap map = ((MapPacket) packet).getMap();
-                    updateWorldMap(map);
-//                    LOGGER.info("Updated map: {}", map);
-                } else if (packet instanceof GamePlayerDataPacket) {
-                    GamePlayerData gamePlayerData = ((GamePlayerDataPacket) packet).getGamePlayerData();
-                    window.gamePage.gameView.setMainGamePlayerData(gamePlayerData);
-//                    LOGGER.info("Updated mainGamePlayer: {}", gamePlayerData);
-                    window.setPage(MainWindow.Page.GAME_PAGE);
-                } else if (packet instanceof GamePlayerDataListPacket) {
-                    List<GamePlayerData> gamePlayerDataList = ((GamePlayerDataListPacket) packet).getGamePlayerDataList();
-                    window.gamePage.gameView.updateGamePlayersData(gamePlayerDataList);
-                }/* else if (packet instanceof MissileListPacket) {
-
-                } else if (packet instanceof EndGamePacket) {
-
-                }*/
+            switch (packet) {
+                case PingPacket p -> handlePing();
+                case RoomListPacket p -> window.roomListPage.updateRoomList(p.getData());
+                case RoomPacket p -> handleRoom(p.getData());
+                case ExitRoomPacket p -> window.setPage(window.roomPage.getFromPage());
+                case PlayerListPacket p -> window.roomPage.updatePlayerList(p.getData());
+                case MapPacket p -> handleMap(p.getData());
+                case GamePlayerDataPacket p -> handleGamePlayerData(p.getData());
+                case GamePlayerDataListPacket p -> window.gamePage.gameView.updateGamePlayersData(p.getData());
+                default -> {
+                }
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
@@ -194,8 +162,41 @@ public class PolyWarClient {
         }
     }
 
+    /**
+     * Join room success
+     *
+     * @param room The room joined
+     */
+    private void handleRoom(Room room) {
+        window.roomPage.updateRoom(room);
+        handleMap(room.map);
+        window.setPage(MainWindow.Page.ROOM_PAGE);
+    }
 
-    public void updateWorldMap(WorldMap worldMap) {
+    /**
+     * GameStart
+     *
+     * @param gamePlayerData - The data of the main player(you)
+     */
+    private void handleGamePlayerData(GamePlayerData gamePlayerData) {
+        window.gamePage.gameView.setMainGamePlayerData(gamePlayerData);
+        window.setPage(MainWindow.Page.GAME_PAGE);
+    }
+
+    /**
+     * Ping pong
+     */
+    private void handlePing() {
+        timePong = getMeasuringTimeMs();
+        ms = timePong - timePing;
+    }
+
+    /**
+     * Get a new map, update the map
+     *
+     * @param worldMap the new map
+     */
+    public void handleMap(WorldMap worldMap) {
         this.worldMap = worldMap;
         window.roomPage.updateMap(worldMap);
         window.gamePage.updateMap(worldMap);
@@ -219,7 +220,6 @@ public class PolyWarClient {
         } catch (IOException e) {
             LOGGER.error("Packet send failed: ", e);
             connected = false;
-//            throw new RuntimeException(e);
         }
     }
 }

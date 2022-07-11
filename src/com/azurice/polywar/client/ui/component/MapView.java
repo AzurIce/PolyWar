@@ -18,6 +18,9 @@ public class MapView extends AbstractView {
     ////// Entities //////
     private boolean debug = false;
 
+    public MapView() {
+    }
+
     public MapView(WorldMap map) {
         this.map = map;
     }

@@ -29,12 +29,11 @@ public abstract class AbstractObjectPacket extends Packet {
         return data;
     }
 
-    public abstract Type getType();
-
-    public Object getObject() {
+    @Override
+    public Object getData() {
         Object object;
         try {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(getData());
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(getDataBytes());
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             try {
                 object = objectInputStream.readObject();
@@ -49,6 +48,6 @@ public abstract class AbstractObjectPacket extends Packet {
 
     @Override
     public String toString() {
-        return getObject().toString();
+        return getData().toString();
     }
 }

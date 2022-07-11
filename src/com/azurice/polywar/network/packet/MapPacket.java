@@ -14,21 +14,17 @@ public class MapPacket extends AbstractObjectPacket {
         super(data);
     }
 
-    public static MapPacket of(WorldMap map) {
-        return new MapPacket(bytesOf(map));
-    }
-
-    public WorldMap getMap() {
-        return (WorldMap) getObject();
-    }
-
     @Override
     public Type getType() {
         return Type.MAP_PACKET;
     }
 
+    public static MapPacket of(WorldMap map) {
+        return new MapPacket(bytesOf(map));
+    }
+
     @Override
-    public String toString() {
-        return getMap().toString();
+    public WorldMap getData() {
+        return (WorldMap) super.getData();
     }
 }

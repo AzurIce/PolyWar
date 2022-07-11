@@ -25,13 +25,8 @@ public class GamePlayerDataPacket extends AbstractObjectPacket {
         return new GamePlayerDataPacket(bytesOf(gamePlayerData));
     }
 
-
-    public GamePlayerData getGamePlayerData() {
-        return (GamePlayerData) getObject();
-    }
-
     @Override
-    public String toString() {
-        return getGamePlayerData().toString();
+    public GamePlayerData getData() {
+        return (GamePlayerData) super.getData();
     }
 }

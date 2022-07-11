@@ -157,7 +157,7 @@ public class PolyWarServer {
                 } else if (packet instanceof CreateRoomPacket) {
                     handleCreateRoom(socketChannel);
                 } else if (packet instanceof RoomPacket) {
-                    Room room = ((RoomPacket) packet).getRoom();
+                    Room room = ((RoomPacket) packet).getData();
                     handleJoinRoom(socketChannel, getRoomById(room.id));
                 } else if (packet instanceof ExitRoomPacket) {
                     handleExitRoom(socketChannel);
@@ -175,7 +175,7 @@ public class PolyWarServer {
                 } else if (packet instanceof GamePlayerControlDataPacket) {
                     Player player = socketsToPlayers.get(socketChannel);
                     Room room = playersToRooms.get(player);
-                    GamePlayerControlData gamePlayerControlData = ((GamePlayerControlDataPacket) packet).getGamePlayerControlData();
+                    GamePlayerControlData gamePlayerControlData = ((GamePlayerControlDataPacket) packet).getData();
 //                    LOGGER.info("");
 //                    LOGGER.info("Get GamePlayerControlDataPacket from player {}: {}", player, gamePlayerControlData);
 //                    LOGGER.info("");
