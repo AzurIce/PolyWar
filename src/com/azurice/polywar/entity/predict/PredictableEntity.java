@@ -7,11 +7,12 @@ import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class PredictableEntity extends DrawableEntity {
+public class PredictableEntity extends DrawableEntity implements Serializable {
     private long lastTickTime = Util.getMeasuringTimeNano();
-    private Vec2d lastTickCoord;
-    private Vec2d lastTickSpeed;
+    protected Vec2d lastTickCoord;
+    protected Vec2d lastTickSpeed;
 
 
     ////// Constructors //////

@@ -84,7 +84,8 @@ public class Packet {
         CREATE_ROOM_PACKET(false), ROOM_PACKET(true), EXIT_ROOM_PACKET(false),
 
         PLAYER_LIST_PACKET(true),
-        REGENERATE_MAP_PACKET(false), MAP_PACKET(true), START_GAME_PACKET(false);
+        REGENERATE_MAP_PACKET(false), MAP_PACKET(true), START_GAME_PACKET(false),
+        GAME_PLAYER_DATA_PACKET(true), GAME_PLAYER_CONTROL_DATA(true), GAME_PLAYER_DATA_LIST_PACKET(true), MISSILE_LIST_PACKET(true), END_GAME_PACKET(true);
 
         public final boolean hasContent;
 

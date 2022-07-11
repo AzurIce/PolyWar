@@ -80,6 +80,11 @@ public class Util {
             case MAP_PACKET -> new MapPacket(blocks);
 
             case START_GAME_PACKET -> new StartGamePacket();
+            case GAME_PLAYER_DATA_PACKET -> new GamePlayerDataPacket(blocks);
+            case GAME_PLAYER_CONTROL_DATA -> new GamePlayerControlDataPacket(blocks);
+            case GAME_PLAYER_DATA_LIST_PACKET -> new GamePlayerDataListPacket(blocks);
+            case MISSILE_LIST_PACKET -> null/*new MissileListPakcet(blocks)*/;
+            case END_GAME_PACKET -> null/*new EndGamePacket(blocks)*/;
         };
     }
 

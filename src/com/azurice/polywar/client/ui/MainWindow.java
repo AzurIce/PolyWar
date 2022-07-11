@@ -31,7 +31,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
     // Pages
     private MainPage mainPage;
     public RoomPage roomPage;
-    private GamePage gamePage;
+    public GamePage gamePage;
 
     public void initViews() {
         setTitle("PolyWar");
@@ -71,13 +71,15 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
     }
 
     public void setPage(Page page) {
-        cardLayout.show(pageContainer, page.name());
-        curPage = switch (page) {
+        AbstractPage targetPage = switch (page) {
             case MAIN_PAGE -> mainPage;
             case GAME_PAGE -> gamePage;
             case ROOM_LIST_PAGE -> roomListPage;
             case ROOM_PAGE -> roomPage;
         };
+        if (curPage == targetPage) return;
+        cardLayout.show(pageContainer, page.name());
+        curPage = targetPage;
         curPage.requestFocusInWindow();
         curPage.onShow();
         LOGGER.info("SetPage: " + page.name());

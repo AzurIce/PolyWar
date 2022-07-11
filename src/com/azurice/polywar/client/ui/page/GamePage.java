@@ -3,17 +3,23 @@ package com.azurice.polywar.client.ui.page;
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.client.ui.component.GameView;
+import com.azurice.polywar.world.WorldMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GamePage extends PerformanceOverlayedPage {
     // Views
-    private GameView gameView;
+    public GameView gameView;
 
     public GamePage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
     }
+
+    public void updateMap(WorldMap worldMap) {
+        gameView.setMap(worldMap);
+    }
+
 
     @Override
     public void render() {

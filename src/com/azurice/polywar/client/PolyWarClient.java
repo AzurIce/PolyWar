@@ -2,6 +2,7 @@ package com.azurice.polywar.client;
 
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.Util;
+import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.network.packet.*;
 import com.azurice.polywar.server.Player;
 import com.azurice.polywar.server.Room;
@@ -36,6 +37,9 @@ public class PolyWarClient {
 
     private PolyWarClient() {
     }
+
+
+    public WorldMap worldMap;
 
 
     public double fps;
@@ -89,11 +93,12 @@ public class PolyWarClient {
         });
         pingThread.start();
 
+        // Network cycle
         LOGGER.info("Handling connections...");
         while (running) {
             if (!connected) { // Connect to server
                 try {
-                    LOGGER.info("Connecting to Server...");
+//                    LOGGER.info("Connecting to Server...");
                     socketChannel = SocketChannel.open();
                     socketChannel.connect(SERVER_ADDRESS);
                     connected = true;
@@ -101,7 +106,7 @@ public class PolyWarClient {
                     socketChannel.register(selector, SelectionKey.OP_READ);
                     LOGGER.info("Connected");
                 } catch (IOException e) {
-                    LOGGER.error("Server connect failed: {}, retrying...", e.toString());
+//                    LOGGER.error("Server connect failed: {}, retrying...", e.toString());
                 }
             } else {
                 try {
@@ -144,28 +149,41 @@ public class PolyWarClient {
                 timePong = com.azurice.polywar.util.Util.getMeasuringTimeMs();
                 ms = timePong - timePing;
             } else {
-                LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
+//                LOGGER.info("Received {}: {}", packet.getTypeString(), packet.toString());
                 if (packet instanceof RoomListPacket) {
                     roomList = ((RoomListPacket) packet).getRoomList();
                     window.roomListPage.updateRoomList(roomList);
-                    LOGGER.info("Updated roomList, {} Rooms: {}", roomList.size(), roomList.toString());
+//                    LOGGER.info("Updated roomList, {} Rooms: {}", roomList.size(), roomList.toString());
                 } else if (packet instanceof RoomPacket) {
                     curRoom = ((RoomPacket) packet).getRoom();
                     window.roomPage.updateRoom(curRoom);
-                    LOGGER.info("Updated curRoom: {}", curRoom);
+                    updateWorldMap(curRoom.map);
+//                    LOGGER.info("Updated curRoom: {}", curRoom);
                     window.setPage(MainWindow.Page.ROOM_PAGE);
                 } else if (packet instanceof ExitRoomPacket) {
-                    LOGGER.info("Exited room");
+//                    LOGGER.info("Exited room");
                     window.setPage(window.roomPage.getFromPage());
                 } else if (packet instanceof PlayerListPacket) {
                     List<Player> playerList = ((PlayerListPacket) packet).getPlayerList();
                     window.roomPage.updatePlayerList(playerList);
-                    LOGGER.info("Updated playerList: {}", playerList);
+//                    LOGGER.info("Updated playerList: {}", playerList);
                 } else if (packet instanceof MapPacket) {
                     WorldMap map = ((MapPacket) packet).getMap();
-                    window.roomPage.updateMap(map);
-                    LOGGER.info("Updated map: {}", map);
-                }
+                    updateWorldMap(map);
+//                    LOGGER.info("Updated map: {}", map);
+                } else if (packet instanceof GamePlayerDataPacket) {
+                    GamePlayerData gamePlayerData = ((GamePlayerDataPacket) packet).getGamePlayerData();
+                    window.gamePage.gameView.setMainGamePlayerData(gamePlayerData);
+//                    LOGGER.info("Updated mainGamePlayer: {}", gamePlayerData);
+                    window.setPage(MainWindow.Page.GAME_PAGE);
+                } else if (packet instanceof GamePlayerDataListPacket) {
+                    List<GamePlayerData> gamePlayerDataList = ((GamePlayerDataListPacket) packet).getGamePlayerDataList();
+                    window.gamePage.gameView.updateGamePlayersData(gamePlayerDataList);
+                }/* else if (packet instanceof MissileListPacket) {
+
+                } else if (packet instanceof EndGamePacket) {
+
+                }*/
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
@@ -174,6 +192,13 @@ public class PolyWarClient {
             connected = false;
             LOGGER.error("Canceled key");
         }
+    }
+
+
+    public void updateWorldMap(WorldMap worldMap) {
+        this.worldMap = worldMap;
+        window.roomPage.updateMap(worldMap);
+        window.gamePage.updateMap(worldMap);
     }
 
 

@@ -39,7 +39,7 @@ public class RoomPage extends PerformanceOverlayedPage {
     public void updateRoom(Room room) {
         // Map
         // Player
-        updatePlayerList(room.players);
+        updatePlayerList(room.playerList);
         this.owner = room.owner;
         this.map = room.map;
         mapView.setMap(room.map);
@@ -85,9 +85,9 @@ public class RoomPage extends PerformanceOverlayedPage {
     @Override
     public void initListeners() {
         super.initListeners();
-        btnEsc.addActionListener((e) -> parent.client.sendPacket(new ExitRoomPacket()));
-        btnRegenerate.addActionListener((e) -> parent.client.sendPacket(new RegenerateMapPacket()));
-        btnStart.addActionListener((e) -> parent.client.sendPacket(new StartGamePacket()));
+        btnEsc.addActionListener((e) -> PolyWarClient.getInstance().sendPacket(new ExitRoomPacket()));
+        btnRegenerate.addActionListener((e) -> PolyWarClient.getInstance().sendPacket(new RegenerateMapPacket()));
+        btnStart.addActionListener((e) -> PolyWarClient.getInstance().sendPacket(new StartGamePacket()));
 
         // Bad Swing focus problem......
         btnEsc.addKeyListener(new KeyAdapter() {

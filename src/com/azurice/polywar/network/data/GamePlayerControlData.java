@@ -1,0 +1,27 @@
+package com.azurice.polywar.network.data;
+
+import java.io.Serializable;
+
+public class GamePlayerControlData implements Serializable {
+    public boolean keyUpPressed;
+    public boolean keyDownPressed;
+    public boolean keyLeftPressed;
+    public boolean keyRightPressed;
+
+    public GamePlayerControlData() {
+        this(false, false, false, false);
+    }
+
+    public GamePlayerControlData(boolean keyUpPressed, boolean keyDownPressed, boolean keyLeftPressed, boolean keyRightPressed) {
+        this.keyUpPressed = keyUpPressed;
+        this.keyDownPressed = keyDownPressed;
+        this.keyLeftPressed = keyLeftPressed;
+        this.keyRightPressed = keyRightPressed;
+    }
+
+    @Override
+    public String toString() {
+        return "GamePlayerControlData<u: " + keyUpPressed + ", d: " + keyDownPressed +
+                ", l: " + keyLeftPressed + ", r: " + keyRightPressed + ">";
+    }
+}

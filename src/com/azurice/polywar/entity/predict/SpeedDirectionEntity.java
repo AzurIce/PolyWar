@@ -4,8 +4,9 @@ import com.azurice.polywar.util.math.Polygon;
 import com.azurice.polywar.util.math.Vec2d;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class SpeedDirectionEntity extends PredictableEntity {
+public class SpeedDirectionEntity extends PredictableEntity implements Serializable {
     protected double angle;
 
 

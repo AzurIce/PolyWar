@@ -132,7 +132,7 @@ public class RoomListPage extends AbstractPage {
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 //            setText(value.toString());
             Room room = (Room) value;
-            setText("Room " + room.id + "    Players: " + room.players.size());
+            setText("Room " + room.id + "    Players: " + room.playerList.size());
             if (isSelected) {
                 setBackground(new Color(MyColor.BLUE | 0x77 << 24, true));
             } else {
