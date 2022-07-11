@@ -1,12 +1,10 @@
 package com.azurice.polywar.network.packet;
 
-public class ExitRoomPacket extends Packet {
-    public ExitRoomPacket() {
-        super(Type.EXIT_ROOM_PACKET);
-    }
+import static com.azurice.polywar.network.packet.Type.EXIT_ROOM_PACKET;
 
+public class ExitRoomPacket extends Packet {
     @Override
-    public String toString() {
-        return "ExitRoomPacket";
+    public Type getType() {
+        return EXIT_ROOM_PACKET;
     }
 }

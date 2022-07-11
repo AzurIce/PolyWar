@@ -1,23 +1,27 @@
 package com.azurice.polywar.network.packet;
 
 import com.azurice.polywar.server.Room;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.List;
 
-import static com.azurice.polywar.network.packet.Packet.Type.ROOM_LIST_PACKET;
+import static com.azurice.polywar.network.packet.Type.ROOM_LIST_PACKET;
+
+;
 
 public class RoomListPacket extends Packet {
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public RoomListPacket(List<PacketBlock> blocks) {
-        super(ROOM_LIST_PACKET, blocks);
+        super(blocks);
     }
 
     public RoomListPacket(byte[] data) {
-        super(ROOM_LIST_PACKET, data);
+        super(data);
+    }
+
+    @Override
+    public Type getType() {
+        return ROOM_LIST_PACKET;
     }
 
     public static RoomListPacket of(List<Room> roomList) {

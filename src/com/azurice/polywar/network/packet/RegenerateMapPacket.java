@@ -1,12 +1,11 @@
 package com.azurice.polywar.network.packet;
 
+import static com.azurice.polywar.network.packet.Type.REGENERATE_MAP_PACKET;
+
 public class RegenerateMapPacket extends Packet {
-    public RegenerateMapPacket() {
-        super(Type.REGENERATE_MAP_PACKET);
+    @Override
+    public Type getType() {
+        return REGENERATE_MAP_PACKET;
     }
 
-    @Override
-    public String toString() {
-        return "RegenerateMapPacket";
-    }
 }

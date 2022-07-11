@@ -38,14 +38,14 @@ public class Util {
         return readBytes(socketChannel, BLOCK_LEN);
     }
 
-    public static Packet.Type readPacketType(SocketChannel socketChannel) throws IOException {
-        return Packet.Type.values()[readByte(socketChannel)];
+    public static Type readPacketType(SocketChannel socketChannel) throws IOException {
+        return Type.values()[readByte(socketChannel)];
     }
 
     public static Packet readPacket(SocketChannel socketChannel) throws IOException {
 //        LOGGER.info("");
 //        LOGGER.info("======Read Packet======");
-        Packet.Type type = readPacketType(socketChannel);
+        Type type = readPacketType(socketChannel);
 //        LOGGER.info("Type: {}", type.toString());
 
         List<PacketBlock> blocks = new ArrayList<>();

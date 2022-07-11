@@ -5,13 +5,20 @@ import com.azurice.polywar.network.data.GamePlayerData;
 import java.io.*;
 import java.util.List;
 
+import static com.azurice.polywar.network.packet.Type.GAME_PLAYER_DATA_LIST_PACKET;
+
 public class GamePlayerDataListPacket extends Packet {
     public GamePlayerDataListPacket(List<PacketBlock> blocks) {
-        super(Type.GAME_PLAYER_DATA_LIST_PACKET, blocks);
+        super(blocks);
     }
 
     public GamePlayerDataListPacket(byte[] data) {
-        super(Type.GAME_PLAYER_DATA_LIST_PACKET, data);
+        super(data);
+    }
+
+    @Override
+    public Type getType() {
+        return GAME_PLAYER_DATA_LIST_PACKET;
     }
 
     public static GamePlayerDataListPacket of(List<GamePlayerData> gamePlayersData) {

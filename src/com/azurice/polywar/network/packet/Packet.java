@@ -11,25 +11,21 @@ import java.util.List;
 /**
  * A Packet has a total length less or equals to 256 Bytes
  */
-public class Packet {
+public abstract class Packet {
     public static final int BLOCK_LEN = 128;
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Type type;
     private List<PacketBlock> blocks = new ArrayList<>();
 
-    public Packet(Type type) {
-        this.type = type;
+    public Packet() {
     }
 
-    public Packet(Type type, List<PacketBlock> blocks) {
-        this.type = type;
+    public Packet(List<PacketBlock> blocks) {
         this.blocks = blocks;
     }
 
-    public Packet(Type type, byte[] data) {
+    public Packet(byte[] data) {
 //        LOGGER.info("");
 //        LOGGER.info("======Constructor======");
-        this.type = type;
         for (int i = 0; i * (BLOCK_LEN - 1) < data.length; i++) {
             byte[] dataBlock = Arrays.copyOfRange(data, i * (BLOCK_LEN - 1), (i + 1) * (BLOCK_LEN - 1));
 //            LOGGER.info("DataBlock from {} to {}: {}", i * (BLOCK_LEN - 1), (i + 1) * BLOCK_LEN - 1, dataBlock);
@@ -54,17 +50,15 @@ public class Packet {
         return data;
     }
 
-    public Type getType() {
-        return type;
-    }
+    public abstract Type getType();
 
     public String getTypeString() {
-        return type.toString();
+        return getType().toString();
     }
 
     public ByteBuffer toByteBuffer() {
         ByteBuffer buf = ByteBuffer.allocate(1 + blocks.size() * BLOCK_LEN);
-        buf.put((byte) type.ordinal());
+        buf.put((byte) getType().ordinal());
         for (PacketBlock block : blocks) {
             buf.put(block.getBytes());
         }
@@ -74,23 +68,6 @@ public class Packet {
 
     @Override
     public String toString() {
-        return Arrays.toString(getData());
-    }
-
-    public enum Type {
-        PING_PACKET(false),
-
-        GET_ROOM_LIST_PACKET(false), ROOM_LIST_PACKET(true),
-        CREATE_ROOM_PACKET(false), ROOM_PACKET(true), EXIT_ROOM_PACKET(false),
-
-        PLAYER_LIST_PACKET(true),
-        REGENERATE_MAP_PACKET(false), MAP_PACKET(true), START_GAME_PACKET(false),
-        GAME_PLAYER_DATA_PACKET(true), GAME_PLAYER_CONTROL_DATA(true), GAME_PLAYER_DATA_LIST_PACKET(true), MISSILE_LIST_PACKET(true), END_GAME_PACKET(true);
-
-        public final boolean hasContent;
-
-        Type(boolean hasContent) {
-            this.hasContent = hasContent;
-        }
+        return getTypeString();
     }
 }
