@@ -84,6 +84,9 @@ public class Util {
             case GAME_PLAYER_CONTROL_DATA -> new GamePlayerControlDataPacket(blocks);
             case GAME_PLAYER_DATA_LIST_PACKET -> new GamePlayerDataListPacket(blocks);
             case MISSILE_DATA_LIST_PACKET -> new MissileDataListPacket(blocks);
+            case NAME_PACKET -> new NamePacket(blocks);
+            case NAME_VALID_PACKET -> new NameValidPacket();
+            case NAME_INVALID_PACKET -> new NameInValidPacket();
             case END_GAME_PACKET -> null/*new EndGamePacket(blocks)*/;
         };
     }

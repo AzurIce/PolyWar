@@ -49,6 +49,12 @@ public class PolyWarClient {
     SocketChannel socketChannel;
     private MainWindow window;
     private boolean connected = false;
+    public boolean nameValid = false;
+    public String name = "Player";
+
+    public boolean isNameValid() {
+        return nameValid;
+    }
 
     public boolean isConnected() {
         return connected;
@@ -103,6 +109,7 @@ public class PolyWarClient {
                     socketChannel.configureBlocking(false);
                     socketChannel.register(selector, SelectionKey.OP_READ);
                     LOGGER.info("Connected");
+                    sendPacket(NamePacket.of(window.mainPage.textName.getText()));
                 } catch (IOException e) {
 //                    LOGGER.error("Server connect failed: {}, retrying...", e.toString());
                 }
@@ -144,6 +151,11 @@ public class PolyWarClient {
             Packet packet = Util.readPacket(socketChannel);
 
             switch (packet) {
+                case NamePacket p -> {
+                    nameValid = true;
+                    name = p.getData();
+                }
+                case NameInValidPacket p -> nameValid = false;
                 case PingPacket p -> handlePing();
                 case RoomListPacket p -> window.roomListPage.updateRoomList(p.getData());
                 case RoomPacket p -> handleRoom(p.getData());

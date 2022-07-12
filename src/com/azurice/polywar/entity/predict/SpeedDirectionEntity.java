@@ -27,7 +27,7 @@ public class SpeedDirectionEntity extends PredictableEntity implements Serializa
     // Now the model has a rotation based on the original model.
     @Override
     public Polygon getModel() {
-        if (speed != Vec2d.ZERO) {
+        if (speed.length() > 1) {
             setAngle(speed.getAngle());
         }
         return super.getModel().rotate(angle);

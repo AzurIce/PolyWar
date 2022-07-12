@@ -29,7 +29,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
     public RoomListPage roomListPage;
 
     // Pages
-    private MainPage mainPage;
+    public MainPage mainPage;
     public RoomPage roomPage;
     public GamePage gamePage;
 

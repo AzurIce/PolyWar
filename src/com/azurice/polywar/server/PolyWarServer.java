@@ -2,6 +2,7 @@ package com.azurice.polywar.server;
 
 import com.azurice.polywar.network.Util;
 import com.azurice.polywar.network.packet.*;
+import com.azurice.polywar.server.database.DatabaseHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +34,9 @@ public class PolyWarServer {
     Map<SocketChannel, Player> socketsToPlayers = Collections.synchronizedMap(new HashMap<>());
     List<Integer> deletedPlayerIds = Collections.synchronizedList(new ArrayList<>());
     Map<SocketChannel, SelectionKey> socketsToKeys = Collections.synchronizedMap(new HashMap<>());
+    public static final DatabaseHelper database = DatabaseHelper.getInstance();
+    Map<SocketChannel, Integer> socketToPlayerId = Collections.synchronizedMap(new HashMap<>());
+    Map<Integer, Room> playerIdToRoom = Collections.synchronizedMap(new HashMap<>());
 
     private PolyWarServer() {
     }
@@ -53,42 +57,15 @@ public class PolyWarServer {
     public void run() {
         this.running = true;
 
-        // Initialize Selector and ServerSocketChannel
-        try {
-            LOGGER.info("Initializing network......");
-            selector = Selector.open();
+        initNetwork(); // Initialize Selector and ServerSocketChannel
 
-            serverSocketChannel = ServerSocketChannel.open();
-            serverSocketChannel.bind(LISTEN_ADDRESS);
-
-            serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (IOException e) {
-            LOGGER.error("Network initialize failed", e);
-            running = false;
-        }
-
-        // Tick cycle
-        LOGGER.info("Starting ticking thread...");
-        Thread tickThread = new Thread(() -> {
-            while (running) {
-                long timeTickStart = com.azurice.polywar.util.Util.getMeasuringTimeMs();
-//                LOGGER.info("Server ticking...");
-                tick();
-                long timeTickFinished = com.azurice.polywar.util.Util.getMeasuringTimeMs();
-                try {
-                    Thread.sleep(Math.max(0, 1000 / TICK_RATE - timeTickFinished + timeTickStart));
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        tickThread.start();
+        startTick(); // Tick cycle
 
 
         // Network cycle
         LOGGER.info("Handling connections...");
         while (running) {
+//            LOGGER.info("Selecting...");
             try {
                 selector.select();
             } catch (IOException e) {
@@ -125,14 +102,6 @@ public class PolyWarServer {
             socketChannel.configureBlocking(false);
             SelectionKey key = socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
             socketsToKeys.put(socketChannel, key);
-            if (deletedPlayerIds.size() == 0) {
-                socketsToPlayers.put(socketChannel, new Player(socketsToPlayers.size(), socketChannel));
-            } else {
-                socketsToPlayers.put(socketChannel, new Player(deletedPlayerIds.get(0), socketChannel));
-                deletedPlayerIds.remove(0);
-            }
-            LOGGER.info("Created Player, total {} Players: {}", socketsToPlayers.size(), socketsToPlayers);
-//            socketChannel.write(new PingPacket().toByteBuffer());
         } catch (IOException e) {
             LOGGER.error("Accept failed: ", e);
         }
@@ -144,57 +113,143 @@ public class PolyWarServer {
             Packet packet = Util.readPacket(socketChannel);
 
             switch (packet) {
-                case PingPacket p -> socketChannel.write(new PingPacket().toByteBuffer());
-                case GetRoomListPacket p -> handleGetRoom(socketChannel);
+                case NamePacket p -> handleName(socketChannel, p.getData());
+                case PingPacket p -> handlePing(socketChannel);
+                case GetRoomListPacket p -> handleGetRoomList(socketChannel);
                 case CreateRoomPacket p -> handleCreateRoom(socketChannel);
-                case RoomPacket p -> handleJoinRoom(socketChannel, Objects.requireNonNull(getRoomById(p.getData().id)));
+                case RoomPacket p -> handleJoinRoom(socketChannel, p.getData());
                 case ExitRoomPacket p -> handleExitRoom(socketChannel);
                 case RegenerateMapPacket p -> {
-                    Player player = socketsToPlayers.get(socketChannel);
-                    Room room = playersToRooms.get(player);
+                    int playerId = socketToPlayerId.get(socketChannel);
+                    Room room = playerIdToRoom.get(playerId);
                     LOGGER.info("Regenerating WorldMap...");
                     room.regenerateMap();
                     LOGGER.info("Sending MapPacket...");
                     sendRoomMapInfo(room);
                 }
                 case StartGamePacket p -> {
-                    Player player = socketsToPlayers.get(socketChannel);
-                    Room room = playersToRooms.get(player);
+                    int playerId = socketToPlayerId.get(socketChannel);
+                    Room room = playerIdToRoom.get(playerId);
                     room.startGame();
                 }
                 case GamePlayerControlDataPacket p -> {
-                    Player player = socketsToPlayers.get(socketChannel);
-                    Room room = playersToRooms.get(player);
-                    room.updatePlayerControlData(player, p.getData());
+                    int playerId = socketToPlayerId.get(socketChannel);
+                    Room room = playerIdToRoom.get(playerId);
+                    room.updatePlayerControlDataById(playerId, p.getData());
                 }
                 default -> {
                 }
             }
         } catch (IOException e) {
             LOGGER.error("Read failed: ", e);
-            key.cancel();
-            Player player = socketsToPlayers.get((SocketChannel) key.channel());
-            socketsToPlayers.remove((SocketChannel) key.channel());
-            deletedPlayerIds.add(player.id);
-            LOGGER.error("Canceled key");
+            handlePlayerLogout(key);
         }
     }
+
+    //--------------------------------------------------------------------//
+
+    private void handleName(SocketChannel socketChannel, String name) {
+        int id = database.updatePlayer(name);
+
+        if (!socketToPlayerId.containsValue(id)) {
+            socketToPlayerId.put(socketChannel, id);
+        }
+        if (socketToPlayerId.get(socketChannel) == null || socketToPlayerId.get(socketChannel) != id) {
+            sendPacket(socketChannel, new NameInValidPacket());
+        } else {
+            sendPacket(socketChannel, NamePacket.of(name));
+        }
+    }
+
+    private void handlePing(SocketChannel socketChannel) {
+        sendPacket(socketChannel, new PingPacket());
+    }
+
+    private void handleGetRoomList(SocketChannel socketChannel) {
+        sendPacket(socketChannel, RoomListPacket.of(rooms));
+    }
+
+    private void handleCreateRoom(SocketChannel socketChannel) throws IOException {
+        int playerId = socketToPlayerId.get(socketChannel);
+
+        Room room;
+        if (deletedRoomIds.size() == 0) {
+            room = new Room(rooms.size(), new Player(playerId, socketChannel));
+        } else {
+            room = new Room(deletedRoomIds.get(0), new Player(playerId, socketChannel));
+            deletedRoomIds.remove(0);
+        }
+        rooms.add(room);
+
+        playerIdToRoom.put(playerId, room);
+        sendPacket(socketChannel, RoomPacket.of(room));
+    }
+
+    private void handleJoinRoom(SocketChannel socketChannel, Room room) throws IOException {
+        room = getRoomById(room.id);
+        if (room == null) return;
+
+        int playerId = socketToPlayerId.get(socketChannel);
+        room.addPlayer(new Player(playerId, socketChannel));
+        playerIdToRoom.put(playerId, room);
+
+        room.sendPlayerListPacket();
+        sendPacket(socketChannel, RoomPacket.of(room));
+    }
+
+    private void handleExitRoom(SocketChannel socketChannel) throws IOException {
+        int playerId = socketToPlayerId.get(socketChannel);
+        Room room = playerIdToRoom.get(playerId);
+
+        room.removePlayerById(playerId);
+        playerIdToRoom.remove(playerId);
+
+        room.sendPlayerListPacket();
+        sendPacket(socketChannel, new ExitRoomPacket());
+    }
+
+    //--------------------------------------------------------------------//
+
+    public void handlePlayerLogout(SocketChannel socketChannel) {
+        this.handlePlayerLogout(socketsToKeys.get(socketChannel));
+    }
+
+    public void handlePlayerLogout(SelectionKey key) {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        key.cancel();
+        socketsToKeys.remove(socketChannel);
+        LOGGER.error("Canceled key");
+
+
+        int playerId = socketToPlayerId.get(socketChannel);
+        socketToPlayerId.remove(socketChannel);
+
+        // If the player is in a room, remove the player
+        Room room = playerIdToRoom.get(playerId);
+        if (room != null) { // This player is still in room
+            room.removePlayerById(playerId);
+            playerIdToRoom.remove(playerId);
+        }
+    }
+
+
+    public void dismissRoom(Room room) {
+        for (int i = 0; i < room.playerList.size(); i++) {
+            sendPacket(room.playerList.get(i).socketChannel, new ExitRoomPacket());
+        }
+        rooms.remove(room);
+    }
+
 
     public void sendPacket(SocketChannel socketChannel, Packet packet) {
         try {
             Util.sendPacket(socketChannel, packet);
         } catch (IOException e) {
             LOGGER.error("Write failed: ", e);
-            Player player = socketsToPlayers.get(socketChannel);
-            deletedPlayerIds.add(player.id);
-            Room room = playersToRooms.get(player);
-            room.removePlayer(player);
-            playersToRooms.remove(player);
-            socketsToKeys.get(socketChannel).cancel();
-            socketsToKeys.remove(socketChannel);
-            socketsToPlayers.remove(socketChannel);
+            handlePlayerLogout(socketChannel);
         }
     }
+
 
     public void removeRoom(Room room) {
         rooms.remove(room);
@@ -206,70 +261,6 @@ public class PolyWarServer {
         }
     }
 
-    private void sendRoomPlayersInfo(Room room) throws IOException {
-        for (int i = 0; i < room.playerList.size(); i++) {
-            Util.sendPacket(room.playerList.get(i).socketChannel, PlayerListPacket.of(room.playerList));
-        }
-    }
-
-    private void handleGetRoom(SocketChannel socketChannel) throws IOException {
-//        LOGGER.info("[{}] Sending Room List", socketChannel.getRemoteAddress());
-        Util.sendPacket(socketChannel, RoomListPacket.of(rooms));
-    }
-
-    private void handleCreateRoom(SocketChannel socketChannel) throws IOException {
-        Player player = socketsToPlayers.get(socketChannel);
-        Room room;
-        if (deletedRoomIds.size() == 0) {
-            room = new Room(rooms.size(), player);
-        } else {
-            room = new Room(deletedRoomIds.get(0), player);
-            deletedRoomIds.remove(0);
-        }
-        rooms.add(room);
-//        LOGGER.info("Created Room, total {} Rooms: {}", rooms.size(), rooms);
-
-        playersToRooms.put(player, room);
-//        LOGGER.info("Sending RoomPacket");
-        Util.sendPacket(socketChannel, RoomPacket.of(room));
-    }
-
-    private void handleJoinRoom(SocketChannel socketChannel, Room room) throws IOException {
-        Player player = socketsToPlayers.get(socketChannel);
-        LOGGER.info("Player{{}} Joining room {{}}", player.id, room.id);
-        room.addPlayer(socketsToPlayers.get(socketChannel));
-        playersToRooms.put(player, room);
-        LOGGER.info("Room: {}", room);
-        LOGGER.info("Sending RoomPacket");
-        Util.sendPacket(socketChannel, RoomPacket.of(room));
-        LOGGER.info("Sending PlayerListPackets");
-        sendRoomPlayersInfo(room);
-    }
-
-    private void handleExitRoom(SocketChannel socketChannel) throws IOException {
-        Player player = socketsToPlayers.get(socketChannel);
-        Room room = playersToRooms.get(player);
-//        LOGGER.info("Player{{}} Exiting room {{}}", player.id, room.id);
-        room.removePlayer(player);
-        playersToRooms.remove(player);
-
-//        LOGGER.info("Sending ExitRoomPacket");
-        Util.sendPacket(socketChannel, new ExitRoomPacket());
-
-        if (room.playerList.size() == 0) {
-//            LOGGER.info("No player left, deleting room...");
-            rooms.remove(room);
-        } else if (room.owner.id == player.id) {
-//            LOGGER.info("Owner exit, deleting room...");
-            for (int i = 0; i < room.playerList.size(); i++) {
-                Util.sendPacket(room.playerList.get(i).socketChannel, new ExitRoomPacket());
-            }
-            rooms.remove(room);
-        } else {
-//            LOGGER.info("Sending PlayerListPackets");
-            sendRoomPlayersInfo(room);
-        }
-    }
 
     private Room getRoomById(int id) {
         for (int i = 0; i < rooms.size(); i++) {
@@ -278,5 +269,40 @@ public class PolyWarServer {
             }
         }
         return null;
+    }
+
+
+    private void initNetwork() {
+        LOGGER.info("Initializing network......");
+        try {
+            selector = Selector.open();
+
+            serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.bind(LISTEN_ADDRESS);
+
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+        } catch (IOException e) {
+            LOGGER.error("Network initialize failed", e);
+            running = false;
+        }
+    }
+
+    public void startTick() {
+        LOGGER.info("Starting ticking thread...");
+        Thread tickThread = new Thread(() -> {
+            while (running) {
+                long timeTickStart = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+//                LOGGER.info("Server ticking...");
+                tick();
+                long timeTickFinished = com.azurice.polywar.util.Util.getMeasuringTimeMs();
+                try {
+                    Thread.sleep(Math.max(0, 1000 / TICK_RATE - timeTickFinished + timeTickStart));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        tickThread.start();
     }
 }
