@@ -18,6 +18,7 @@ public class GamePlayer extends SpeedDirectionEntity {
     //vvvvvv CONSTANTS vvvvvv//
     private static final double FRICTION = 0.01;
     private static final double ACC = 4;
+    private static final int SHOOT_COOL_DOWN = 10;
     //^^^^^^ CONSTANTS ^^^^^^//
     private final WorldMap worldMap;
     protected Vec2d acceleration = Vec2d.ZERO;
@@ -51,7 +52,7 @@ public class GamePlayer extends SpeedDirectionEntity {
         shootCoolDown--;
         if (gamePlayerControlData.keyShootPressed && shootCoolDown <= 0) {
             room.addMissile(new Missile(coord, speed.add(Vec2d.D.rotate(getAngle()).multiply(Missile.SPEED)), id));
-            shootCoolDown = 10;
+            shootCoolDown = SHOOT_COOL_DOWN;
         }
 
 //        LOGGER.info("Ticking GamePlayer: {}", this);
