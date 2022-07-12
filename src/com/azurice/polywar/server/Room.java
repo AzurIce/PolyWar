@@ -1,13 +1,11 @@
 package com.azurice.polywar.server;
 
 import com.azurice.polywar.entity.predict.Missile;
+import com.azurice.polywar.network.data.GameOverData;
 import com.azurice.polywar.network.data.GamePlayerControlData;
 import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.network.data.MissileData;
-import com.azurice.polywar.network.packet.GamePlayerDataListPacket;
-import com.azurice.polywar.network.packet.GamePlayerDataPacket;
-import com.azurice.polywar.network.packet.MissileDataListPacket;
-import com.azurice.polywar.network.packet.PlayerListPacket;
+import com.azurice.polywar.network.packet.*;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
 import org.apache.logging.log4j.LogManager;
@@ -24,9 +22,9 @@ public class Room implements Serializable {
 
     //
     public int id;
+    public List<Player> playerList = Collections.synchronizedList(new ArrayList<>());
     public Player owner;
     public List<Missile> missileList = Collections.synchronizedList(new ArrayList<>());
-    public List<Player> playerList = Collections.synchronizedList(new ArrayList<>());
     public WorldMap map;
 
     public boolean playing = false;
@@ -59,8 +57,16 @@ public class Room implements Serializable {
             server.removeRoom(this);
         }
         if (playing) {
+            if (gamePlayers.size() == 0) {
+                playing = false;
+                for (int i = 0; i < playerList.size(); i++) {
+                    server.sendPacket(playerList.get(i).socketChannel, new RoomFinishPlayingPacket());
+                }
+                return;
+            }
             for (int i = 0; i < playerList.size(); i++) {
-                gamePlayers.get(playerList.get(i).id).tick(this);
+                GamePlayer gamePlayer = gamePlayers.get(playerList.get(i).id);
+                if (gamePlayer != null) gamePlayer.tick(this);
             }
             sendGamePlayerDataListPacket();
             for (int i = 0; i < missileList.size(); i++) {
@@ -71,6 +77,22 @@ public class Room implements Serializable {
 
     }
 
+    public void killGamePlayer(GamePlayer gamePlayer) {
+        int playerId = gamePlayer.id;
+        gamePlayers.remove(playerId);
+        LOGGER.info("Killed GamePlayer: {}, remains {} GamePlayers", gamePlayer, gamePlayers.size());
+        server.sendPacket(getPlayerById(playerId).socketChannel, GameOverPacket.of(
+                new GameOverData(gamePlayers.size() + 1, gamePlayer.shootCount, gamePlayer.distance)
+        ));
+    }
+
+    public Player getPlayerById(int playerId) {
+        for (int i = 0; i < playerList.size(); i++) {
+            if (playerList.get(i).id == playerId) return playerList.get(i);
+        }
+        return null;
+    }
+
 
     public void removeMissile(Missile missile) {
         missileList.remove(missile);
@@ -79,7 +101,9 @@ public class Room implements Serializable {
     public void sendGamePlayerDataListPacket() {
         List<GamePlayerData> gamePlayerDataList = new ArrayList<>();
         for (int i = 0; i < playerList.size(); i++) {
-            gamePlayerDataList.add(gamePlayers.get(playerList.get(i).id).getGamePlayerData());
+            if (gamePlayers.get(playerList.get(i).id) != null) {
+                gamePlayerDataList.add(gamePlayers.get(playerList.get(i).id).getGamePlayerData());
+            }
         }
         for (int i = 0; i < playerList.size(); i++) {
             server.sendPacket(playerList.get(i).socketChannel, GamePlayerDataListPacket.of(gamePlayerDataList));

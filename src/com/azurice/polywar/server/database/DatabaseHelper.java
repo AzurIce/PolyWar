@@ -85,7 +85,15 @@ public class DatabaseHelper {
         }
     }
 
-    public void createPlayer(String name, boolean online) {
-
+    public String getPlayerNameById(int id) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(
+                    "SELECT * FROM PLAYER WHERE id = " + id + ";"
+            );
+            return rs.next() ? rs.getString("NAME") : "NULL";
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -87,7 +87,9 @@ public class Util {
             case NAME_PACKET -> new NamePacket(blocks);
             case NAME_VALID_PACKET -> new NameValidPacket();
             case NAME_INVALID_PACKET -> new NameInValidPacket();
-            case END_GAME_PACKET -> null/*new EndGamePacket(blocks)*/;
+            case GAME_OVER_PACKET -> new GameOverPacket(blocks);
+            case PLAYER_PACKET -> new PlayerPacket(blocks);
+            case ROOM_FINISHED_PLAYING_PACKET -> new RoomFinishPlayingPacket();
         };
     }
 

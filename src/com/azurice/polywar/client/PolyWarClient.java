@@ -2,6 +2,7 @@ package com.azurice.polywar.client;
 
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.Util;
+import com.azurice.polywar.network.data.GameOverData;
 import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.network.data.MissileData;
 import com.azurice.polywar.network.packet.*;
@@ -51,6 +52,7 @@ public class PolyWarClient {
     private boolean connected = false;
     public boolean nameValid = false;
     public String name = "Player";
+    public int id;
 
     public boolean isNameValid() {
         return nameValid;
@@ -151,9 +153,10 @@ public class PolyWarClient {
             Packet packet = Util.readPacket(socketChannel);
 
             switch (packet) {
-                case NamePacket p -> {
+                case PlayerPacket p -> {
                     nameValid = true;
-                    name = p.getData();
+                    id = p.getData().id;
+                    name = p.getData().name;
                 }
                 case NameInValidPacket p -> nameValid = false;
                 case PingPacket p -> handlePing();
@@ -165,6 +168,7 @@ public class PolyWarClient {
                 case GamePlayerDataPacket p -> handleGamePlayerData(p.getData());
                 case GamePlayerDataListPacket p -> window.gamePage.gameView.updateGamePlayersData(p.getData());
                 case MissileDataListPacket p -> handleMissileDataList(p.getData());
+                case GameOverPacket p -> handleGameOver(p.getData());
                 default -> {
                 }
             }
@@ -219,6 +223,11 @@ public class PolyWarClient {
 
     public void handleMissileDataList(List<MissileData> missileDataList) {
         window.gamePage.gameView.updateMissilesData(missileDataList);
+    }
+
+    public void handleGameOver(GameOverData gameOverData) {
+        window.gamePage.gameOverData = gameOverData;
+        window.gamePage.gameOver = true;
     }
 
 

@@ -157,7 +157,7 @@ public class PolyWarServer {
         if (socketToPlayerId.get(socketChannel) == null || socketToPlayerId.get(socketChannel) != id) {
             sendPacket(socketChannel, new NameInValidPacket());
         } else {
-            sendPacket(socketChannel, NamePacket.of(name));
+            sendPacket(socketChannel, PlayerPacket.of(new Player(id, name)));
         }
     }
 
@@ -171,12 +171,13 @@ public class PolyWarServer {
 
     private void handleCreateRoom(SocketChannel socketChannel) throws IOException {
         int playerId = socketToPlayerId.get(socketChannel);
+        String playerName = database.getPlayerNameById(playerId);
 
         Room room;
         if (deletedRoomIds.size() == 0) {
-            room = new Room(rooms.size(), new Player(playerId, socketChannel));
+            room = new Room(rooms.size(), new Player(playerId, playerName, socketChannel));
         } else {
-            room = new Room(deletedRoomIds.get(0), new Player(playerId, socketChannel));
+            room = new Room(deletedRoomIds.get(0), new Player(playerId, playerName, socketChannel));
             deletedRoomIds.remove(0);
         }
         rooms.add(room);
@@ -190,7 +191,8 @@ public class PolyWarServer {
         if (room == null) return;
 
         int playerId = socketToPlayerId.get(socketChannel);
-        room.addPlayer(new Player(playerId, socketChannel));
+        String playerName = database.getPlayerNameById(playerId);
+        room.addPlayer(new Player(playerId, playerName, socketChannel));
         playerIdToRoom.put(playerId, room);
 
         room.sendPlayerListPacket();

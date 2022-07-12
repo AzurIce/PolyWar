@@ -27,8 +27,10 @@ public class GamePlayer extends SpeedDirectionEntity {
     public int id;
     private int health = 100;
     private int shootCoolDown = 0;
+    public int shootCount = 0;
+    public double distance = 0;
+
     //^^^^^^ PROPERTIES ^^^^^^//
-    //^^^^^^ CONSTRUCTOR ^^^^^^//
 
 
     //vvvvvv CONSTRUCTOR vvvvvv//
@@ -37,6 +39,7 @@ public class GamePlayer extends SpeedDirectionEntity {
         this.worldMap = worldMap;
         this.id = id;
     }
+    //^^^^^^ CONSTRUCTOR ^^^^^^//
 
     //vvvvvv NETWORK vvvvvv//
     public GamePlayerData getGamePlayerData() {
@@ -49,10 +52,20 @@ public class GamePlayer extends SpeedDirectionEntity {
     }
 
     public void tick(Room room) {
+        if (room.gamePlayers.size() == 1) {
+            room.killGamePlayer(this);
+            return;
+        }
+        if (health <= 0) {
+            room.killGamePlayer(this);
+            return;
+        }
+
         shootCoolDown--;
         if (gamePlayerControlData.keyShootPressed && shootCoolDown <= 0) {
             room.addMissile(new Missile(coord, speed.add(Vec2d.D.rotate(getAngle()).multiply(Missile.SPEED)), id));
             shootCoolDown = SHOOT_COOL_DOWN;
+            shootCount++;
         }
 
 //        LOGGER.info("Ticking GamePlayer: {}", this);
@@ -94,6 +107,7 @@ public class GamePlayer extends SpeedDirectionEntity {
             speed = new Vec2d(speed.x, 0);
         }
 
+        distance += speed.length();
         super.tick();
     }
 

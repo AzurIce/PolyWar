@@ -31,6 +31,20 @@ public class RoomPage extends PerformanceOverlayedPage {
     private MapView mapView;
     private Player owner;
 
+    public boolean playing = false;
+
+    @Override
+    public void render() {
+        super.render();
+        if (playing || client.id != owner.id) {
+            btnRegenerate.setEnabled(false);
+            btnStart.setEnabled(false);
+        } else {
+            btnRegenerate.setEnabled(true);
+            btnStart.setEnabled(true);
+        }
+    }
+
     public RoomPage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
     }
@@ -152,7 +166,7 @@ public class RoomPage extends PerformanceOverlayedPage {
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 //            setText(value.toString());
             Player player = (Player) value;
-            setText("Player " + player.id + (RoomPage.this.owner == player ? "owner" : ""));
+            setText(player.name + (RoomPage.this.owner.id == player.id ? "owner" : ""));
             return this;
         }
     }

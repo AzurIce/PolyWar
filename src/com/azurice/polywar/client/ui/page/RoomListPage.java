@@ -106,7 +106,11 @@ public class RoomListPage extends AbstractPage {
 
     @Override
     public void render() {
-
+        if (roomList.getSelectedValue() != null && roomList.getSelectedValue().playing) {
+            btnJoin.setEnabled(false);
+        } else {
+            btnJoin.setEnabled(true);
+        }
     }
 
     @Override
@@ -132,9 +136,11 @@ public class RoomListPage extends AbstractPage {
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 //            setText(value.toString());
             Room room = (Room) value;
-            setText("Room " + room.id + "    Players: " + room.playerList.size());
+            setText("Room " + room.id + "    Players: " + room.playerList.size() + "    Playing: " + room.playing);
             if (isSelected) {
                 setBackground(new Color(MyColor.BLUE | 0x77 << 24, true));
+            } else if (room.playing) {
+                setBackground(new Color(0x9c9c9c));
             } else {
                 setBackground(new Color(0xfcfcfc));
             }

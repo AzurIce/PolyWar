@@ -3,6 +3,7 @@ package com.azurice.polywar.client.ui.page;
 import com.azurice.polywar.client.PolyWarClient;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.client.ui.component.GameView;
+import com.azurice.polywar.network.data.GameOverData;
 import com.azurice.polywar.world.WorldMap;
 
 import java.awt.*;
@@ -11,6 +12,8 @@ import java.awt.event.KeyEvent;
 public class GamePage extends PerformanceOverlayedPage {
     // Views
     public GameView gameView;
+    public boolean gameOver = false;
+    public GameOverData gameOverData;
 
     public GamePage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
@@ -28,9 +31,19 @@ public class GamePage extends PerformanceOverlayedPage {
     }
 
     @Override
+    public void paintOverlay(Graphics g) {
+        super.paintOverlay(g);
+        if (gameOver) {
+            g.drawString("You died, press Esc to exit", 400, 400);
+            g.drawString(gameOverData.toString(), 400, 414);
+        }
+    }
+
+    @Override
     public void tick() {
-        gameView.tick();
-        super.tick();
+        if (!gameOver) {
+            gameView.tick();
+        }
     }
 
 
@@ -49,7 +62,8 @@ public class GamePage extends PerformanceOverlayedPage {
     ////// KeyListener //////
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            parent.setPage(MainWindow.Page.MAIN_PAGE);
+            parent.setPage(MainWindow.Page.ROOM_PAGE);
+            gameOver = false;
         } else {
             gameView.keyPressed(e);
         }

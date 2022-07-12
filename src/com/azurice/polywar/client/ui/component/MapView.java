@@ -51,7 +51,6 @@ public class MapView extends AbstractView {
     // Overrides of AbstractView
     @Override
     public void initViews() {
-
         setOpaque(false);
         setBackground(Color.WHITE);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

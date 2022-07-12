@@ -37,6 +37,10 @@ public class GameView extends AbstractView {
     // Player
     private GamePlayer mainGamePlayer;
 
+    public int getMainGamePlayerId() {
+        return mainGamePlayer.id;
+    }
+
     private Vec2d screenLocation = Vec2d.ZERO;
     private WorldMap worldMap;
 
