@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -46,7 +45,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
         pageContainer.add(Page.GAME_PAGE.name(), gamePage);
         pageContainer.add(Page.ROOM_LIST_PAGE.name(), roomListPage);
         pageContainer.add(Page.ROOM_PAGE.name(), roomPage);
-        pageContainer.setBorder(new LineBorder(new Color(0x00ff00)));
+//        pageContainer.setBorder(new LineBorder(new Color(0x00ff00)));
 
         pageContainer.setLocation(0, 0);
 
