@@ -62,7 +62,7 @@ public class GamePlayer extends SpeedDirectionEntity {
             }
             circleHealthDescCoolDown--;
         }
-        if (room.gamePlayers.size() == room.diedGamePlayerIds.size()) {
+        if (room.gamePlayers.size() - room.diedGamePlayerIds.size() == 1) {
             room.killGamePlayer(this);
             return;
         }

@@ -165,7 +165,7 @@ public class RoomPage extends PerformanceOverlayedPage {
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 //            setText(value.toString());
             Player player = (Player) value;
-            setText(player.name + (RoomPage.this.owner.id == player.id ? "owner" : ""));
+            setText(player.name + (RoomPage.this.owner.id == player.id ? " [owner]" : "") + (client.id == player.id ? " [you]" : ""));
             return this;
         }
     }

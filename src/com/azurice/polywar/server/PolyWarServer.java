@@ -30,9 +30,6 @@ public class PolyWarServer {
 
     List<Room> rooms = Collections.synchronizedList(new ArrayList<>());
     List<Integer> deletedRoomIds = Collections.synchronizedList(new ArrayList<>());
-    Map<Player, Room> playersToRooms = Collections.synchronizedMap(new HashMap<>());
-    Map<SocketChannel, Player> socketsToPlayers = Collections.synchronizedMap(new HashMap<>());
-    List<Integer> deletedPlayerIds = Collections.synchronizedList(new ArrayList<>());
     Map<SocketChannel, SelectionKey> socketsToKeys = Collections.synchronizedMap(new HashMap<>());
     public static final DatabaseHelper database = DatabaseHelper.getInstance();
     Map<SocketChannel, Integer> socketToPlayerId = Collections.synchronizedMap(new HashMap<>());
@@ -141,7 +138,7 @@ public class PolyWarServer {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Read failed: ", e);
+//            LOGGER.error("Read failed: ", e);
             handlePlayerLogout(key);
         }
     }
@@ -247,7 +244,7 @@ public class PolyWarServer {
         try {
             Util.sendPacket(socketChannel, packet);
         } catch (IOException e) {
-            LOGGER.error("Write failed: ", e);
+//            LOGGER.error("Write failed: ", e);
             handlePlayerLogout(socketChannel);
         }
     }

@@ -85,7 +85,8 @@ public class Room implements Serializable {
         int playerId = gamePlayer.id;
         diedGamePlayerIds.add(gamePlayer.id);
 //        gamePlayers.remove(playerId);
-        LOGGER.info("Killed GamePlayer: {}, remains {} GamePlayers", gamePlayer, diedGamePlayerIds.size() - gamePlayers.size());
+        LOGGER.info("Killed GamePlayer: {}, remains {} GamePlayers", gamePlayer,
+                gamePlayers.size() - diedGamePlayerIds.size());
         server.sendPacket(getPlayerById(playerId).socketChannel, GameOverPacket.of(
                 new GameOverData(gamePlayers.size() + 1, gamePlayer.shootCount, gamePlayer.distance)
         ));
@@ -106,14 +107,12 @@ public class Room implements Serializable {
     public void sendGamePlayerDataListPacket() {
         List<GamePlayerData> gamePlayerDataList = new ArrayList<>();
         for (int i = 0; i < playerList.size(); i++) {
-            if (gamePlayers.get(playerList.get(i).id) != null) {
-                gamePlayerDataList.add(gamePlayers.get(playerList.get(i).id).getGamePlayerData());
-            }
+            int playerId = playerList.get(i).id;
+            if (diedGamePlayerIds.contains(playerId)) continue;
+            gamePlayerDataList.add(gamePlayers.get(playerId).getGamePlayerData());
         }
         for (int i = 0; i < playerList.size(); i++) {
-            if (gamePlayers.get(playerList.get(i).id) != null) {
-                server.sendPacket(playerList.get(i).socketChannel, GamePlayerDataListPacket.of(gamePlayerDataList));
-            }
+            server.sendPacket(playerList.get(i).socketChannel, GamePlayerDataListPacket.of(gamePlayerDataList));
         }
     }
 
