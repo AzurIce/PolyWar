@@ -31,6 +31,7 @@ public class Room implements Serializable {
 
     // Game
     public Map<Integer, GamePlayer> gamePlayers = Collections.synchronizedMap(new HashMap<>());
+    public Set<Integer> diedGamePlayerIds = Collections.synchronizedSet(new HashSet<>());
 
     public Room(int id, Player owner, WorldMap map) {
         this.id = id;
@@ -57,16 +58,20 @@ public class Room implements Serializable {
             server.removeRoom(this);
         }
         if (playing) {
-            if (gamePlayers.size() == 0) {
+            if (gamePlayers.size() == diedGamePlayerIds.size()) {
                 playing = false;
                 for (int i = 0; i < playerList.size(); i++) {
                     server.sendPacket(playerList.get(i).socketChannel, new RoomFinishPlayingPacket());
                 }
                 return;
             }
+            map.tick();
+            for (int i = 0; i < playerList.size(); i++) {
+                server.sendPacket(playerList.get(i).socketChannel, MapRadiusPacket.of(map.radius));
+            }
             for (int i = 0; i < playerList.size(); i++) {
                 GamePlayer gamePlayer = gamePlayers.get(playerList.get(i).id);
-                if (gamePlayer != null) gamePlayer.tick(this);
+                if (!diedGamePlayerIds.contains(gamePlayer.id)) gamePlayer.tick(this);
             }
             sendGamePlayerDataListPacket();
             for (int i = 0; i < missileList.size(); i++) {
@@ -74,13 +79,13 @@ public class Room implements Serializable {
             }
             sendMissileListPacket();
         }
-
     }
 
     public void killGamePlayer(GamePlayer gamePlayer) {
         int playerId = gamePlayer.id;
-        gamePlayers.remove(playerId);
-        LOGGER.info("Killed GamePlayer: {}, remains {} GamePlayers", gamePlayer, gamePlayers.size());
+        diedGamePlayerIds.add(gamePlayer.id);
+//        gamePlayers.remove(playerId);
+        LOGGER.info("Killed GamePlayer: {}, remains {} GamePlayers", gamePlayer, diedGamePlayerIds.size() - gamePlayers.size());
         server.sendPacket(getPlayerById(playerId).socketChannel, GameOverPacket.of(
                 new GameOverData(gamePlayers.size() + 1, gamePlayer.shootCount, gamePlayer.distance)
         ));

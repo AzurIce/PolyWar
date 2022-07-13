@@ -11,7 +11,8 @@ public enum Type {
     GAME_PLAYER_DATA_PACKET(true), GAME_PLAYER_CONTROL_DATA(true), GAME_PLAYER_DATA_LIST_PACKET(true), MISSILE_DATA_LIST_PACKET(true), GAME_OVER_PACKET(true),
 
     NAME_PACKET(true), NAME_VALID_PACKET(false), NAME_INVALID_PACKET(false), PLAYER_PACKET(true),
-    ROOM_FINISHED_PLAYING_PACKET(false);
+    ROOM_FINISHED_PLAYING_PACKET(false),
+    MAP_RADIUS_PACKET(true);
 
     public final boolean hasContent;
 

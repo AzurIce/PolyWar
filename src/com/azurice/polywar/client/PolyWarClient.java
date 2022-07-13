@@ -169,6 +169,7 @@ public class PolyWarClient {
                 case GamePlayerDataListPacket p -> window.gamePage.gameView.updateGamePlayersData(p.getData());
                 case MissileDataListPacket p -> handleMissileDataList(p.getData());
                 case GameOverPacket p -> handleGameOver(p.getData());
+                case MapRadiusPacket p -> handleMapRadius(p.getData());
                 default -> {
                 }
             }
@@ -229,6 +230,10 @@ public class PolyWarClient {
         LOGGER.info("GG");
         window.gamePage.gameOverData = gameOverData;
         window.gamePage.gameOver = true;
+    }
+
+    public void handleMapRadius(double r) {
+        window.gamePage.gameView.setMapRadius(r);
     }
 
 

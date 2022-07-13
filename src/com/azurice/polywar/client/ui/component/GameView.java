@@ -46,6 +46,10 @@ public class GameView extends AbstractView {
 
     private boolean debug = false;
 
+    public void setMapRadius(double r) {
+        worldMap.radius = r;
+    }
+
     public void setMap(WorldMap worldMap) {
         this.worldMap = worldMap;
     }

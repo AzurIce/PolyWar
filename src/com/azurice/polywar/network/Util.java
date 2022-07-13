@@ -90,6 +90,7 @@ public class Util {
             case GAME_OVER_PACKET -> new GameOverPacket(blocks);
             case PLAYER_PACKET -> new PlayerPacket(blocks);
             case ROOM_FINISHED_PLAYING_PACKET -> new RoomFinishPlayingPacket();
+            case MAP_RADIUS_PACKET -> new MapRadiusPacket(blocks);
         };
     }
 

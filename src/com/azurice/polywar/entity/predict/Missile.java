@@ -41,7 +41,7 @@ public class Missile extends SpeedDirectionEntity {
         for (int i = 0; i < room.gamePlayers.size(); i++) {
             GamePlayer gamePlayer = room.gamePlayers.get(room.playerList.get(i).id);
             if (gamePlayer.getCoord().minus(coord).length() <= 16 && gamePlayer.id != ownerId) {
-                gamePlayer.decHealth();
+                gamePlayer.descHealth();
                 room.removeMissile(this);
                 return;
             }

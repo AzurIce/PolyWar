@@ -20,7 +20,7 @@ public class GamePage extends PerformanceOverlayedPage {
     private static Player bgm;
 
     private void initBGM() throws JavaLayerException {
-        bgm = new Player(GamePage.class.getResourceAsStream("/sounds/bgm.mp3"));
+        bgm = new Player(GamePage.class.getResourceAsStream("/sounds/Goldmund - The Wind Wings.mp3"));
     }
 
 

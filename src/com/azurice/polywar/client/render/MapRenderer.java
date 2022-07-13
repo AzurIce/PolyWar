@@ -58,6 +58,16 @@ public class MapRenderer {
             wall.paint(g2d, screenLocation.negate());
 //            wall.paint(g2d);
         }
+
+        g2d.setColor(new Color(0xff0000));
+        g2d.drawOval(
+                (WorldMap.MAP_SIZE / 2 - (int) map.radius) - (int) screenLocation.x,
+                (WorldMap.MAP_SIZE / 2 - (int) map.radius) - (int) screenLocation.y,
+                2 * (int) map.radius, 2 * (int) map.radius
+        );
+
+//        g2d.drawString("x: " + ((map.mapSize / 2 - (int) map.radius) - (int) screenLocation.x) +
+//                ", y: " + ((map.mapSize / 2 - (int) map.radius) - (int) screenLocation.y) + ", r: " + map.radius, 300, 300);
     }
 
 }

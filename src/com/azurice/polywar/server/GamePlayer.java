@@ -11,6 +11,7 @@ import com.azurice.polywar.world.WorldMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static com.azurice.polywar.world.WorldMap.MAP_SIZE;
 import static java.lang.Math.abs;
 
 public class GamePlayer extends SpeedDirectionEntity {
@@ -19,6 +20,7 @@ public class GamePlayer extends SpeedDirectionEntity {
     private static final double FRICTION = 0.01;
     private static final double ACC = 4;
     private static final int SHOOT_COOL_DOWN = 10;
+    private static final int CIRCLE_HEALTH_DESC_COOL_DOWN = 20;
     //^^^^^^ CONSTANTS ^^^^^^//
     private final WorldMap worldMap;
     protected Vec2d acceleration = Vec2d.ZERO;
@@ -27,6 +29,7 @@ public class GamePlayer extends SpeedDirectionEntity {
     public int id;
     private int health = 100;
     private int shootCoolDown = 0;
+    private int circleHealthDescCoolDown = 0;
     public int shootCount = 0;
     public double distance = 0;
 
@@ -52,7 +55,14 @@ public class GamePlayer extends SpeedDirectionEntity {
     }
 
     public void tick(Room room) {
-        if (room.gamePlayers.size() == 1) {
+        if (coord.minus(new Vec2d(MAP_SIZE / 2d, MAP_SIZE / 2d)).length() > room.map.radius) {
+            if (circleHealthDescCoolDown <= 0) {
+                descHealth();
+                circleHealthDescCoolDown = CIRCLE_HEALTH_DESC_COOL_DOWN;
+            }
+            circleHealthDescCoolDown--;
+        }
+        if (room.gamePlayers.size() == room.diedGamePlayerIds.size()) {
             room.killGamePlayer(this);
             return;
         }
@@ -112,7 +122,7 @@ public class GamePlayer extends SpeedDirectionEntity {
     }
 
 
-    public void decHealth() {
+    public void descHealth() {
         health -= 10;
     }
 
