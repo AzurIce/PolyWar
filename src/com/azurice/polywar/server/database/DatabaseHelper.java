@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.sql.*;
 
 public class DatabaseHelper {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(DatabaseHelper.class);
 
     private static final DatabaseHelper instance = new DatabaseHelper();
     private final Connection connection;

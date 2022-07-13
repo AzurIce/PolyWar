@@ -7,15 +7,12 @@ import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.network.packet.GamePlayerControlDataPacket;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GamePlayer extends SpeedDirectionEntity {
     ////// CONSTANTS //////
-    private static final Logger LOGGER = LogManager.getLogger();
     // Keys
     private static final int KEY_UP = KeyEvent.VK_W;
     private static final int KEY_DOWN = KeyEvent.VK_S;

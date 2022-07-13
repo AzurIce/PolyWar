@@ -2,8 +2,6 @@ package com.azurice.polywar.client.ui.component;
 
 import com.azurice.polywar.client.render.MapRenderer;
 import com.azurice.polywar.world.WorldMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +9,6 @@ import java.awt.event.MouseAdapter;
 
 public class MapView extends AbstractView {
     private static final int MAP_SIZE = 4096;
-    private static final Logger LOGGER = LogManager.getLogger();
     private WorldMap map;
 
 

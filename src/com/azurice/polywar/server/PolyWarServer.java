@@ -17,7 +17,7 @@ import java.util.*;
 public class PolyWarServer {
     ////// Constants //////
     private static final InetSocketAddress LISTEN_ADDRESS = new InetSocketAddress(7777);
-    private static final Logger LOGGER = LogManager.getLogger("PolyWarServer");
+    private static final Logger LOGGER = LogManager.getLogger(PolyWarServer.class);
 
     private static final int TICK_RATE = 20;
 

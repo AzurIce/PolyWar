@@ -1,8 +1,5 @@
 package com.azurice.polywar.network.packet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +10,7 @@ import java.util.List;
  */
 public abstract class Packet {
     public static final int BLOCK_LEN = 128;
-    private static final Logger LOGGER = LogManager.getLogger();
+//    private static final Logger LOGGER = LogManager.getLogger(Packet.class);
     private List<PacketBlock> blocks = new ArrayList<>();
 
     public Packet() {

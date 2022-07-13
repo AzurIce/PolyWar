@@ -1,8 +1,6 @@
 package com.azurice.polywar.network;
 
 import com.azurice.polywar.network.packet.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,7 +11,7 @@ import java.util.List;
 import static com.azurice.polywar.network.packet.Packet.BLOCK_LEN;
 
 public class Util {
-    private static final Logger LOGGER = LogManager.getLogger();
+//    private static final Logger LOGGER = LogManager.getLogger();
 
     private static byte readByte(SocketChannel socketChannel) throws IOException {
         ByteBuffer buf = ByteBuffer.allocate(1);

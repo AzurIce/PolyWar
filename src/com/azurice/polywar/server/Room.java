@@ -16,7 +16,7 @@ import java.util.*;
 
 public class Room implements Serializable {
     private static final PolyWarServer server = PolyWarServer.getInstance();
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(Room.class);
     public static final int MAP_SIZE = 4096;
     private static final Random r = new Random();
 

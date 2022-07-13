@@ -8,15 +8,13 @@ import com.azurice.polywar.network.data.GamePlayerControlData;
 import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static com.azurice.polywar.world.WorldMap.MAP_SIZE;
 import static java.lang.Math.abs;
 
 public class GamePlayer extends SpeedDirectionEntity {
-    private static final Logger LOGGER = LogManager.getLogger();
-    //vvvvvv CONSTANTS vvvvvv//
+//    private static final Logger LOGGER = LogManager.getLogger();
+//vvvvvv CONSTANTS vvvvvv//
     private static final double FRICTION = 0.01;
     private static final double ACC = 4;
     private static final int SHOOT_COOL_DOWN = 10;

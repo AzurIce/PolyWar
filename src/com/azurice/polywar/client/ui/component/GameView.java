@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.*;
 
 public class GameView extends AbstractView {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(GameView.class);
     private static final PolyWarClient client = PolyWarClient.getInstance();
     private static final Random r = new Random();
     private static final int MAP_SIZE = 4096;
