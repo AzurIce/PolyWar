@@ -27,3 +27,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Log ###
+logs/
+
+### db ###
+polywar.db
