@@ -226,6 +226,7 @@ public class PolyWarClient {
     }
 
     public void handleGameOver(GameOverData gameOverData) {
+        LOGGER.info("GG");
         window.gamePage.gameOverData = gameOverData;
         window.gamePage.gameOver = true;
     }

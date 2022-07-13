@@ -106,7 +106,9 @@ public class Room implements Serializable {
             }
         }
         for (int i = 0; i < playerList.size(); i++) {
-            server.sendPacket(playerList.get(i).socketChannel, GamePlayerDataListPacket.of(gamePlayerDataList));
+            if (gamePlayers.get(playerList.get(i).id) != null) {
+                server.sendPacket(playerList.get(i).socketChannel, GamePlayerDataListPacket.of(gamePlayerDataList));
+            }
         }
     }
 
@@ -165,7 +167,8 @@ public class Room implements Serializable {
     }
 
     public void updatePlayerControlDataById(int playerId, GamePlayerControlData gamePlayerControlData) {
-        gamePlayers.get(playerId).setGamePlayerControlData(gamePlayerControlData);
+        GamePlayer gamePlayer = gamePlayers.get(playerId);
+        if (gamePlayer != null) gamePlayer.setGamePlayerControlData(gamePlayerControlData);
     }
 
     public void addMissile(Missile missile) {

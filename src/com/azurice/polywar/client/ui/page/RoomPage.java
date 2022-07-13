@@ -15,7 +15,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RoomPage extends PerformanceOverlayedPage {
@@ -140,7 +139,7 @@ public class RoomPage extends PerformanceOverlayedPage {
     }
 
     private static class ListModel extends DefaultListModel<Player> {
-        private java.util.List<Player> players = new ArrayList<>();
+        private java.util.List<Player> players;
 
         private ListModel(java.util.List<Player> playerList) {
             players = java.util.List.of(playerList.toArray(new Player[0]));

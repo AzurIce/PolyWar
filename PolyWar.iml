@@ -11,5 +11,6 @@
     <orderEntry type="library" name="log4j-api-2.18.0" level="project" />
     <orderEntry type="library" name="flatlaf-2.3" level="project" />
     <orderEntry type="library" name="sqlite-jdbc-3.36.0.3" level="project" />
+    <orderEntry type="library" name="jlayer-1.0.1.4" level="project" />
   </component>
 </module>

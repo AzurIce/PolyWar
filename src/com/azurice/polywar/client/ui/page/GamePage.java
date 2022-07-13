@@ -5,6 +5,8 @@ import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.client.ui.component.GameView;
 import com.azurice.polywar.network.data.GameOverData;
 import com.azurice.polywar.world.WorldMap;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,12 +17,39 @@ public class GamePage extends PerformanceOverlayedPage {
     public boolean gameOver = false;
     public GameOverData gameOverData;
 
+    private static Player bgm;
+
+    private void initBGM() throws JavaLayerException {
+        bgm = new Player(GamePage.class.getResourceAsStream("/sounds/bgm.mp3"));
+    }
+
+
     public GamePage(PolyWarClient client, MainWindow parent) {
         super(client, parent);
     }
 
     public void updateMap(WorldMap worldMap) {
         gameView.setMap(worldMap);
+    }
+
+
+    @Override
+    public void onShow() {
+        super.onShow();
+        new Thread(() -> {
+            try {
+                initBGM();
+                bgm.play();
+            } catch (JavaLayerException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onExit() {
+        super.onExit();
+        bgm.close();
     }
 
 

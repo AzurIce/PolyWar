@@ -78,6 +78,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
             case ROOM_PAGE -> roomPage;
         };
         if (curPage == targetPage) return;
+        if (curPage != null) curPage.onExit();
         cardLayout.show(pageContainer, page.name());
         curPage = targetPage;
         curPage.requestFocusInWindow();
