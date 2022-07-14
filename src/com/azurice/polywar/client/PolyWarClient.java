@@ -1,6 +1,7 @@
 package com.azurice.polywar.client;
 
 import com.azurice.polywar.client.ui.MainWindow;
+import com.azurice.polywar.client.ui.page.GamePage;
 import com.azurice.polywar.network.Util;
 import com.azurice.polywar.network.data.GameOverData;
 import com.azurice.polywar.network.data.GamePlayerData;
@@ -8,6 +9,8 @@ import com.azurice.polywar.network.data.MissileData;
 import com.azurice.polywar.network.packet.*;
 import com.azurice.polywar.server.Room;
 import com.azurice.polywar.world.WorldMap;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,8 +25,9 @@ import java.util.List;
 import static com.azurice.polywar.util.Util.getMeasuringTimeMs;
 
 public class PolyWarClient {
-//    private static final String SERVER_IP = "127.0.0.1";
-private static final String SERVER_IP = "114.116.241.137";
+    //    private static final String SERVER_IP = "127.0.0.1";
+    private static final String SERVER_IP = "114.116.241.137";
+    private static Player missileSound;
     private static final int SERVER_PORT = 7777;
     private static final InetSocketAddress SERVER_ADDRESS = new InetSocketAddress(SERVER_IP, SERVER_PORT);
     public static int TICK_RATE = 20;
@@ -36,6 +40,10 @@ private static final String SERVER_IP = "114.116.241.137";
 
     public static PolyWarClient getInstance() {
         return instance;
+    }
+
+    private void initMissileSound() throws JavaLayerException {
+        missileSound = new Player(GamePage.class.getResourceAsStream("/sounds/shoot.mp3"));
     }
 
     private PolyWarClient() {
@@ -178,6 +186,7 @@ private static final String SERVER_IP = "114.116.241.137";
                 case RoomFinishPlayingPacket p -> {
                     window.roomPage.playing = false;
                 }
+                case MissileSoundPacket p -> handleMissileSound();
                 default -> {
                 }
             }
@@ -187,6 +196,20 @@ private static final String SERVER_IP = "114.116.241.137";
             window.setPage(MainWindow.Page.MAIN_PAGE);
             connected = false;
             LOGGER.error("Canceled key");
+        }
+    }
+
+
+    private void handleMissileSound() {
+        new Thread(this::playMissileSound).start();
+    }
+
+    private void playMissileSound() {
+        try {
+            initMissileSound();
+            missileSound.play();
+        } catch (JavaLayerException e) {
+            throw new RuntimeException(e);
         }
     }
 

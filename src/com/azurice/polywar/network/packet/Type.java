@@ -13,7 +13,8 @@ public enum Type {
     NAME_PACKET(true), NAME_VALID_PACKET(false), NAME_INVALID_PACKET(false), PLAYER_PACKET(true),
     ROOM_FINISHED_PLAYING_PACKET(false),
     MAP_RADIUS_PACKET(true),
-    GET_GAME_OVER_RECORD_PACKET(false), GAME_OVER_DATA_LIST_PACKET(true);
+    GET_GAME_OVER_RECORD_PACKET(false), GAME_OVER_DATA_LIST_PACKET(true),
+    MISSILE_SOUND_PACKET(false);
 
     public final boolean hasContent;
 

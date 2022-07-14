@@ -72,6 +72,7 @@ public class GamePlayer extends SpeedDirectionEntity {
         shootCoolDown--;
         if (gamePlayerControlData.keyShootPressed && shootCoolDown <= 0) {
             room.addMissile(new Missile(coord, speed.add(Vec2d.D.rotate(getAngle()).multiply(Missile.SPEED)), id));
+            room.sendMissileSoundPacket(id);
             shootCoolDown = SHOOT_COOL_DOWN;
             shootCount++;
         }

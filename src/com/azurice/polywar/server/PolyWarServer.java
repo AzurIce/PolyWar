@@ -24,7 +24,7 @@ public class PolyWarServer {
 
 
     ///// Singleton //////
-    private static PolyWarServer instance = new PolyWarServer();
+    private static final PolyWarServer instance = new PolyWarServer();
     ////// Properties //////
     ServerSocketChannel serverSocketChannel;
     Selector selector;

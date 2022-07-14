@@ -91,6 +91,7 @@ public class Util {
             case MAP_RADIUS_PACKET -> new MapRadiusPacket(blocks);
             case GET_GAME_OVER_RECORD_PACKET -> new GetGameOverDataListPacket();
             case GAME_OVER_DATA_LIST_PACKET -> new GameOverDataListPacket(blocks);
+            case MISSILE_SOUND_PACKET -> new MissileSoundPacket();
         };
     }
 

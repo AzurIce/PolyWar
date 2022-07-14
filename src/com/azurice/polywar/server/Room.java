@@ -181,4 +181,13 @@ public class Room implements Serializable {
     public void addMissile(Missile missile) {
         this.missileList.add(missile);
     }
+
+    public void sendMissileSoundPacket(int id) {
+        for (int i = 0; i < playerList.size(); i++) {
+            if (playerList.get(i).id == id) {
+                server.sendPacket(playerList.get(i).socketChannel, new MissileSoundPacket());
+                return;
+            }
+        }
+    }
 }
