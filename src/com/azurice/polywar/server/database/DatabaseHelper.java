@@ -90,12 +90,12 @@ public class DatabaseHelper {
     }
 
     /**
-     * Update player data(Create the player if not exist)
+     * Insert a player if not exist
      *
      * @param name name
      * @return the player id
      */
-    public int updatePlayer(String name) {
+    public int insertPlayerIfNotExist(String name) {
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(

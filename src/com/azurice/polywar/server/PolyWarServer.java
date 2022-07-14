@@ -148,7 +148,7 @@ public class PolyWarServer {
     //--------------------------------------------------------------------//
 
     private void handleName(SocketChannel socketChannel, String name) {
-        int id = database.updatePlayer(name);
+        int id = database.insertPlayerIfNotExist(name);
 
         if (!socketToPlayerId.containsValue(id)) {
             socketToPlayerId.put(socketChannel, id);
