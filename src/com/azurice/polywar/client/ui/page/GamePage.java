@@ -25,7 +25,7 @@ public class GamePage extends PerformanceOverlayedPage {
 
 
     public GamePage(PolyWarClient client, MainWindow parent) {
-        super(client, parent);
+        super(parent);
     }
 
     public void updateMap(WorldMap worldMap) {

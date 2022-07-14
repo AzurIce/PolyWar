@@ -31,7 +31,7 @@ public class MainPage extends PerformanceOverlayedPage {
     JButton btnName;
 
     public MainPage(PolyWarClient client, MainWindow parent) {
-        super(client, parent);
+        super(parent);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class RoomPage extends PerformanceOverlayedPage {
     }
 
     public RoomPage(PolyWarClient client, MainWindow parent) {
-        super(client, parent);
+        super(parent);
     }
 
     public void updateRoom(Room room) {

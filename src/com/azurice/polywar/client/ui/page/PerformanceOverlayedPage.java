@@ -6,11 +6,10 @@ import com.azurice.polywar.client.ui.MainWindow;
 import java.awt.*;
 
 public abstract class PerformanceOverlayedPage extends AbstractPage {
-    private final PolyWarClient client;
+    protected static final PolyWarClient client = PolyWarClient.getInstance();
 
-    public PerformanceOverlayedPage(PolyWarClient client, MainWindow parent) {
+    public PerformanceOverlayedPage(MainWindow parent) {
         super(parent);
-        this.client = client;
     }
 
     @Override

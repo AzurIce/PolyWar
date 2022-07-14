@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomListPage extends AbstractPage {
+public class RoomListPage extends PerformanceOverlayedPage {
 
 
     private JButton btnEsc;

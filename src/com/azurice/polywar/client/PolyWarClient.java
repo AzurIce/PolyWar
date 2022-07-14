@@ -175,6 +175,9 @@ private static final String SERVER_IP = "114.116.241.137";
                 case MissileDataListPacket p -> handleMissileDataList(p.getData());
                 case GameOverPacket p -> handleGameOver(p.getData());
                 case MapRadiusPacket p -> handleMapRadius(p.getData());
+                case RoomFinishPlayingPacket p -> {
+                    window.roomPage.playing = false;
+                }
                 default -> {
                 }
             }
@@ -206,6 +209,7 @@ private static final String SERVER_IP = "114.116.241.137";
     private void handleGamePlayerData(GamePlayerData gamePlayerData) {
         window.gamePage.gameView.setMainGamePlayerData(gamePlayerData);
         window.setPage(MainWindow.Page.GAME_PAGE);
+        window.roomPage.playing = true;
     }
 
     /**

@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameOverRecordListPage extends AbstractPage {
+public class GameOverRecordListPage extends PerformanceOverlayedPage {
 
 
     private JButton btnEsc;
