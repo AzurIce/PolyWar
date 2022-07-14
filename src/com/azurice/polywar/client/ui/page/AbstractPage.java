@@ -20,6 +20,12 @@ public abstract class AbstractPage extends JPanel implements Tickable, Renderabl
         initListeners();
     }
 
+    @Override
+    public abstract void tick();
+
+    @Override
+    public abstract void render();
+
     public void initViews() {
         setFocusable(true);
     }

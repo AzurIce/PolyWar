@@ -22,7 +22,8 @@ import java.util.List;
 import static com.azurice.polywar.util.Util.getMeasuringTimeMs;
 
 public class PolyWarClient {
-    private static final String SERVER_IP = "127.0.0.1";
+//    private static final String SERVER_IP = "127.0.0.1";
+private static final String SERVER_IP = "114.116.241.137";
     private static final int SERVER_PORT = 7777;
     private static final InetSocketAddress SERVER_ADDRESS = new InetSocketAddress(SERVER_IP, SERVER_PORT);
     public static int TICK_RATE = 20;
