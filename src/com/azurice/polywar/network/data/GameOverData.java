@@ -3,9 +3,9 @@ package com.azurice.polywar.network.data;
 import java.io.Serializable;
 
 public class GameOverData implements Serializable {
-    int rank;
-    int shoot;
-    double distance;
+    public int rank;
+    public int shoot;
+    public double distance;
 
     public GameOverData(int rank, int shoot, double distance) {
         this.rank = rank;

@@ -64,6 +64,15 @@ public class GamePlayer extends SpeedDirectionEntity {
     }
 
     @Override
+    public void paint(Graphics g, Vec2d offset) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        if (health <= 0) g2d.setColor(new Color(0x3c3c3c));
+        else g2d.setColor(color);
+        g2d.fillPolygon(getRenderPolygon().add(offset).toAwtPolygon());
+    }
+
+    @Override
     public void tick() {
         PolyWarClient.getInstance().sendPacket(GamePlayerControlDataPacket.of(gamePlayerControlData));
     }

@@ -29,17 +29,16 @@ public class GameView extends AbstractView {
     private static final int MAP_SIZE = 4096;
     private static final int VIEWPORT_SIZE = 800;
 
+    private static final int CAMERA_CHANGE_COOL_DOWN = 100;
+
 
     ////// Entities //////
-//        private List<Missile> missileList = new ArrayList<>();
-    private Map<Integer, GamePlayer> gamePlayers;
+    private Map<Integer, GamePlayer> idToPlayer;
     private List<Missile> missileList = new ArrayList<>();
     // Player
     private GamePlayer mainGamePlayer;
-
-    public int getMainGamePlayerId() {
-        return mainGamePlayer.id;
-    }
+    private GamePlayer cameraPlayer;
+    private int cameraChangeCoolDown;
 
     private Vec2d screenLocation = Vec2d.ZERO;
     private WorldMap worldMap;
@@ -55,20 +54,21 @@ public class GameView extends AbstractView {
     }
 
     public void setMainGamePlayerData(GamePlayerData data) {
-        gamePlayers = Collections.synchronizedMap(new HashMap<>());
+        idToPlayer = Collections.synchronizedMap(new HashMap<>());
         mainGamePlayer = new GamePlayer(data.coord, new Color(MyColor.BLUE), worldMap, data.id);
-        gamePlayers.put(data.id, mainGamePlayer);
+        cameraPlayer = mainGamePlayer;
+        idToPlayer.put(data.id, mainGamePlayer);
         LOGGER.info("Set mainGamePlayer: {}", mainGamePlayer);
     }
 
     public void updateGamePlayersData(List<GamePlayerData> gamePlayersData) {
         for (GamePlayerData data : gamePlayersData) {
             GamePlayer gamePlayer;
-            if (!gamePlayers.containsKey(data.id)) {
+            if (!idToPlayer.containsKey(data.id)) {
                 gamePlayer = new GamePlayer(data.coord, worldMap, data.id);
-                gamePlayers.put(data.id, gamePlayer);
+                idToPlayer.put(data.id, gamePlayer);
             } else {
-                gamePlayer = gamePlayers.get(data.id);
+                gamePlayer = idToPlayer.get(data.id);
             }
             gamePlayer.updatePlayerData(data);
 //            LOGGER.info("Update player data: {}", gamePlayer);
@@ -90,7 +90,7 @@ public class GameView extends AbstractView {
     }
 
     private void initGame() {
-        gamePlayers = Collections.synchronizedMap(new HashMap<>());
+        idToPlayer = Collections.synchronizedMap(new HashMap<>());
         LOGGER.info("Generating worldMap...");
         worldMap = WorldMap.generateWorldMap(MAP_SIZE);
 
@@ -103,7 +103,7 @@ public class GameView extends AbstractView {
         while (!worldMap.isAvailableToSpawnAt(mainGamePlayer.getCoord())) {
             mainGamePlayer.setCoord(new Vec2d(r.nextInt(0, MAP_SIZE), r.nextInt(0, MAP_SIZE)));
         }
-        gamePlayers.put(0, mainGamePlayer);
+        idToPlayer.put(0, mainGamePlayer);
     }
 
     // KeyListener
@@ -122,15 +122,22 @@ public class GameView extends AbstractView {
     // Render & tick
     @Override
     public void tick() {
-        mainGamePlayer.tick();
+        if (cameraChangeCoolDown <= 0 && client.window.gamePage.gameOver) {
+            cameraPlayer = (GamePlayer) idToPlayer.values().toArray()[r.nextInt(0, idToPlayer.size())];
+            cameraChangeCoolDown = CAMERA_CHANGE_COOL_DOWN;
+        }
+        cameraChangeCoolDown--;
+        if (!client.window.gamePage.gameOver) mainGamePlayer.tick();
 //        for (GamePlayer gamePlayer : gamePlayers.values()) {
 //            gamePlayer.tick();
 //        }
     }
 
     private void updateScreenLocation() {
-        double x = mainGamePlayer.getPredictedCoord().x;
-        double y = mainGamePlayer.getPredictedCoord().y;
+//        if (cameraPlayer == null) return;
+//        LOGGER.info(cameraPlayer.id);
+        double x = cameraPlayer.getPredictedCoord().x;
+        double y = cameraPlayer.getPredictedCoord().y;
         screenLocation = new Vec2d(
                 Util.clip(x - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE),
                 Util.clip(y - VIEWPORT_SIZE / 2.0, 0, MAP_SIZE - VIEWPORT_SIZE)
@@ -153,7 +160,7 @@ public class GameView extends AbstractView {
 
         MapRenderer.render(worldMap, g2d, screenLocation);
 
-        for (GamePlayer gamePlayer : gamePlayers.values()) {
+        for (GamePlayer gamePlayer : idToPlayer.values()) {
             PlayerRenderer.render(gamePlayer, g2d, screenLocation.negate(), new Vec2d(VIEWPORT_SIZE, VIEWPORT_SIZE));
         }
 

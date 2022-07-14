@@ -48,7 +48,7 @@ public class PolyWarClient {
     public double ms;
     private boolean running = true;
     SocketChannel socketChannel;
-    private MainWindow window;
+    public MainWindow window;
     private boolean connected = false;
     public boolean nameValid = false;
     public String name = "Player";

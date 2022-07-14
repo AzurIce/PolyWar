@@ -63,16 +63,22 @@ public class GamePage extends PerformanceOverlayedPage {
     public void paintOverlay(Graphics g) {
         super.paintOverlay(g);
         if (gameOver) {
-            g.drawString("You died, press Esc to exit", 400, 400);
-            g.drawString(gameOverData.toString(), 400, 414);
+            g.setColor(new Color(0xcc000000, true));
+            g.fillRect(0, 0, 800, 800);
+            g.setColor(new Color(0xccffffff, true));
+            g.fillRect(250, 350, 300, 100);
+            g.setColor(new Color(0x000000));
+            g.drawString("Game Over, press Esc to exit to RoomPage", 260, 364);
+            g.drawString("You placed " + gameOverData.rank + "!", 260, 380);
+            g.drawString("You shot " + gameOverData.shoot + " times.", 260, 396);
+            g.drawString("You moved " + gameOverData.distance + "px.", 260, 412);
+//            g.drawString(gameOverData.toString(), 260, 380);
         }
     }
 
     @Override
     public void tick() {
-        if (!gameOver) {
-            gameView.tick();
-        }
+        gameView.tick();
     }
 
 
@@ -90,7 +96,7 @@ public class GamePage extends PerformanceOverlayedPage {
 
     ////// KeyListener //////
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE && gameOver) {
             parent.setPage(MainWindow.Page.ROOM_PAGE);
             gameOver = false;
         } else {

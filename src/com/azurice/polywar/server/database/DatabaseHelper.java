@@ -11,8 +11,6 @@ public class DatabaseHelper {
     private static final DatabaseHelper instance = new DatabaseHelper();
     private final Connection connection;
 
-    ;
-
 
     private DatabaseHelper() {
 
