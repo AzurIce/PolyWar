@@ -166,6 +166,7 @@ public class PolyWarClient {
                     nameValid = true;
                     id = p.getData().id;
                     name = p.getData().name;
+                    window.setTitle("PolyWar - " + name);
                 }
                 case GameOverDataListPacket p -> {
                     window.gameOverDataListPage.updateGameOverDataList(p.getData());
