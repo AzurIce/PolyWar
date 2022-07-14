@@ -31,6 +31,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
     public MainPage mainPage;
     public RoomPage roomPage;
     public GamePage gamePage;
+    public GameOverRecordListPage gameOverDataListPage;
 
     public void initViews() {
         setTitle("PolyWar");
@@ -39,12 +40,14 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
         gamePage = new GamePage(client, this);
         roomListPage = new RoomListPage(this);
         roomPage = new RoomPage(client, this);
+        gameOverDataListPage = new GameOverRecordListPage(this);
 
         pageContainer.setLayout(cardLayout);
         pageContainer.add(Page.MAIN_PAGE.name(), mainPage);
         pageContainer.add(Page.GAME_PAGE.name(), gamePage);
         pageContainer.add(Page.ROOM_LIST_PAGE.name(), roomListPage);
         pageContainer.add(Page.ROOM_PAGE.name(), roomPage);
+        pageContainer.add(Page.GAME_OVER_DATA_LIST_PAGE.name(), gameOverDataListPage);
 //        pageContainer.setBorder(new LineBorder(new Color(0x00ff00)));
 
         pageContainer.setLocation(0, 0);
@@ -75,6 +78,7 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
             case GAME_PAGE -> gamePage;
             case ROOM_LIST_PAGE -> roomListPage;
             case ROOM_PAGE -> roomPage;
+            case GAME_OVER_DATA_LIST_PAGE -> gameOverDataListPage;
         };
         if (curPage == targetPage) return;
         if (curPage != null) curPage.onExit();
@@ -198,7 +202,8 @@ public class MainWindow extends JFrame implements Tickable, Renderable {
         MAIN_PAGE,
         GAME_PAGE,
         ROOM_LIST_PAGE,
-        ROOM_PAGE
+        ROOM_PAGE,
+        GAME_OVER_DATA_LIST_PAGE
     }
 
 

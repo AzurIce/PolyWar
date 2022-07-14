@@ -1,9 +1,12 @@
 package com.azurice.polywar.server.database;
 
+import com.azurice.polywar.network.data.GameOverData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper {
     private static final Logger LOGGER = LogManager.getLogger(DatabaseHelper.class);
@@ -26,14 +29,14 @@ public class DatabaseHelper {
                             " NAME  TEXT     UNIQUE      NOT NULL);"
             );
             statement.close();
-//            statement.executeUpdate(
-//                    "CREATE TABLE GAME_RECORD " +
-//                            "(ID                     INT PRIMARY KEY NOT NULL," +
-//                            " GAME_PLAYERS_RECORD_ID INT             NOT NULL," +
-//                            " START_TIME             TEXT            NOT NULL," +
-//                            " END_TIME               TEXT            NOT NULL," +
-//                            " WINNER_PLAYER_ID       INT             NOT NULL);"
-//            );
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS GAME_OVER_DATA " +
+                            "(ID              INTEGER PRIMARY KEY AUTOINCREMENT," +
+                            "  GAME_PLAYER_ID INT                 NOT NULL," +
+                            " RANK            INT                 NOT NULL," +
+                            " SHOOT           INT                 NOT NULL," +
+                            " DISTANCE        INT                 NOT NULL);"
+            );
 //            statement.executeUpdate(
 //                    "CREATE TABLE GAME_PLAYERS_RECORD " +
 //                            "(ID                INT PRIMARY KEY NOT NULL," +
@@ -51,6 +54,39 @@ public class DatabaseHelper {
 
     public static DatabaseHelper getInstance() {
         return instance;
+    }
+
+    public void insertGameOverData(int gamePlayerId, GameOverData gameOverData) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(
+                    "INSERT INTO GAME_OVER_DATA(GAME_PLAYER_ID, RANK, SHOOT, DISTANCE)" +
+                            " values(" + gamePlayerId + ", " + gameOverData.rank +
+                            ", " + gameOverData.shoot + "," + gameOverData.distance + ");"
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<GameOverData> getGameOverDataListByPlayerId(int playerId) {
+        List<GameOverData> gameOverDataList = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(
+                    "SELECT * FROM GAME_OVER_DATA WHERE GAME_PLAYER_ID = " + playerId + ";"
+            );
+            while (rs.next()) {
+                gameOverDataList.add(
+                        new GameOverData(rs.getInt("RANK"),
+                                rs.getInt("SHOOT"),
+                                rs.getInt("DISTANCE"))
+                );
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return gameOverDataList;
     }
 
     /**

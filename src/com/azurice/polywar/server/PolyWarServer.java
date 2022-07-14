@@ -1,6 +1,7 @@
 package com.azurice.polywar.server;
 
 import com.azurice.polywar.network.Util;
+import com.azurice.polywar.network.data.GameOverData;
 import com.azurice.polywar.network.packet.*;
 import com.azurice.polywar.server.database.DatabaseHelper;
 import org.apache.logging.log4j.LogManager;
@@ -112,6 +113,7 @@ public class PolyWarServer {
             switch (packet) {
                 case NamePacket p -> handleName(socketChannel, p.getData());
                 case PingPacket p -> handlePing(socketChannel);
+                case GetGameOverDataListPacket p -> handleGetGameOverDataList(socketChannel);
                 case GetRoomListPacket p -> handleGetRoomList(socketChannel);
                 case CreateRoomPacket p -> handleCreateRoom(socketChannel);
                 case RoomPacket p -> handleJoinRoom(socketChannel, p.getData());
@@ -161,6 +163,13 @@ public class PolyWarServer {
     private void handlePing(SocketChannel socketChannel) {
         sendPacket(socketChannel, new PingPacket());
     }
+
+
+    private void handleGetGameOverDataList(SocketChannel socketChannel) {
+        List<GameOverData> gameOverDataList = database.getGameOverDataListByPlayerId(socketToPlayerId.get(socketChannel));
+        sendPacket(socketChannel, GameOverDataListPacket.of(gameOverDataList));
+    }
+
 
     private void handleGetRoomList(SocketChannel socketChannel) {
         sendPacket(socketChannel, RoomListPacket.of(rooms));

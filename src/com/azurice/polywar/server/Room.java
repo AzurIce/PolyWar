@@ -6,6 +6,7 @@ import com.azurice.polywar.network.data.GamePlayerControlData;
 import com.azurice.polywar.network.data.GamePlayerData;
 import com.azurice.polywar.network.data.MissileData;
 import com.azurice.polywar.network.packet.*;
+import com.azurice.polywar.server.database.DatabaseHelper;
 import com.azurice.polywar.util.math.Vec2d;
 import com.azurice.polywar.world.WorldMap;
 import org.apache.logging.log4j.LogManager;
@@ -87,9 +88,11 @@ public class Room implements Serializable {
 //        gamePlayers.remove(playerId);
         LOGGER.info("Killed GamePlayer: {}, remains {} GamePlayers", gamePlayer,
                 gamePlayers.size() - diedGamePlayerIds.size());
-        server.sendPacket(getPlayerById(playerId).socketChannel, GameOverPacket.of(
-                new GameOverData(gamePlayers.size() - diedGamePlayerIds.size() + 1, gamePlayer.shootCount, gamePlayer.distance)
-        ));
+
+        GameOverData gameOverData = new GameOverData(gamePlayers.size() - diedGamePlayerIds.size() + 1, gamePlayer.shootCount, gamePlayer.distance);
+
+        server.sendPacket(getPlayerById(playerId).socketChannel, GameOverPacket.of(gameOverData));
+        DatabaseHelper.getInstance().insertGameOverData(gamePlayer.id, gameOverData);
     }
 
     public Player getPlayerById(int playerId) {

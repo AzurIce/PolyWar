@@ -89,6 +89,8 @@ public class Util {
             case PLAYER_PACKET -> new PlayerPacket(blocks);
             case ROOM_FINISHED_PLAYING_PACKET -> new RoomFinishPlayingPacket();
             case MAP_RADIUS_PACKET -> new MapRadiusPacket(blocks);
+            case GET_GAME_OVER_RECORD_PACKET -> new GetGameOverDataListPacket();
+            case GAME_OVER_DATA_LIST_PACKET -> new GameOverDataListPacket(blocks);
         };
     }
 

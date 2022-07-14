@@ -158,6 +158,10 @@ public class PolyWarClient {
                     id = p.getData().id;
                     name = p.getData().name;
                 }
+                case GameOverDataListPacket p -> {
+                    window.gameOverDataListPage.updateGameOverDataList(p.getData());
+                    window.setPage(MainWindow.Page.GAME_OVER_DATA_LIST_PAGE);
+                }
                 case NameInValidPacket p -> nameValid = false;
                 case PingPacket p -> handlePing();
                 case RoomListPacket p -> window.roomListPage.updateRoomList(p.getData());

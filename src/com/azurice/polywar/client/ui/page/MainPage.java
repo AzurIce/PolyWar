@@ -5,6 +5,7 @@ import com.azurice.polywar.client.ui.Layout.VerticalFlowLayout;
 import com.azurice.polywar.client.ui.Layout.container.Row;
 import com.azurice.polywar.client.ui.MainWindow;
 import com.azurice.polywar.network.packet.CreateRoomPacket;
+import com.azurice.polywar.network.packet.GetGameOverDataListPacket;
 import com.azurice.polywar.network.packet.NamePacket;
 
 import javax.swing.*;
@@ -19,7 +20,7 @@ public class MainPage extends PerformanceOverlayedPage {
         imageBg = new ImageIcon(imageURL).getImage();
     }
 
-//    JButton btnStartGame;
+    JButton btnRecord;
     JButton btnCreateRoom;
     JButton btnJoinRoom;
     JLabel labelTitle;
@@ -43,6 +44,7 @@ public class MainPage extends PerformanceOverlayedPage {
         super.tick();
         btnCreateRoom.setEnabled(parent.client.isConnected() && parent.client.isNameValid());
         btnJoinRoom.setEnabled(parent.client.isConnected() && parent.client.isNameValid());
+        btnRecord.setEnabled(parent.client.isConnected() && parent.client.isNameValid());
         if (!parent.client.isNameValid()) {
             labelName.setText("Your Name is Not Available");
             labelName.setForeground(new Color(0xff0000));
@@ -117,15 +119,14 @@ public class MainPage extends PerformanceOverlayedPage {
 
         rightPanel.add(row3);
 
-//        JPanel row4 = new Row();
-//        row4.setOpaque(false);
+        JPanel row4 = new Row();
+        row4.setOpaque(false);
 //        row4.setPreferredSize(new Dimension(295, 60));
 //        row4.setBorder(new LineBorder(new Color(0xff0000)));
-//        btnStartGame = new JButton("TestStart");
-//        btnStartGame.setPreferredSize(new Dimension(285, 50));
-//        row4.add(btnStartGame);
+        btnRecord = new JButton("Check record");
+        row4.add(btnRecord);
 
-//        rightPanel.add(row4);
+        rightPanel.add(row4);
 
         add(rightPanel, BorderLayout.EAST);
     }
@@ -143,6 +144,7 @@ public class MainPage extends PerformanceOverlayedPage {
                 parent.client.sendPacket(NamePacket.of(textName.getText()));
             }
         });
+        btnRecord.addActionListener(e -> parent.client.sendPacket(new GetGameOverDataListPacket()));
     }
 
     ////// Key Listener //////
